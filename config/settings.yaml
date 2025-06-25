@@ -1,0 +1,134 @@
+# settings.yaml
+# DSBL (Deferred Semantic Binding Language) Experiment Settings
+# For parameter explanations and effects, see USER_GUIDE.md
+
+# Core voting system parameters
+voting:
+  promotion_threshold: 5 # TESTING: Lowered for quick STATUS_CHANGE verification
+  demotion_threshold: -3 # Reputation threshold for demotion (v2.9 even softer for active antagonists)
+  demote_multiplier: 2 # Demote votes hit 2x harder than promote
+  self_vote_weight: 0.2 # v2.3: Self-votes weighted at 20% (anti-manipulation)
+  binder_vote_multiplier: 1.5 # v2.7: BINDER votes are weighted 1.5x
+
+  # v2.10.2: Reputation-based vote weighting (global, symmetric system)
+  reputation_weight:
+    enabled: true
+    min_rep_for_full_weight: -2.0 # Reputation threshold below which votes lose weight
+    scale: 0.08 # Each reputation point below threshold reduces vote weight by this amount
+
+  # v2.10.1: TEMPORARILY DISABLED - may be redundant with reputation_weight system
+  dynamic_threshold:
+    enabled: false
+    threshold_increase: 1 # +1 to promotion threshold after status changes (4→5)
+    cooldown_tickets: 10 # Return to normal threshold after N tickets
+    triggers: ["PROMOTION", "DEMOTION"] # Events that trigger threshold increase
+
+  # v2.10: TEMPORARILY DISABLED - effect covered by reputation_weight system
+  self_vote_cooldown:
+    enabled: false
+    cooldown_tickets: 4 # Reduced self-vote weight for N tickets after self-voting
+    reduced_weight: 0.1 # Weight during cooldown period (stronger penalty)
+
+# AI model settings
+ai:
+  model: "gpt-4o-mini" # OpenAI model for AI agents
+  max_tokens: 80 # Token limit for responses
+  temperature: 0.7 # Creativity level
+  timeout: 15 # API timeout in seconds
+  token_budget: 3000 # Max tokens for context
+
+# CIVIL gate configuration (v2.11 balanced Mallory participation)
+civil_gate:
+  toxicity_threshold: 0.7 # BALANCED: Allow some Mallory messages through while maintaining safety
+  use_openai_moderation: true
+  reputation_penalty: 0.6 # v2.10.2: Balanced penalty - allows reputation weighting to activate
+  fallback_patterns:
+    # AGGRESSIVE: Removed most patterns to allow Mallory participation while keeping safety
+    - "waste of space"
+    - "pathetic"
+    # REMOVED: "pity points", "drags us down", "promoting myself", "i deserve"
+    # TESTING: Removed common words that trigger too often:
+    # "logical choice", "obviously", "clearly", "let's be honest"
+
+# Rate limiting (v2.2 anti-vote-stuffing)
+rate_limiting:
+  enabled: true
+  window_seconds: 120 # 2 minute window
+  max_messages: 10 # Max messages per agent per window (increased for batch)
+  # Prevents vote manipulation by limiting agent activity (e.g., alice hits limit → pauses system briefly)
+
+# Experiment timing
+timing:
+  message_interval: 1.5 # Base seconds between agent messages
+  jitter_range: 0.5 # Random variance in timing
+  auto_stop_tickets: null # Set to number (e.g. 100) to auto-stop after N tickets
+
+# DSBL (v2.10.2) - DISABLED for testing with pure content-based civil gate
+dsbl:
+  civil_binding:
+    probabilistic_injection_rate: 0.0 # Disabled - let civil gate react to actual content only
+
+# Probation system (v2.9) - active antagonist system
+probation:
+  enabled: false
+  block_duration_tickets: 4 # Increased from 1 for better interaction balance
+  reentry_jitter: 1 # +/- 1 ticket randomization to prevent synchronized waves
+  forbid_votes_only: true # Allow posting but block voting for demoted agents
+  on_reentry_reputation_gain: 0.5 # Rehabilitation bonus to prevent zombie status
+  exempt_agents: [] # Removed mallory exemption - she now gets probation like everyone else
+
+# BIND gate management (v2.7) - prevent spam and ensure TTL
+bind_gates:
+  cooldown_tickets: 10 # Minimum tickets between BIND uses per user
+  default_ttl_tickets: 50 # Default TTL for BIND gate effects
+  auto_bind_probability: 0.20 # 20% chance for BINDERs to auto-use BIND gates
+
+# Adaptive Immune System configuration (v2.11) - REFLECT/CALIBRATE ablation support
+adaptive_immune:
+  enable_reflect: true # Always enable pressure detection (Event A)
+  enable_calibrate: true # Enable frequency adjustments (Event B) - set false for ablation
+  # Ablation testing: enable_calibrate=false shows baseline stabilization without adaptive response
+
+# Agent personalities (voting_frequency = how often they vote)
+personalities:
+  supportive:
+    voting_frequency: 0.87 # PRO-promotion agent: votes FOR others → higher = more BINDERs
+  technical:
+    voting_frequency: 0.85 # PRO-promotion agent: analytical support → higher = more BINDERs
+  strategic:
+    voting_frequency: 0.75 # PRO-promotion agent: calculated support → higher = more BINDERs
+  follower:
+    voting_frequency: 0.9 # PRO-promotion agent: follows trends → higher = more BINDERs
+  contrarian:
+    voting_frequency: 0.26 # ANTI-promotion agent: votes AGAINST others → lower = more BINDERs
+  malice:
+    voting_frequency: 0.9 # CHAOTIC agent: creates conflict → keep high for interesting dynamics
+
+# Audit logging
+audit:
+  console_output: true # Print audit events to console
+  jsonl_logging: true # Save to JSONL files
+  include_content_hash: true # Hash content for privacy
+
+  # Debug mode settings (v2.8) - enable with --debug flag
+  debug_mode: false # Master debug switch
+  debug_gate_decisions: false # Log every gate allow/block decision with reasoning
+  debug_vote_calculations: false # Log vote weight calculations and multipliers
+  debug_state_changes: false # Log user status changes, reputation updates
+  debug_timing: false # Log detailed timing for ticket generation bottlenecks
+
+# Security settings
+security:
+  defense_in_depth: true # Validate AI output before gates
+  dangerous_patterns:
+    - "rm -rf"
+    - "system("
+    - "eval("
+    - "exec("
+    - "__import__"
+    - "subprocess"
+    - "os.system"
+    - "password"
+    - "token"
+    - "secret"
+    - "api_key"
