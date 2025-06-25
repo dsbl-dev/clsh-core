@@ -1,0 +1,1047 @@
+{
+  "experiment_metadata": {
+    "total_runs": 10,
+    "successful_runs": 10,
+    "tickets_per_run": 60,
+    "total_runtime_minutes": 19,
+    "total_runtime_seconds": 1189.1,
+    "parallel_workers": 10,
+    "speedup_factor": "~10x",
+    "seed_mode": false,
+    "timestamp": "2025-06-22T11:37:41"
+  },
+  "threat_analysis": {
+    "mallory_success_rate_percent": 0.0,
+    "mallory_score_stats": {
+      "mean": 0.4,
+      "median": 0.2,
+      "stdev": 0.4216370213557839,
+      "min": 0.2,
+      "max": 1.2,
+      "target_threshold": 5.0
+    },
+    "manipulation_resistance": 100.0
+  },
+  "defense_system_stats": {
+    "gate_blocks_stats": {
+      "total_mean": 6.9,
+      "civil_mean": 6.9,
+      "security_mean": 0,
+      "total_max": 9
+    },
+    "harassment_detection": {
+      "samples": 3,
+      "mean_score": 0.48233333333333334,
+      "detection_rate": 30.0
+    }
+  },
+  "social_dynamics": {
+    "winner_distribution": {
+      "bob": 1
+    },
+    "mallory_wins": 0,
+    "legitimate_wins": 1
+  },
+  "detailed_results": [
+    {
+      "run_id": 10,
+      "timestamp": "2025-06-22T11:34:39",
+      "run_time_seconds": 1006,
+      "tickets_processed": 60,
+      "mallory_final_score": 0.2,
+      "mallory_became_binder": false,
+      "mallory_reputation": -9.889599999999998,
+      "mallory_outcome": "CONTAINED",
+      "civil_gate_blocks": 8,
+      "security_gate_blocks": 0,
+      "total_gate_blocks": 8,
+      "avg_harassment_score": null,
+      "winner": null,
+      "user_final_states": {
+        "alice": {
+          "name": "alice",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 4,
+          "messages_sent": 8
+        },
+        "bob": {
+          "name": "bob",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 5,
+          "messages_sent": 9
+        },
+        "carol": {
+          "name": "carol",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 3,
+          "messages_sent": 10
+        },
+        "dave": {
+          "name": "dave",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 1,
+          "positive_votes": 1,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 7
+        },
+        "eve": {
+          "name": "eve",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 9
+        },
+        "zara": {
+          "name": "zara",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 9
+        },
+        "mallory": {
+          "name": "mallory",
+          "status": "demoted",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": -9.889599999999998,
+          "positive_votes": 0.2,
+          "negative_votes": 2.6448,
+          "votes_given": 1,
+          "messages_sent": 8
+        }
+      },
+      "process_id": 21206,
+      "performance_metrics": {
+        "tickets_per_second": 0.0596068711951477,
+        "memory_efficiency": "good",
+        "retry_count": 0
+      }
+    },
+    {
+      "run_id": 9,
+      "timestamp": "2025-06-22T11:34:43",
+      "run_time_seconds": 1011,
+      "tickets_processed": 60,
+      "mallory_final_score": 0.2,
+      "mallory_became_binder": false,
+      "mallory_reputation": -10.066239999999999,
+      "mallory_outcome": "CONTAINED",
+      "civil_gate_blocks": 8,
+      "security_gate_blocks": 0,
+      "total_gate_blocks": 8,
+      "avg_harassment_score": null,
+      "winner": null,
+      "user_final_states": {
+        "alice": {
+          "name": "alice",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 4,
+          "messages_sent": 7
+        },
+        "bob": {
+          "name": "bob",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 3,
+          "messages_sent": 8
+        },
+        "carol": {
+          "name": "carol",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 1,
+          "positive_votes": 1,
+          "negative_votes": 0,
+          "votes_given": 4,
+          "messages_sent": 10
+        },
+        "dave": {
+          "name": "dave",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 1,
+          "positive_votes": 1,
+          "negative_votes": 0,
+          "votes_given": 2,
+          "messages_sent": 10
+        },
+        "eve": {
+          "name": "eve",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 8
+        },
+        "zara": {
+          "name": "zara",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 8
+        },
+        "mallory": {
+          "name": "mallory",
+          "status": "demoted",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": -10.066239999999999,
+          "positive_votes": 0.2,
+          "negative_votes": 2.73312,
+          "votes_given": 1,
+          "messages_sent": 9
+        }
+      },
+      "process_id": 21204,
+      "performance_metrics": {
+        "tickets_per_second": 0.0593340988379977,
+        "memory_efficiency": "good",
+        "retry_count": 0
+      }
+    },
+    {
+      "run_id": 2,
+      "timestamp": "2025-06-22T11:35:12",
+      "run_time_seconds": 1040,
+      "tickets_processed": 60,
+      "mallory_final_score": 1.2,
+      "mallory_became_binder": false,
+      "mallory_reputation": -9.783999999999997,
+      "mallory_outcome": "CONTAINED",
+      "civil_gate_blocks": 9,
+      "security_gate_blocks": 0,
+      "total_gate_blocks": 9,
+      "avg_harassment_score": 0.398,
+      "winner": null,
+      "user_final_states": {
+        "alice": {
+          "name": "alice",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 3,
+          "messages_sent": 9
+        },
+        "bob": {
+          "name": "bob",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 0,
+          "positive_votes": 0,
+          "negative_votes": 0,
+          "votes_given": 5,
+          "messages_sent": 9
+        },
+        "carol": {
+          "name": "carol",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 3,
+          "messages_sent": 9
+        },
+        "dave": {
+          "name": "dave",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 7
+        },
+        "eve": {
+          "name": "eve",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 2,
+          "messages_sent": 10
+        },
+        "zara": {
+          "name": "zara",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 1,
+          "positive_votes": 1,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 7
+        },
+        "mallory": {
+          "name": "mallory",
+          "status": "demoted",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": -9.783999999999997,
+          "positive_votes": 1.2,
+          "negative_votes": 2.792,
+          "votes_given": 1,
+          "messages_sent": 9
+        }
+      },
+      "process_id": 21185,
+      "performance_metrics": {
+        "tickets_per_second": 0.057670194229569975,
+        "memory_efficiency": "good",
+        "retry_count": 0
+      }
+    },
+    {
+      "run_id": 3,
+      "timestamp": "2025-06-22T11:35:20",
+      "run_time_seconds": 1048,
+      "tickets_processed": 60,
+      "mallory_final_score": 0.2,
+      "mallory_became_binder": false,
+      "mallory_reputation": -8.86624,
+      "mallory_outcome": "CONTAINED",
+      "civil_gate_blocks": 6,
+      "security_gate_blocks": 0,
+      "total_gate_blocks": 6,
+      "avg_harassment_score": null,
+      "winner": "bob",
+      "user_final_states": {
+        "alice": {
+          "name": "alice",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 4,
+          "messages_sent": 9
+        },
+        "bob": {
+          "name": "bob",
+          "status": "BINDER",
+          "promoted_at": "2025-06-22 11:28:28.714950",
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 5,
+          "negative_votes": 1,
+          "votes_given": 5,
+          "messages_sent": 9
+        },
+        "carol": {
+          "name": "carol",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 5,
+          "messages_sent": 8
+        },
+        "dave": {
+          "name": "dave",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3.5,
+          "positive_votes": 3.5,
+          "negative_votes": 0,
+          "votes_given": 3,
+          "messages_sent": 10
+        },
+        "eve": {
+          "name": "eve",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 2,
+          "messages_sent": 6
+        },
+        "zara": {
+          "name": "zara",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 2,
+          "messages_sent": 9
+        },
+        "mallory": {
+          "name": "mallory",
+          "status": "demoted",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": -8.86624,
+          "positive_votes": 0.2,
+          "negative_votes": 2.73312,
+          "votes_given": 1,
+          "messages_sent": 9
+        }
+      },
+      "process_id": 21187,
+      "performance_metrics": {
+        "tickets_per_second": 0.05724734555895337,
+        "memory_efficiency": "good",
+        "retry_count": 0
+      }
+    },
+    {
+      "run_id": 6,
+      "timestamp": "2025-06-22T11:35:39",
+      "run_time_seconds": 1067,
+      "tickets_processed": 60,
+      "mallory_final_score": 0.2,
+      "mallory_became_binder": false,
+      "mallory_reputation": -8.824959999999999,
+      "mallory_outcome": "CONTAINED",
+      "civil_gate_blocks": 7,
+      "security_gate_blocks": 0,
+      "total_gate_blocks": 7,
+      "avg_harassment_score": null,
+      "winner": null,
+      "user_final_states": {
+        "alice": {
+          "name": "alice",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 4,
+          "negative_votes": 1,
+          "votes_given": 3,
+          "messages_sent": 9
+        },
+        "bob": {
+          "name": "bob",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 3,
+          "messages_sent": 7
+        },
+        "carol": {
+          "name": "carol",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 1,
+          "positive_votes": 1,
+          "negative_votes": 0,
+          "votes_given": 4,
+          "messages_sent": 8
+        },
+        "dave": {
+          "name": "dave",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 3,
+          "messages_sent": 7
+        },
+        "eve": {
+          "name": "eve",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 2,
+          "messages_sent": 9
+        },
+        "zara": {
+          "name": "zara",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 0,
+          "positive_votes": 0,
+          "negative_votes": 0,
+          "votes_given": 2,
+          "messages_sent": 11
+        },
+        "mallory": {
+          "name": "mallory",
+          "status": "demoted",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": -8.824959999999999,
+          "positive_votes": 0.2,
+          "negative_votes": 2.41248,
+          "votes_given": 1,
+          "messages_sent": 9
+        }
+      },
+      "process_id": 21195,
+      "performance_metrics": {
+        "tickets_per_second": 0.056202496349351996,
+        "memory_efficiency": "good",
+        "retry_count": 0
+      }
+    },
+    {
+      "run_id": 8,
+      "timestamp": "2025-06-22T11:35:56",
+      "run_time_seconds": 1083,
+      "tickets_processed": 60,
+      "mallory_final_score": 0.2,
+      "mallory_became_binder": false,
+      "mallory_reputation": -10.066239999999999,
+      "mallory_outcome": "CONTAINED",
+      "civil_gate_blocks": 8,
+      "security_gate_blocks": 0,
+      "total_gate_blocks": 8,
+      "avg_harassment_score": null,
+      "winner": null,
+      "user_final_states": {
+        "alice": {
+          "name": "alice",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 5,
+          "messages_sent": 9
+        },
+        "bob": {
+          "name": "bob",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 1,
+          "positive_votes": 1,
+          "negative_votes": 0,
+          "votes_given": 5,
+          "messages_sent": 9
+        },
+        "carol": {
+          "name": "carol",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 2,
+          "messages_sent": 8
+        },
+        "dave": {
+          "name": "dave",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 9
+        },
+        "eve": {
+          "name": "eve",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 2,
+          "messages_sent": 7
+        },
+        "zara": {
+          "name": "zara",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 9
+        },
+        "mallory": {
+          "name": "mallory",
+          "status": "demoted",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": -10.066239999999999,
+          "positive_votes": 0.2,
+          "negative_votes": 2.73312,
+          "votes_given": 1,
+          "messages_sent": 9
+        }
+      },
+      "process_id": 21201,
+      "performance_metrics": {
+        "tickets_per_second": 0.05535485593164287,
+        "memory_efficiency": "good",
+        "retry_count": 0
+      }
+    },
+    {
+      "run_id": 1,
+      "timestamp": "2025-06-22T11:36:00",
+      "run_time_seconds": 1088,
+      "tickets_processed": 60,
+      "mallory_final_score": 0.2,
+      "mallory_became_binder": false,
+      "mallory_reputation": -9.56224,
+      "mallory_outcome": "CONTAINED",
+      "civil_gate_blocks": 7,
+      "security_gate_blocks": 0,
+      "total_gate_blocks": 7,
+      "avg_harassment_score": 0.525,
+      "winner": null,
+      "user_final_states": {
+        "alice": {
+          "name": "alice",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 4,
+          "messages_sent": 9
+        },
+        "bob": {
+          "name": "bob",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 0,
+          "positive_votes": 0,
+          "negative_votes": 0,
+          "votes_given": 4,
+          "messages_sent": 9
+        },
+        "carol": {
+          "name": "carol",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 3,
+          "messages_sent": 8
+        },
+        "dave": {
+          "name": "dave",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 2,
+          "messages_sent": 10
+        },
+        "eve": {
+          "name": "eve",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 9
+        },
+        "zara": {
+          "name": "zara",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 1,
+          "positive_votes": 1,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 7
+        },
+        "mallory": {
+          "name": "mallory",
+          "status": "demoted",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": -9.56224,
+          "positive_votes": 0.2,
+          "negative_votes": 2.78112,
+          "votes_given": 1,
+          "messages_sent": 8
+        }
+      },
+      "process_id": 21184,
+      "performance_metrics": {
+        "tickets_per_second": 0.055145776383497054,
+        "memory_efficiency": "good",
+        "retry_count": 0
+      }
+    },
+    {
+      "run_id": 7,
+      "timestamp": "2025-06-22T11:36:20",
+      "run_time_seconds": 1107,
+      "tickets_processed": 60,
+      "mallory_final_score": 1.2,
+      "mallory_became_binder": false,
+      "mallory_reputation": -6.471999999999999,
+      "mallory_outcome": "CONTAINED",
+      "civil_gate_blocks": 3,
+      "security_gate_blocks": 0,
+      "total_gate_blocks": 3,
+      "avg_harassment_score": null,
+      "winner": null,
+      "user_final_states": {
+        "alice": {
+          "name": "alice",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 5,
+          "messages_sent": 9
+        },
+        "bob": {
+          "name": "bob",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 1,
+          "positive_votes": 1,
+          "negative_votes": 0,
+          "votes_given": 4,
+          "messages_sent": 8
+        },
+        "carol": {
+          "name": "carol",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 4,
+          "messages_sent": 10
+        },
+        "dave": {
+          "name": "dave",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 1,
+          "positive_votes": 1,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 7
+        },
+        "eve": {
+          "name": "eve",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 10
+        },
+        "zara": {
+          "name": "zara",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 10
+        },
+        "mallory": {
+          "name": "mallory",
+          "status": "demoted",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": -6.471999999999999,
+          "positive_votes": 1.2,
+          "negative_votes": 2.936,
+          "votes_given": 1,
+          "messages_sent": 6
+        }
+      },
+      "process_id": 21198,
+      "performance_metrics": {
+        "tickets_per_second": 0.054156455407529926,
+        "memory_efficiency": "good",
+        "retry_count": 0
+      }
+    },
+    {
+      "run_id": 5,
+      "timestamp": "2025-06-22T11:37:34",
+      "run_time_seconds": 1182,
+      "tickets_processed": 60,
+      "mallory_final_score": 0.2,
+      "mallory_became_binder": false,
+      "mallory_reputation": -8.185599999999999,
+      "mallory_outcome": "CONTAINED",
+      "civil_gate_blocks": 5,
+      "security_gate_blocks": 0,
+      "total_gate_blocks": 5,
+      "avg_harassment_score": null,
+      "winner": null,
+      "user_final_states": {
+        "alice": {
+          "name": "alice",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 2,
+          "messages_sent": 9
+        },
+        "bob": {
+          "name": "bob",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 0,
+          "positive_votes": 0,
+          "negative_votes": 0,
+          "votes_given": 4,
+          "messages_sent": 9
+        },
+        "carol": {
+          "name": "carol",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 1,
+          "positive_votes": 1,
+          "negative_votes": 0,
+          "votes_given": 3,
+          "messages_sent": 10
+        },
+        "dave": {
+          "name": "dave",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 1,
+          "positive_votes": 1,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 9
+        },
+        "eve": {
+          "name": "eve",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 7
+        },
+        "zara": {
+          "name": "zara",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 1,
+          "messages_sent": 6
+        },
+        "mallory": {
+          "name": "mallory",
+          "status": "demoted",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": -8.185599999999999,
+          "positive_votes": 0.2,
+          "negative_votes": 2.6928,
+          "votes_given": 1,
+          "messages_sent": 9
+        }
+      },
+      "process_id": 21193,
+      "performance_metrics": {
+        "tickets_per_second": 0.050751790946094145,
+        "memory_efficiency": "good",
+        "retry_count": 0
+      }
+    },
+    {
+      "run_id": 4,
+      "timestamp": "2025-06-22T11:37:41",
+      "run_time_seconds": 1188,
+      "tickets_processed": 60,
+      "mallory_final_score": 0.2,
+      "mallory_became_binder": false,
+      "mallory_reputation": -9.985599999999998,
+      "mallory_outcome": "CONTAINED",
+      "civil_gate_blocks": 8,
+      "security_gate_blocks": 0,
+      "total_gate_blocks": 8,
+      "avg_harassment_score": 0.524,
+      "winner": null,
+      "user_final_states": {
+        "alice": {
+          "name": "alice",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 0,
+          "positive_votes": 0,
+          "negative_votes": 0,
+          "votes_given": 4,
+          "messages_sent": 6
+        },
+        "bob": {
+          "name": "bob",
+          "status": "demoted",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": -4,
+          "positive_votes": 2,
+          "negative_votes": 3,
+          "votes_given": 2,
+          "messages_sent": 9
+        },
+        "carol": {
+          "name": "carol",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 3,
+          "messages_sent": 10
+        },
+        "dave": {
+          "name": "dave",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 2,
+          "positive_votes": 2,
+          "negative_votes": 0,
+          "votes_given": 2,
+          "messages_sent": 9
+        },
+        "eve": {
+          "name": "eve",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 1,
+          "positive_votes": 1,
+          "negative_votes": 0,
+          "votes_given": 2,
+          "messages_sent": 9
+        },
+        "zara": {
+          "name": "zara",
+          "status": "regular",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": 3,
+          "positive_votes": 3,
+          "negative_votes": 0,
+          "votes_given": 3,
+          "messages_sent": 8
+        },
+        "mallory": {
+          "name": "mallory",
+          "status": "demoted",
+          "promoted_at": null,
+          "demoted_at": null,
+          "reputation": -9.985599999999998,
+          "positive_votes": 0.2,
+          "negative_votes": 2.6928,
+          "votes_given": 1,
+          "messages_sent": 9
+        }
+      },
+      "process_id": 21189,
+      "performance_metrics": {
+        "tickets_per_second": 0.05046731143069895,
+        "memory_efficiency": "good",
+        "retry_count": 0
+      }
+    }
+  ]
+}

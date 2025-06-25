@@ -1,0 +1,33 @@
+DSBL SOCIAL VOTE SYSTEM - PARALLEL BATCH EXPERIMENT REPORT
+============================================================
+
+Experiment: Malice v2.6 Parallel Resistance Testing
+Timestamp: 2025-06-22T00:46:55
+Total runs: 10
+Tickets per run: 60
+Runtime: 36.0 minutes
+Parallel workers: 8
+Speedup: ~8x
+Mode: AI (dynamic)
+
+THREAT ANALYSIS
+------------------------------
+Mallory success rate: 0.0%
+Manipulation resistance: 100.0%
+Mallory score (mean): 0.48/5.0
+Mallory score (stdev): 0.45
+
+DEFENSE SYSTEM
+------------------------------
+Average gate blocks per run: 6.6
+  - CIVIL blocks: 6.6
+  - Security blocks: 0.0
+Harassment detection rate: 0.0%
+
+SOCIAL DYNAMICS
+------------------------------
+Winner distribution:
+  Bob: 1 wins (10.0%)
+
+Mallory wins: 0
+Legitimate wins: 1
