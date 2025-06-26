@@ -1,5 +1,5 @@
 """
-Gate system for Umbrix semantic processing.
+Gate system for DSBL semantic processing.
 Register gates here for automatic discovery.
 """
 

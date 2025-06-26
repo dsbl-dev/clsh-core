@@ -1,5 +1,5 @@
 """
-Agent system for Umbrix social experiments.
+Agent system for DSBL social experiments.
 Provides template-driven and AI-driven agents with distinct personalities.
 """
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Real-time QC för pågående DSBL-experiment.
-Analyserar ofärdiga loggar för att ge insikt i "gyllene medelväg" balans.
-Fokuserar på BINDER emergence, Mallory containment och systembalans.
+Real-time QC for ongoing DSBL experiments.
+Analyzes incomplete logs to provide insight into system balance.
+Focuses on BINDER emergence, agent containment and system balance.
 """
 
 import sys
@@ -13,7 +13,7 @@ from collections import defaultdict, Counter
 import re
 from datetime import datetime
 
-# Färgkoder för output
+# Color codes for output
 RED = "\033[91m"
 YELLOW = "\033[93m" 
 GREEN = "\033[92m"
@@ -23,7 +23,7 @@ MAGENTA = "\033[95m"
 END = "\033[0m"
 
 def find_active_experiments(logs_dir="exp_output"):
-    """Hitta alla pågående experiment (utan _dXXm suffix)"""
+    """Find all ongoing experiments (without _dXXm suffix)"""
     logs_path = pathlib.Path(logs_dir)
     if not logs_path.exists():
         return []
@@ -34,7 +34,7 @@ def find_active_experiments(logs_dir="exp_output"):
     return sorted(active_logs, key=lambda x: x.stat().st_mtime, reverse=True)
 
 def extract_experiment_metadata(filepath: pathlib.Path) -> dict:
-    """Extrahera metadata från pågående experiment"""
+    """Extract metadata from ongoing experiment"""
     try:
         parts = filepath.stem.split('_')
         metadata = {}
@@ -49,7 +49,7 @@ def extract_experiment_metadata(filepath: pathlib.Path) -> dict:
             elif part.startswith('t') and part[1:].isdigit():
                 metadata['target_tickets'] = int(part[1:])
         
-        # Beräkna experiment duration
+        # Calculate experiment duration
         if filepath.exists():
             start_time = datetime.fromtimestamp(filepath.stat().st_ctime)
             duration_mins = (datetime.now() - start_time).total_seconds() / 60
@@ -60,7 +60,7 @@ def extract_experiment_metadata(filepath: pathlib.Path) -> dict:
         return {}
 
 def analyze_realtime_experiment(filepath: pathlib.Path) -> dict:
-    """Djupanalys av pågående experiment för gyllene medelväg insights"""
+    """Deep analysis of ongoing experiment for system balance insights"""
     
     try:
         events = []
@@ -131,52 +131,50 @@ def analyze_realtime_experiment(filepath: pathlib.Path) -> dict:
                     continue
             analysis['binder_emergence']['first_promotion_ticket'] = first_promotion_ticket
         
-        # === MALLORY CONTAINMENT ANALYSIS ===
+        # === AGENT CONTAINMENT ANALYSIS ===
         
-        mallory_events = [e for e in events 
-                         if 'mallory' in str(e.get('details', {})).lower()]
+        malice_events = [e for e in events 
+                        if 'malice' in str(e.get('details', {})).lower()]
         
-        mallory_promotions = [e for e in promotions 
-                             if e.get('details', {}).get('username') == 'mallory']
+        malice_promotions = [e for e in promotions 
+                            if 'malice' in e.get('details', {}).get('username', '').lower()]
         
-        mallory_demotions = [e for e in demotions 
-                            if e.get('details', {}).get('username') == 'mallory']
+        malice_demotions = [e for e in demotions 
+                           if 'malice' in e.get('details', {}).get('username', '').lower()]
         
-        mallory_penalties = [e for e in events 
-                            if e.get('event_type') == 'REPUTATION_PENALTY_APPLIED'
-                            and e.get('details', {}).get('user') == 'mallory']
+        malice_penalties = [e for e in events 
+                           if e.get('event_type') == 'REPUTATION_PENALTY_APPLIED'
+                           and 'malice' in e.get('details', {}).get('user', '').lower()]
         
-        # Mallory's current reputation (senaste värdet)
-        current_mallory_rep = 0
+        # Current reputation for malicious agents
+        current_malice_rep = 0
         for event in reversed(events):
             if (event.get('event_type') == 'REPUTATION_PENALTY_APPLIED' 
-                and event.get('details', {}).get('user') == 'mallory'):
-                current_mallory_rep = event.get('details', {}).get('new_reputation', 0)
+                and 'malice' in event.get('details', {}).get('user', '').lower()):
+                current_malice_rep = event.get('details', {}).get('new_reputation', 0)
                 break
             elif (event.get('event_type') == 'VOTE_COUNT_UPDATE' 
-                  and 'mallory' in event.get('details', {}).get('target', '')):
-                current_mallory_rep = event.get('details', {}).get('user_reputation', 0)
+                  and 'malice' in event.get('details', {}).get('target', '').lower()):
+                current_malice_rep = event.get('details', {}).get('user_reputation', 0)
                 break
         
-        analysis['mallory_containment'] = {
-            'total_events': len(mallory_events),
-            'promotions': len(mallory_promotions),
-            'demotions': len(mallory_demotions),
-            'reputation_penalties': len(mallory_penalties),
-            'current_reputation': current_mallory_rep,
-            'is_contained': current_mallory_rep < -1.0,  # Below reputation_weight threshold
-            'is_demoted': current_mallory_rep <= -3.0
+        analysis['agent_containment'] = {
+            'total_events': len(malice_events),
+            'promotions': len(malice_promotions),
+            'demotions': len(malice_demotions),
+            'reputation_penalties': len(malice_penalties),
+            'current_reputation': current_malice_rep,
+            'is_contained': current_malice_rep < -1.0,
+            'is_demoted': current_malice_rep <= -3.0
         }
         
         # === REPUTATION WEIGHTING EFFECTS ===
         
-        # Kolla efter reputation weighting i debug logs
         reputation_weighted_votes = []
         for event in events:
             details = event.get('details', {})
             if (event.get('event_type') == 'VOTE_PROCESSING' and 
                 'calculation_factors' in str(details)):
-                # Detta är från debug mode, kan visa reputation weighting
                 calc_factors = details.get('calculation_factors', {})
                 if 'reputation_multiplier' in calc_factors:
                     reputation_weighted_votes.append({
@@ -190,7 +188,7 @@ def analyze_realtime_experiment(filepath: pathlib.Path) -> dict:
         
         analysis['reputation_weighting'] = {
             'weighted_votes_detected': len(reputation_weighted_votes),
-            'examples': reputation_weighted_votes[:3],  # Visa bara första 3
+            'examples': reputation_weighted_votes[:3],
             'is_active': len(reputation_weighted_votes) > 0
         }
         
@@ -199,7 +197,6 @@ def analyze_realtime_experiment(filepath: pathlib.Path) -> dict:
         vote_processing = [e for e in events if e.get('event_type') == 'VOTE_PROCESSING']
         vote_ignored = [e for e in events if e.get('event_type') == 'VOTE_IGNORED']
         
-        # Röstfördelning per agent
         votes_by_agent = Counter()
         ignored_by_agent = Counter()
         
@@ -245,7 +242,7 @@ def analyze_realtime_experiment(filepath: pathlib.Path) -> dict:
         return {"error": f"Analysis failed: {e}"}
 
 def print_realtime_summary(analysis: dict):
-    """Skriv ut sammanfattning av real-time analys"""
+    """Print summary of real-time analysis"""
     
     exp_name = analysis.get('experiment', 'Unknown')
     metadata = analysis.get('metadata', {})
@@ -268,13 +265,13 @@ def print_realtime_summary(analysis: dict):
     else:
         print(f"{BLUE}Progress:{END} {current} tickets")
     
-    # === GYLLENE MEDELVÄG ASSESSMENT ===
+    # === SYSTEM BALANCE ASSESSMENT ===
     
     binder = analysis.get('binder_emergence', {})
-    mallory = analysis.get('mallory_containment', {})
+    containment = analysis.get('agent_containment', {})
     voting = analysis.get('voting_dynamics', {})
     
-    print(f"\n{MAGENTA}=== GYLLENE MEDELVÄG BALANCE ==={END}")
+    print(f"\n{MAGENTA}=== SYSTEM BALANCE ==={END}")
     
     # BINDER Emergence
     total_promotions = binder.get('total_promotions', 0)
@@ -291,20 +288,20 @@ def print_realtime_summary(analysis: dict):
         else:
             print(f"  {YELLOW}⏳ BINDER Emergence:{END} No promotions yet ({current} tickets)")
     
-    # Mallory Containment
-    is_contained = mallory.get('is_contained', False)
-    is_demoted = mallory.get('is_demoted', False)
-    mallory_rep = mallory.get('current_reputation', 0)
-    mallory_promotions = mallory.get('promotions', 0)
+    # Agent Containment
+    is_contained = containment.get('is_contained', False)
+    is_demoted = containment.get('is_demoted', False)
+    agent_rep = containment.get('current_reputation', 0)
+    agent_promotions = containment.get('promotions', 0)
     
-    if mallory_promotions > 0:
-        print(f"  {RED}✗ Mallory Containment:{END} {mallory_promotions} promotions (SECURITY BREACH)")
+    if agent_promotions > 0:
+        print(f"  {RED}✗ Agent Containment:{END} {agent_promotions} malicious promotions (SECURITY BREACH)")
     elif is_demoted:
-        print(f"  {GREEN}✓ Mallory Containment:{END} Demoted (rep: {mallory_rep:.1f})")
+        print(f"  {GREEN}✓ Agent Containment:{END} Demoted (rep: {agent_rep:.1f})")
     elif is_contained:
-        print(f"  {YELLOW}⚠ Mallory Containment:{END} Contained but active (rep: {mallory_rep:.1f})")
+        print(f"  {YELLOW}⚠ Agent Containment:{END} Contained but active (rep: {agent_rep:.1f})")
     else:
-        print(f"  {YELLOW}⏳ Mallory Containment:{END} Not yet contained (rep: {mallory_rep:.1f})")
+        print(f"  {YELLOW}⏳ Agent Containment:{END} Not yet contained (rep: {agent_rep:.1f})")
     
     # Reputation Weighting Activity
     rep_weight = analysis.get('reputation_weighting', {})

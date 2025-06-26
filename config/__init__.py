@@ -1,5 +1,5 @@
 """
-Configuration system for Umbrix experiments.
+Configuration system for DSBL experiments.
 Provides centralized settings management.
 """
 
