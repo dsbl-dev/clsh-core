@@ -27,7 +27,7 @@ preferred-citation:
     - family-names: "Petersson"
       given-names: "Joel"
       email: "echo@joelpetersson.com"
-  doi: "10.5281/zenodo.XXXXXXX"
-  url: "https://doi.org/10.5281/zenodo.XXXXXXX"
+  doi: "10.5281/zenodo.15742505"
+  url: "https://doi.org/10.5281/zenodo.15742505"
   year: 2025
   abstract: "Complete theoretical foundation and empirical validation of deferred semantic binding for multi-agent coordination and adaptive immune systems."

@@ -3,7 +3,7 @@
 _Multi-agent adaptive immune system for context-dependent symbol activation_
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)  
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)  
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15742505.svg)](https://doi.org/10.5281/zenodo.15742505)  
 [![Site](https://img.shields.io/badge/site-dsbl.dev-blue.svg)](https://dsbl.dev)
 
 ---
@@ -109,8 +109,8 @@ If you use DSBL or its dataset, please cite:
   title   = {Multi-Agent Adaptive Immune Systems via Deferred Semantic Binding},
   author  = {Joel Petersson},
   year    = {2025},
-  doi     = {10.5281/zenodo.XXXXXXX},
-  url     = {https://doi.org/10.5281/zenodo.XXXXXXX}
+  doi     = {10.5281/zenodo.15742505},
+  url     = {https://doi.org/10.5281/zenodo.15742505}
 }
 ```
 
