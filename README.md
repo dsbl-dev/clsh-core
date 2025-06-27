@@ -1,6 +1,6 @@
 # DSBL · Deferred Semantic Binding Language
 
-_MAA immune system for context-dependent symbol activation_
+_MAAIS for context-dependent symbol activation_
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)  
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15742505.svg)](https://doi.org/10.5281/zenodo.15742505)  
@@ -12,7 +12,7 @@ DSBL introduces **deferred semantic binding**: symbols like `⟦VOTE:promote_ali
 meaning latent until runtime context activates them.  
 The repository contains test implementation and experimental data
 (34 MB), + tools to **reproduce the results in  
-_"MAA Immune System via Deferred Semantic Binding."_**
+_"MAAIS via Deferred Semantic Binding."_**
 
 ---
 
@@ -106,7 +106,7 @@ If you use dataset, please cite:
 
 ```bibtex
 @misc{petersson2025dsbl,
-  title   = {MAA Immune System via Deferred Semantic Binding},
+  title   = {MAAIS via Deferred Semantic Binding},
   author  = {Joel Petersson},
   year    = {2025},
   doi     = {10.5281/zenodo.15742505},

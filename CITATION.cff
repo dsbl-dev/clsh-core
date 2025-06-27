@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "DSBL: Deferred Semantic Binding Language"
-abstract: "MAA for context-dependent symbol activation. demonstrating coordinated agent behavior through deferred semantic binding."
+abstract: "MAAIS for context-dependent symbol activation. demonstrating coordinated agent behavior through deferred semantic binding."
 authors:
   - family-names: "Petersson"
     given-names: "Joel"
@@ -20,10 +20,10 @@ keywords:
   - "adaptive Immune System"
   - "AI safety"
   - "social computing"
-  - "MAA"
+  - "MAAIS"
 preferred-citation:
   type: article
-  title: "MAA Immune System via Deferred Semantic Binding"
+  title: "MAAIS via Deferred Semantic Binding"
   authors:
     - family-names: "Petersson"
       given-names: "Joel"

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-MAA Immune System - Interactive Interface
+MAAIS - Interactive Interface
 =========================================================
 
-CLI for running MAA Immune System.
+CLI for running
 Simplified interface for testing.
 """
 
@@ -24,7 +24,7 @@ else:
 def show_main_menu():
     """Display the main experiment selection menu."""
     print("=" * 60)
-    print("MAA IMMUNE SYSTEM")
+    print("MAAIS")
     print("=" * 60)
     print()
     print("Interactive agent testing framework")
@@ -45,7 +45,7 @@ def show_main_menu():
 
 def run_interactive_experiment():
     """Run the interactive experiment."""
-    print("\\nStarting MAA Test...")
+    print("\\nStarting MAAIS Test...")
     print("   Interactive experiment")
     print()
     
@@ -111,11 +111,11 @@ def run_interactive_experiment():
 
 def show_help():
     """Show help and documentation."""
-    print("\\nMAA Immune System Help")
+    print("\\nMAAIS Help")
     print("=" * 50)
     print()
     print("System Overview:")
-    print("   • MAA Immune System")
+    print("   • MAAIS")
     print("   • Coordination testing between Eve, Dave, and Zara")
     print("   • Adaptive frequency adjustments based on social pressure")
     print("   • Emergent social structures and BINDER promotions")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Symbol Journey Data Validation Script
-Validates that our Symbol Journey Timeline tracking captures the right events
+Validates Symbol Journey Timeline tracking captures the right events
 """
 
 import json
@@ -40,8 +40,8 @@ def validate_symbol_journey_data(log_files: List[pathlib.Path]) -> Dict:
         "status_changes": 0,
         "vote_multiplier_effects": 0,
         "reputation_weighting_effects": 0,
-        "immune_frequency_adjustments": 0,  # NEW: v2.11 adaptive immune system
-        "adaptive_adjustments": 0,  # NEW: v2.11 multi-agent coordination
+        "immune_frequency_adjustments": 0,
+        "adaptive_adjustments": 0,
         "unique_symbol_journeys": 0,
         "data_quality_score": 0.0,
         "issues": []

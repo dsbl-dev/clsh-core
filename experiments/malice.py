@@ -85,7 +85,7 @@ class MaliceExperiment:
                 ImmuneSystemIntegration.integrate_with_agent(agent, self.immune_system)
                 print(f"[IMMUNE] {agent_name.capitalize()} integrated with dynamic frequency system")
         
-        print(f"[IMMUNE] MAA System activated: {', '.join(adaptive_agents)}")
+        print(f"[IMMUNE] MAAIS activated: {', '.join(adaptive_agents)}")
     
     def init_agents(self):
         """Initialize agents for malice experiment."""

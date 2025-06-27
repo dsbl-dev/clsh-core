@@ -40,7 +40,7 @@ def extract_status_changes(events: List[Dict]) -> List[Dict]:
         elif (event.get('event_type') == 'SYMBOL_INTERPRETATION' and 
               event.get('details', {}).get('symbol_type') == 'STATUS_CHANGE'):
             status_changes.append(event)
-        # Check for MAA Immune System events (v2.11)
+        # Check for MAAIS events
         elif event.get('event_type') in ['IMMUNE_FREQUENCY_ADJUSTMENT', 'ADAPTIVE_ADJUSTMENT', 'IMMUNE_RESPONSE_ADJUSTMENT']:
             status_changes.append(event)
     return status_changes
@@ -395,7 +395,7 @@ def analyze_production_patterns(symbol_journeys: Dict[str, List[Dict]]) -> Dict:
     return production_patterns
 
 def analyze_adaptive_immune_patterns(symbol_interpretations: List[Dict], status_changes: List[Dict]) -> Dict:
-    """Analyze patterns specific to MAA Immune System v2.11."""
+    """Analyze patterns specific to MAAIS"""
     
     adaptive_patterns = {
         'frequency_adjustments': [],
@@ -578,10 +578,10 @@ def generate_symbol_timeline_report(analysis: Dict, output_file: Optional[pathli
             total = stats['total_activity']
             report.append(f"- **{period.title()} period**: {unique} unique symbols, {total} total activity, {diversity:.2f} diversity")
     
-    # MAA Immune System analysis (v2.11)
+    # MAAIS
     adaptive_analysis = analysis.get('adaptive_immune_analysis')
     if adaptive_analysis:
-        report.append("\n## MAA Immune System Analysis (v2.11)")
+        report.append("\n## MAAIS Analysis")
         
         coordination = adaptive_analysis['multi_agent_coordination']
         report.append(f"### Agent Frequency Adjustments:")

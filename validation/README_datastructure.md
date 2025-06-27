@@ -1,4 +1,4 @@
-# Log Data Structure Reference - MAA Immune System
+# Log Data Structure Reference - MAAIS
 
 Purpose: Comprehensive JSON structure reference for validation script development  
 Updated: 2025-06-22 (added metrics separation, validated against batches 9, 10, 11)

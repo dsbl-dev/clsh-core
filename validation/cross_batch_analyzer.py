@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cross-Batch Analysis Script for MAA Immune System
+Cross-Batch Analysis Script for MAAIS
 Analyzes patterns across Batch 09, 10, and 11 (90 total runs)
 Focus: Adaptive immune system consistency + social dynamics variation
 """
@@ -163,8 +163,8 @@ class CrossBatchAnalyzer:
         }
 
     def analyze_immune_consistency(self):
-        """Analyze MAA Immune System consistency across batches"""
-        print("\nMAA Immune System Consistency Analysis")
+        """Analyze MAAIS consistency across batches"""
+        print("\nMAAIS Consistency Analysis")
         print("=" * 60)
         
         total_adjustments = 0
@@ -273,7 +273,7 @@ class CrossBatchAnalyzer:
         """Generate comprehensive cross-batch analysis report"""
         print("\n" + "="*80)
         print("📊 COMPREHENSIVE CROSS-BATCH ANALYSIS REPORT")
-        print("MAA Immune System v2.11 (90 Production Runs)")
+        print("MAAIS (90 Production Runs)")
         print("="*80)
         
         # Aggregate statistics
@@ -343,7 +343,7 @@ def main():
         'Batch_11': 'exp_output/published_data/batch_11_adaptive_immune'
     }
     
-    print("Cross-Batch Analysis: MAA Immune System v2.11")
+    print("Cross-Batch Analysis: MAAIS")
     print("Analyzing 90 production runs across 3 batches")
     print("Focus: Immune consistency + Social dynamics variation")
     

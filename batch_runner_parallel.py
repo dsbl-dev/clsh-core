@@ -118,7 +118,7 @@ def _run_experiment_worker(config: Dict) -> Dict:
                 # Set log directory for batch mode (used if console output was enabled)
                 experiment.log_directory = batch_dir
                 
-                #  Initialize MAA Immune System for Eve, Dave, Zara
+                #  Initialize MAAIS for Eve, Dave, Zara
                 adaptive_agents = ['eve', 'dave', 'zara']
                 immune_system = AdaptiveImmuneSystem(
                     audit_logger=experiment.vote_system.audit_logger

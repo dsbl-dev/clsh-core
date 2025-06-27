@@ -2,7 +2,7 @@ Creative Commons Attribution 4.0 International (CC BY 4.0)
 
 This dataset is licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
 
-DATASET: DSBL MAA Immune System Experimental Data
+DATASET: DSBL MAAIS Experimental Data
 COPYRIGHT: 2025 Joel Petersson
 
 You are free to:
@@ -16,14 +16,14 @@ Under the following terms:
 
 DATASET CONTENTS:
 
-- Experimental logs from MAA Immune System research
-- Published data supporting the paper "MAA Immune System via Deferred Semantic Binding"
+- Experimental logs from MAAIS
+- Published data supporting the paper "MAAIS via Deferred Semantic Binding"
 - JSONL event logs, metrics data, and analysis summaries
 - Total size: 34 MB of research data
 
 ATTRIBUTION:
 When using this dataset, please cite:
-Petersson, J. (2025). MAA Immune System via Deferred Semantic Binding.
+Petersson, J. (2025). MAAIS via Deferred Semantic Binding.
 DOI: 10.5281/zenodo.15742505
 
 CONTACT:
