@@ -756,7 +756,7 @@ def load_and_process_logs(log_files):
                 all_symbol_interpretations.extend(symbol_interpretations)
                 all_status_changes.extend(status_changes)
                 
-                # Also check for corresponding metrics/debug log
+                # Also check for corresponding metrics
                 metrics_name = log_path.stem.replace("_d", "_metrics_d") + ".jsonl"
                 debug_name = log_path.stem.replace("_d", "_debug_d") + ".jsonl"
                 

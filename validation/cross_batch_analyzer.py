@@ -337,7 +337,6 @@ class CrossBatchAnalyzer:
 def main():
     """Main execution function"""
     
-    # Configure batch directories - skip Batch 08 due to different data structure
     batch_dirs = {
         'Batch_09': 'exp_output/published_data/batch_09_adaptive_immune',
         'Batch_10': 'exp_output/published_data/batch_10_adaptive_immune',
@@ -364,7 +363,6 @@ def main():
     results = analyzer.generate_comprehensive_report()
     
     print(f"\n✅ Cross-batch analysis complete!")
-    print(f"🎉 Ready for ArXiv publication: Multi-Agent Adaptive Immune Systems")
     
     return results
 

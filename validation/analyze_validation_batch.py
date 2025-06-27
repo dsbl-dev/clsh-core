@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Automated Validation Batch Analyzer for DSBL Research
+Automated Validation Batch Analyzer
 Compares validation results with previous eras and generates publication report.
 """
 

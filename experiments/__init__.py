@@ -1,5 +1,5 @@
 """
-Experiment system for DSBL social voting research.
+Experiment system for social voting research.
 Provides different experimental configurations and scenarios.
 """
 

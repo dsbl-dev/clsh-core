@@ -1,6 +1,5 @@
 """
 Malicious agent for testing social manipulation resistance.
-Enhanced v2.2 with more sophisticated manipulation tactics.
 """
 
 import random

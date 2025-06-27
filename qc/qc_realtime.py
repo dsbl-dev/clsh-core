@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Real-time QC for ongoing DSBL experiments.
+Real-time QC for ongoing experiments (beta).
 Analyzes incomplete logs to provide insight into system balance.
 Focuses on BINDER emergence, agent containment and system balance.
 """
@@ -60,7 +60,7 @@ def extract_experiment_metadata(filepath: pathlib.Path) -> dict:
         return {}
 
 def analyze_realtime_experiment(filepath: pathlib.Path) -> dict:
-    """Deep analysis of ongoing experiment for system balance insights"""
+    """Analysis of ongoing experiment for system balance insights"""
     
     try:
         events = []

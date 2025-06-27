@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Standardized data parsing functions for DSBL experiments.
+Standardized data parsing functions for experiments.
 Implements the data structure patterns documented in README_datastructure.md.
 
 This module provides consistent parsing across all validation scripts,

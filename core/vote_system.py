@@ -1,6 +1,5 @@
 """
-Core social voting system with emergent promotion mechanics.
-Refactored to use modular gate processing, reputation system, and vote processing.
+Core social voting system.
 """
 
 from datetime import datetime

@@ -1,6 +1,6 @@
 """
-Core data models for DSBL social voting system.
-These are stable structures that rarely change.
+Core data models for social voting system.
+= stable structures that rarely change.
 """
 
 from dataclasses import dataclass, field

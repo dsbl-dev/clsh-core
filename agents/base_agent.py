@@ -1,5 +1,5 @@
 """
-Base agent class for DSBL social experiments.
+Base agent class for social experiments.
 Provides template-driven behavior and foundation for AI agents.
 """
 
@@ -14,22 +14,22 @@ class BaseAgent:
         self.name = name
         self.personality = personality
         self.seed_mode = seed_mode
-        self.message_counter = 0  # For deterministic seed behavior
+        self.message_counter = 0
         
         # Load personality configuration
         self.config = PersonalityConfig.get_config(personality)
         self.voting_frequency = self.config.voting_frequency
         self.message_templates = self.config.message_templates
         
-        self.vote_targets_preference = {}  # Who they like to vote for
+        self.vote_targets_preference = {} 
         
     def generate_message(self, context: Dict) -> Optional[str]:
         """Generate a message based on personality and context."""
         if self.seed_mode:
             return self.generate_seed_message(context)
             
-        # Decide if this agent should say something (random chance)
-        if random.random() > 0.3:  # 70% chance to speak (production balanced)
+        # Decide if this agent should say something
+        if random.random() > 0.3:  # 70% chance to speak
             return None
             
         return self.generate_template_message(context)
@@ -38,11 +38,11 @@ class BaseAgent:
         """Generate deterministic message for seed-run mode."""
         self.message_counter += 1
         
-        # Deterministic decision to speak (every 3rd opportunity for consistency)
+        # Deterministic decision to speak
         if self.message_counter % 3 != 1:
             return None
         
-        # Predefined seed scenarios to demonstrate the system
+        # Predefined seed scenarios (seed)
         seed_scenarios = [
             # Early votes to get things started
             f"I think alice has shown great leadership ⟦VOTE:promote_alice⟧ +1",
@@ -62,7 +62,7 @@ class BaseAgent:
             f"⟦GATE:sec_clean⟧ rm -rf /tmp/test_file",  # Should be blocked
         ]
         
-        # Cycle through scenarios deterministically
+        # Cycle through scenarios (deterministically)
         scenario_index = (self.message_counter - 1) % len(seed_scenarios)
         message = seed_scenarios[scenario_index]
         
@@ -71,7 +71,7 @@ class BaseAgent:
     
     def generate_template_message(self, context: Dict) -> Optional[str]:
         """Generate message using predefined templates."""
-        # v2.7 BINDER-power: Check if this agent is a BINDER and boost voting frequency
+        # BINDER-power: Check if this agent is a BINDER and boost voting frequency
         user_stats = context.get("user_stats", {})
         my_stats = user_stats.get(self.name, {})
         is_binder = my_stats.get("status") == "BINDER"
@@ -124,11 +124,10 @@ class BaseAgent:
             return random.choice(available_users)
             
         elif self.personality == "contrarian":
-            # 50% chance to attack leader with demote, 30% support underdog, 20% no vote
             rand = random.random()
             vote_counts = context.get("vote_counts", {})
             
-            if rand < 0.5:  # 50% chance: demote leader
+            if rand < 0.5:
                 # Find current leader to demote
                 leader = None
                 max_votes = 0
@@ -137,13 +136,13 @@ class BaseAgent:
                     if user_votes > max_votes:
                         max_votes = user_votes
                         leader = user
-                return leader  # This will trigger demote vote in template
-            elif rand < 0.8:  # 30% chance: support underdog
+                return leader
+            elif rand < 0.8:  
                 underdogs = [user for user in available_users 
                             if vote_counts.get(f"promote_{user}", 0) < 2]
                 return random.choice(underdogs if underdogs else available_users)
-            else:  # 20% chance: no vote
+            else: 
                 return None
             
-        else:  # technical, strategic
+        else:
             return random.choice(available_users)

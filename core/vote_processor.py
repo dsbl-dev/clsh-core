@@ -1,6 +1,5 @@
 """
 Vote parsing, validation, and weighting calculations.
-Extracted from vote_system.py for better separation of concerns.
 """
 
 import re
@@ -10,7 +9,7 @@ from typing import List, Tuple, Optional
 class VoteProcessor:
     """
     Handles vote parsing, validation, and weighting calculations.
-    Manages the core voting mechanics and BINDER-power multipliers.
+    Manages the core voting mechanics.
     """
     
     def __init__(self, settings, audit_logger):

@@ -1,6 +1,5 @@
 """
-Console formatting utilities for DSBL experiment output.
-Uses symbols instead of colors for better terminal compatibility.
+Console formatting utilities for experiment output.
 """
 
 class Colors:

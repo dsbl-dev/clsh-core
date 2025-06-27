@@ -1,6 +1,6 @@
 """
 Reputation tracking and status change management.
-Extracted from vote_system.py for better separation of concerns.
+Extracted from vote_system.py for better 'separation of concerns'.
 """
 
 from datetime import datetime

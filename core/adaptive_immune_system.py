@@ -2,9 +2,6 @@
 """
 Dynamic Immune Response System for DSBL Multi-Agent Voting
 Implementation of adaptive agent behavior based on system promotional pressure.
-
-This system addresses the "Eve Suppression Problem" by allowing Eve to dynamically adjust
-her participation based on system needs, serving as a distributed immune response.
 """
 
 import logging
@@ -15,13 +12,6 @@ from datetime import datetime
 
 
 class AdaptiveImmuneSystem:
-    """
-    Manages dynamic agent frequency adjustments based on system promotional pressure.
-    
-    Implementation: Instead of fixed personality frequencies, agents adapt their behavior
-    to maintain system balance - Eve becomes more active when promotion inflation occurs,
-    less active when system is balanced.
-    """
     
     def __init__(self, audit_logger=None):
         self.audit_logger = audit_logger

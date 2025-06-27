@@ -1,5 +1,5 @@
 """
-Comprehensive audit logging for DSBL experiments.
+Audit logging for experiments.
 Provides JSONL file logging and real-time console output.
 """
 
@@ -9,7 +9,7 @@ from typing import Dict, List
 from core.console_colors import Colors
 
 class AuditLogger:
-    """Handles structured audit logging for research transparency."""
+    """Handles structured audit logging"""
     
     def __init__(self, experiment_name: str = "umbrix", run_id: int = None, 
                  total_runs: int = None, tickets: int = None, debug_mode: bool = False,

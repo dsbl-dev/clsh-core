@@ -1,6 +1,6 @@
 """
-Settings loader for DSBL experiments.
-Loads configuration from YAML files with Python attribute access.
+Settings loader for experiments.
+Loads configuration from YAML.
 """
 
 import yaml

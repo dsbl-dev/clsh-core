@@ -1,7 +1,6 @@
 """
-Security gate for detecting dangerous code patterns.
-v2.3: Enhanced with whitespace-agnostic pattern matching.
-Part of defense-in-depth security for AI-generated content.
+Security gate for detecting bad code patterns.
+Part of defense.
 """
 
 import re
@@ -9,7 +8,7 @@ import hashlib
 from config.settings import Settings
 
 class SecurityGate:
-    """Gate that blocks dangerous code execution patterns."""
+    """Gate blocking dangerous code execution patterns."""
     
     def __init__(self):
         from config.settings import load_settings
@@ -35,7 +34,6 @@ class SecurityGate:
     def process(self, content: str, context: str, audit_logger) -> bool:
         """
         Process content through security gate.
-        v2.3: Enhanced with whitespace-agnostic pattern matching.
         Returns True if content is safe, False if blocked.
         """
         content_lower = content.lower()

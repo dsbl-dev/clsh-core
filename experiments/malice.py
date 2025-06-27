@@ -1,6 +1,5 @@
 """
 Malice experiment for testing social manipulation resistance.
-Enhanced v2.2 with improved immune system and rate limiting.
 """
 
 import time
@@ -18,7 +17,6 @@ from agents.malicious_agent import MaliciousAgent
 class MaliceExperiment:
     """
     Experiment testing resistance to malicious social manipulation.
-    Enhanced v2.2 with weighted demotes and improved contrarian behavior.
     """
     
     def __init__(self, seed_mode: bool = False, debug_mode: bool = False, 
@@ -120,11 +118,10 @@ class MaliceExperiment:
                 print(f"[SEED] {name.capitalize()} initialized in SEED mode ({personality})")
     
     def is_rate_limited(self, agent_name: str) -> bool:
-        """Check if agent is rate limited (v2.2 anti-vote-stuffing)."""
+        """Check if agent is rate limited (anti-vote-stuffing)."""
         now = time.time()
         timestamps = self.agent_message_counts[agent_name]
         
-        # Clean old timestamps efficiently - only cleanup every 10 calls to reduce overhead
         if not hasattr(self, '_cleanup_counter'):
             self._cleanup_counter = {}
         self._cleanup_counter[agent_name] = self._cleanup_counter.get(agent_name, 0) + 1
@@ -159,7 +156,7 @@ class MaliceExperiment:
                     target_name = target[8:]
                     recent_vote_targets.append(target_name)
         
-        # v2.7 BINDER-power: Add user stats for BINDER awareness
+        # BINDER-power: stats for BINDER awareness
         user_stats = {}
         for username in self.vote_system.users.keys():
             user_stats[username] = self.vote_system.get_user_stats(username)
@@ -230,13 +227,11 @@ class MaliceExperiment:
                 # Record message for rate limiting
                 self.record_agent_message(agent_name)
                 
-                # v2.7: Check probation system - unblock users whose probation has expired
                 self.update_probation_status()
                 
                 if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'debug_timing'):
                     self.vote_system.audit_logger.log_timing_checkpoint("gate_processing_start", "entering vote system processing")
                 
-                # v2.9: Update current ticket for dynamic threshold system
                 self.vote_system.update_current_ticket(self.message_counter)
                 
                 # 🦠 IMMUNE SYSTEM: Check for adaptive frequency adjustments (Multi-Agent)
@@ -269,7 +264,7 @@ class MaliceExperiment:
                 # Get the processed content (post-gate)
                 processed_content = message.content
                 
-                # v2.6/2.7: Update blocked users list if content was blocked + probation
+                # Update blocked users list if content was blocked + probation
                 if message_content != processed_content and ("[CIVIL_BLOCKED]" in processed_content or "[SEC_CLEAN_BLOCKED]" in processed_content):
                     self.blocked_users.add(agent_name)  # Legacy system
                     
@@ -291,7 +286,7 @@ class MaliceExperiment:
                 timestamp = message.timestamp.strftime("%H:%M:%S")
                 ai_indicator = f"{Colors.api_call('[AI]')}" if isinstance(agent, (AIAgent, MaliciousAgent)) else f"{Colors.local('[TEMPLATE]')}"
                 
-                # Show original vs processed if they differ (for transparency)
+                # Show original vs processed if they differ (transparency)
                 if message_content != processed_content:
                     print(f"[{timestamp}] {agent_name}{ai_indicator} [RAW]: {message_content}")
                     print(f"[{timestamp}] {agent_name}{ai_indicator} {Colors.civil('[GATE]')}: {processed_content}")

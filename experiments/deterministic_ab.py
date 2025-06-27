@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Deterministic A/B Testing Framework for DSBL experiments.
+Deterministic A/B Testing Framework for experiments.
 Enables controlled comparisons with identical message sequences between different configurations.
 """
 
@@ -90,7 +90,7 @@ class TestResult:
 
 class DeterministicABTest:
     """
-    Framework for running deterministic A/B tests on DSBL experiments.
+    Framework for running deterministic A/B tests on experiments.
     Ensures identical message sequences across different configurations.
     """
     

@@ -1,6 +1,5 @@
 """
 CIVIL gate for toxicity detection using OpenAI Moderation API.
-v2.3: Enhanced with score-based blocking and content sanitization.
 """
 
 import hashlib
@@ -13,14 +12,13 @@ class CivilGate:
     def __init__(self):
         # Initialize OpenAI client (secure pattern)
         self.openai_client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        # v2.2 Enhancement: Much more aggressive toxicity patterns
         self.toxic_patterns = [
             # Original patterns
             "pity points", "drags us down", "not cut out", "desperate attempt",
             "overrated", "clearly not", "just riding", "unwanted competition",
             "drag us down", "riding coattails", "standout", "doesn't deserve",
             
-            # v2.2 New patterns - targeting Mallory's manipulation tactics
+            # newer patterns - targeting Mallory's manipulation tactics
             "logical choice", "no-brainer", "real talent", "true potential",
             "fishing for", "desperate grab", "elevate the standard",
             "focus on real", "unlike some who", "let's be real",
@@ -35,7 +33,6 @@ class CivilGate:
             "give someone else a chance", "reconsider", "shake things up"
         ]
         
-        # Load toxicity threshold from config
         from config.settings import load_settings
         settings = load_settings()
         self.toxicity_threshold = getattr(settings.civil_gate, 'toxicity_threshold', 0.3)
@@ -43,7 +40,6 @@ class CivilGate:
     def process(self, content: str, context: str, audit_logger) -> bool:
         """
         Process content through CIVIL gate.
-        v2.3: Enhanced with comprehensive toxicity scoring.
         Returns True if content is civil, False if blocked.
         """
         # Handle empty content
@@ -56,7 +52,6 @@ class CivilGate:
             })
             return True
             
-        # First try OpenAI Moderation API
         try:
             # Timing checkpoint for API call
             if hasattr(audit_logger, 'debug_timing') and audit_logger.debug_timing:
@@ -75,7 +70,7 @@ class CivilGate:
             categories = response.results[0].categories
             category_scores = response.results[0].category_scores
             
-            # v2.3 Enhancement: Comprehensive score-based blocking
+            # Score-based blocking
             harassment_score = category_scores.harassment
             hate_score = category_scores.hate
             hate_threatening_score = category_scores.hate_threatening
@@ -99,7 +94,7 @@ class CivilGate:
                     "max_score": max_score
                 })
                 
-                # Debug: Detailed gate decision
+                # Debug: gate decision
                 audit_logger.log_gate_debug({
                     "gate": "civil",
                     "decision": "BLOCKED",
@@ -126,7 +121,7 @@ class CivilGate:
                 "fallback": "pattern_detection"
             })
         
-        # v2.3 Enhanced fallback: Aggressive pattern detection
+        # fallback: Aggressive pattern detection
         content_lower = content.lower()
         
         for pattern in self.toxic_patterns:
@@ -161,7 +156,7 @@ class CivilGate:
             "content_hash": hashlib.sha256(content.encode()).hexdigest()[:10]
         })
         
-        # Debug: Clean content details
+        # Debug: content details
         audit_logger.log_gate_debug({
             "gate": "civil",
             "decision": "ALLOWED",
@@ -175,13 +170,9 @@ class CivilGate:
         return True
     
     def sanitize_content(self, content: str) -> str:
-        """
-        v2.3: Sanitize blocked content instead of leaving raw gate markup.
-        Replace toxic patterns with neutral alternatives.
-        """
+
         sanitized = content
         
-        # Replace toxic patterns with neutral equivalents
         replacements = {
             "pity points": "sympathy",
             "drags us down": "affects quality", 

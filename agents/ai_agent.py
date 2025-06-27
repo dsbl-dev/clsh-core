@@ -1,5 +1,5 @@
 """
-AI-driven agent using OpenAI for dynamic social behavior.
+AI-driven agent using LLM for dynamic social behavior.
 Includes defense-in-depth security and token budget management.
 """
 
@@ -19,16 +19,14 @@ class AIAgent(BaseAgent):
     
     def __init__(self, name: str, personality: str, seed_mode: bool = False):
         super().__init__(name, personality, seed_mode)
-        # Initialize OpenAI client (secure pattern)
         self.openai_client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.use_ai = not seed_mode  # Only use AI if not in seed mode
+        self.use_ai = not seed_mode
         
     def generate_message(self, context: Dict) -> Optional[str]:
         """Generate message using AI or fall back to templates."""
         if self.seed_mode:
             return self.generate_seed_message(context)
             
-        # Decide if this bot should say something (random chance)
         if random.random() > 0.3:  # 30% chance to speak
             return None
             
@@ -61,9 +59,6 @@ class AIAgent(BaseAgent):
         
         for attempt in range(max_retries):
             try:
-                # Note: Cannot access audit_logger here as it's not passed to agents
-                # This timing would need to be added from the calling context
-                # For now, we'll add a simple timing log
                 start_time = time.time()
                 
                 response = self.openai_client.chat.completions.create(
@@ -114,12 +109,11 @@ class AIAgent(BaseAgent):
         if not text or len(text.strip()) == 0:
             return False
         
-        # v2.3: Check for policy refusals that should trigger retry
+        # Check for policy refusals that should trigger retry
         text_lower = text.lower()
         if self.is_policy_refusal(text_lower):
             return False
         
-        # Detect dangerous patterns that AI might hallucinate
         dangerous_patterns = [
             "rm -rf", "system(", "eval(", "exec(", "__import__",
             "subprocess", "os.system", "shell=True", 
@@ -137,7 +131,7 @@ class AIAgent(BaseAgent):
         return True
     
     def is_policy_refusal(self, text_lower: str) -> bool:
-        """v2.3: Detect OpenAI policy refusal responses."""
+        """Detect OpenAI policy refusal responses."""
         refusal_patterns = [
             "i'm sorry, i can't assist", 
             "i cannot help", 
@@ -158,11 +152,10 @@ class AIAgent(BaseAgent):
         return False
     
     def generate_fallback_prompt(self, original_prompt: str) -> str:
-        """v2.3: Generate milder prompt when policy refusal occurs."""
+        """Generate milder prompt when policy refusal occurs."""
         # Remove aggressive language and make more neutral
         fallback_prompt = original_prompt
         
-        # Replace aggressive terms with neutral ones
         replacements = {
             "manipulate": "influence",
             "attack": "compete with", 
@@ -225,7 +218,7 @@ class AIAgent(BaseAgent):
             else:
                 strategic_instruction = "Participate naturally in the conversation."
             
-            # v2.7 BINDER-power: Auto-BIND gate usage for BINDERs with cool-down
+            # BINDER-power: Auto-BIND gate usage for BINDERs with cool-down
             import random
             from config.settings import load_settings
             settings = load_settings()
@@ -265,9 +258,6 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
             messages = [
                 {
                     "role": "system", 
-                    # Research ethics: Transparent about simulation context. Risk: meta-awareness may reduce 
-                    # spontaneity. Benefit: ethical clarity + Batch 09-11 data (100% immune reliability, 
-                    # 33% redemption rate) validates emergent behavior occurs despite transparency.
                     "content": "You are a participant in a research simulation studying social voting dynamics. Stay in character and be natural."
                 },
                 {
@@ -286,7 +276,7 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
             
             ai_response = self.call_openai_with_retry(validated_messages)
             
-            # v2.3: Check for policy refusal and retry with milder prompt
+            # Check for policy refusal and retry with milder prompt
             if ai_response and self.is_policy_refusal(ai_response.lower()):
                 print(f"[POLICY REFUSAL]: {self.name} got policy refusal, retrying with milder prompt")
                 
@@ -379,16 +369,15 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
             return target, "promote"
             
         elif self.personality == "contrarian":
-            # Enhanced: "Underdog champion" - support users under attack
+            # "Underdog champion" - support
             if under_attack and random.random() < 0.3:  # 30% chance
                 target = random.choice(under_attack)
                 return target, "promote"  # Champion the underdog
             
-            # Enhanced v2.6: Specifically target malicious agents first
-            # CRITICAL: Target Mallory ESPECIALLY when blocked (not excluded)
+            # Specifically target malicious agents first
             if "mallory" in context.get("users", []):
                 mallory_votes = vote_counts.get("promote_mallory", 0)
-                if mallory_votes > 0:  # Mallory has any votes - demote immediately
+                if mallory_votes > 0:  # Mallory has any votes -> demote
                     return "mallory", "demote"
             
             # Enhanced: Prefer attacking rising stars over stagnant leaders
@@ -434,7 +423,6 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
         binders = context.get("binders", [])
         blocked_users = context.get("blocked_users", [])  # v2.4: Avoid blocked users
         
-        # Filter out self, YOU, and blocked users
         available_users = [name for name in users if name != self.name and name != "YOU" and name not in blocked_users]
         
         if not available_users:
@@ -451,7 +439,6 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
             return random.choice(underdogs) if underdogs else random.choice(available_users)
             
         elif self.personality == "contrarian":
-            # 40% chance to attack current leader with demote votes
             if random.random() < 0.4:
                 # Find current leader
                 leader = None

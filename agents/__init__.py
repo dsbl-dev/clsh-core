@@ -1,5 +1,5 @@
 """
-Agent system for DSBL social experiments.
+Agent system for social experiments.
 Provides template-driven and AI-driven agents with distinct personalities.
 """
 

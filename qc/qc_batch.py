@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-QC script for DSBL batches.
+QC script for batches.
 Checks data integrity and experiment validity for JSONL audit logs.
-Requires only standard Python libraries.
 """
 
 import sys

@@ -1,5 +1,5 @@
 """
-Gate processing system for DSBL semantic gates.
+Gate processing system for semantic gates.
 Handles registration and orchestration of different gate types.
 """
 

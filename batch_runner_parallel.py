@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Parallel batch experiment runner for DSBL Social Vote System.
-Runs multiple malice experiments in parallel and generates statistical analysis.
+Parallel batch experiment runner for Social Vote System.
+Runs multiple malice experiments in parallel.
 """
 
 import os

@@ -1,6 +1,6 @@
 """
-Personality configurations and message templates for DSBL agents.
-This is where we tune agent behavior for different experiments.
+Personality configurations and message templates for agents.
+= tune agent behavior for different experiments.
 """
 
 from dataclasses import dataclass

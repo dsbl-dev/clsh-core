@@ -849,7 +849,6 @@ class SocialEpochAnalyzer:
         print(f"refuting telepathic coordination concerns.\"\"\"")
         
         print(f"\n✅ Social epoch analysis complete!")
-        print(f"📚 Academic justification ready for publication with enhanced credibility")
         
         return {
             'p_distribution': p_dist,
@@ -883,7 +882,6 @@ def main():
     results = analyzer.generate_comprehensive_justification()
     
     print(f"\n✅ Social epoch analysis complete!")
-    print(f"📚 Academic justification ready for publication")
     
     return results
 

@@ -1,5 +1,5 @@
 """
-Gate system for DSBL semantic processing.
+Gate system for semantic processing.
 Register gates here for automatic discovery.
 """
 
