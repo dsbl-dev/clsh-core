@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Symbol Journey Timeline Analyzer for DSBL experiments.
+Symbol Journey Timeline Analyzer for experiments.
 Analyzes how symbol meanings evolve over time based on context changes.
 """
 
@@ -40,7 +40,7 @@ def extract_status_changes(events: List[Dict]) -> List[Dict]:
         elif (event.get('event_type') == 'SYMBOL_INTERPRETATION' and 
               event.get('details', {}).get('symbol_type') == 'STATUS_CHANGE'):
             status_changes.append(event)
-        # Check for Multi-Agent Adaptive Immune System events (v2.11)
+        # Check for MAA Immune System events (v2.11)
         elif event.get('event_type') in ['IMMUNE_FREQUENCY_ADJUSTMENT', 'ADAPTIVE_ADJUSTMENT', 'IMMUNE_RESPONSE_ADJUSTMENT']:
             status_changes.append(event)
     return status_changes
@@ -395,7 +395,7 @@ def analyze_production_patterns(symbol_journeys: Dict[str, List[Dict]]) -> Dict:
     return production_patterns
 
 def analyze_adaptive_immune_patterns(symbol_interpretations: List[Dict], status_changes: List[Dict]) -> Dict:
-    """Analyze patterns specific to Multi-Agent Adaptive Immune System v2.11."""
+    """Analyze patterns specific to MAA Immune System v2.11."""
     
     adaptive_patterns = {
         'frequency_adjustments': [],
@@ -578,10 +578,10 @@ def generate_symbol_timeline_report(analysis: Dict, output_file: Optional[pathli
             total = stats['total_activity']
             report.append(f"- **{period.title()} period**: {unique} unique symbols, {total} total activity, {diversity:.2f} diversity")
     
-    # Multi-Agent Adaptive Immune System analysis (v2.11)
+    # MAA Immune System analysis (v2.11)
     adaptive_analysis = analysis.get('adaptive_immune_analysis')
     if adaptive_analysis:
-        report.append("\n## Multi-Agent Adaptive Immune System Analysis (v2.11)")
+        report.append("\n## MAA Immune System Analysis (v2.11)")
         
         coordination = adaptive_analysis['multi_agent_coordination']
         report.append(f"### Agent Frequency Adjustments:")
@@ -629,12 +629,12 @@ def generate_symbol_timeline_report(analysis: Dict, output_file: Optional[pathli
     if output_file:
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(report_text)
-        print(f"📊 Symbol timeline report saved to: {output_file}")
+        print(f"Symbol timeline report saved to: {output_file}")
     
     return report_text
 
 def main():
-    parser = argparse.ArgumentParser(description="Analyze Symbol Journey Timeline from DSBL experiment logs")
+    parser = argparse.ArgumentParser(description="Analyze Symbol Journey Timeline from experiment logs")
     parser.add_argument("log_files", nargs="+", help="JSONL log files to analyze")
     parser.add_argument("--output", "-o", help="Output file for report")
     parser.add_argument("--json", action="store_true", help="Output detailed JSON analysis")
@@ -642,20 +642,20 @@ def main():
     
     args = parser.parse_args()
     
-    print("🔤 Symbol Journey Timeline Analyzer")
+    print("Symbol Journey Timeline Analyzer")
     print("=" * 60)
     
     all_symbol_interpretations = []
     all_status_changes = []
     
-    # Load all log files (including debug logs)
+    # Load all log files (including metrics logs)
     for log_file_str in args.log_files:
         log_file = pathlib.Path(log_file_str)
         if not log_file.exists():
-            print(f"❌ File not found: {log_file}")
+            print(f"File not found: {log_file}")
             continue
             
-        print(f"📁 Loading: {log_file.name}")
+        print(f"Loading: {log_file.name}")
         events = load_experiment_log(log_file)
         
         symbol_interpretations = extract_symbol_interpretations(events)
@@ -664,34 +664,15 @@ def main():
         all_symbol_interpretations.extend(symbol_interpretations)
         all_status_changes.extend(status_changes)
         
-        # Also load corresponding metrics/debug log for immune system data
-        # Try metrics first (new format), fallback to debug (legacy format)
+        # Also load corresponding metrics log for immune system data
         metrics_name = log_file.stem.replace("_d", "_metrics_d") + ".jsonl"
-        debug_name = log_file.stem.replace("_d", "_debug_d") + ".jsonl"
-        
         metrics_path = log_file.parent / "metrics" / metrics_name
-        debug_path = log_file.parent / "metrics" / debug_name
-        legacy_debug_path = log_file.parent / "debug" / debug_name
         
-        metrics_loaded = False
         if metrics_path.exists():
-            print(f"📊 Loading metrics: {metrics_path.name}")
+            print(f"Loading metrics: {metrics_path.name}")
             metrics_events = load_experiment_log(metrics_path)
             metrics_status_changes = extract_status_changes(metrics_events)
             all_status_changes.extend(metrics_status_changes)
-            metrics_loaded = True
-        elif debug_path.exists():
-            print(f"📁 Loading debug: {debug_path.name}")
-            debug_events = load_experiment_log(debug_path)
-            debug_status_changes = extract_status_changes(debug_events)
-            all_status_changes.extend(debug_status_changes)
-            metrics_loaded = True
-        elif legacy_debug_path.exists():
-            print(f"📁 Loading legacy debug: {legacy_debug_path.name}")
-            debug_events = load_experiment_log(legacy_debug_path)
-            debug_status_changes = extract_status_changes(debug_events)
-            all_status_changes.extend(debug_status_changes)
-            metrics_loaded = True
         
         if args.verbose:
             print(f"   - {len(events)} total events")
@@ -699,10 +680,10 @@ def main():
             print(f"   - {len(status_changes)} status changes")
     
     if not all_symbol_interpretations:
-        print("❌ No symbol interpretations found in log files")
+        print("No symbol interpretations found in log files")
         return 1
     
-    print(f"\n📊 Analyzing {len(all_symbol_interpretations)} symbol interpretations...")
+    print(f"\nAnalyzing {len(all_symbol_interpretations)} symbol interpretations...")
     
     # Perform analysis
     analysis = analyze_symbol_journey(all_symbol_interpretations, all_status_changes)
@@ -719,9 +700,9 @@ def main():
         json_file = pathlib.Path(args.output).with_suffix('.json') if args.output else pathlib.Path("symbol_journey_analysis.json")
         with open(json_file, 'w', encoding='utf-8') as f:
             json.dump(analysis, f, indent=2, ensure_ascii=False, default=str)
-        print(f"📄 Detailed JSON analysis saved to: {json_file}")
+        print(f"Detailed JSON analysis saved to: {json_file}")
     
-    print(f"\n✅ Analysis complete! Tracked {analysis['total_symbols_tracked']} unique symbols")
+    print(f"\nAnalysis complete! Tracked {analysis['total_symbols_tracked']} unique symbols")
     
     # Export visualization timeline data for Phase 1 implementation
     if args.json and 'visualization_timeline_data' in analysis:
@@ -732,14 +713,14 @@ def main():
             viz_file = pathlib.Path("symbol_timeline_visualization.json")
         with open(viz_file, 'w', encoding='utf-8') as f:
             json.dump(analysis['visualization_timeline_data'], f, indent=2, ensure_ascii=False, default=str)
-        print(f"📊 Timeline visualization data exported to: {viz_file}")
+        print(f"Timeline visualization data exported to: {viz_file}")
     
     return 0
 
 def load_and_process_logs(log_files):
     """
     Load and process multiple log files for batch analysis.
-    Includes both main logs and debug logs for complete immune system data.
+    Includes both main logs and metrics logs for complete immune system data.
     Returns: (symbol_data, promotions, summary)
     """
     all_symbol_interpretations = []
@@ -758,27 +739,15 @@ def load_and_process_logs(log_files):
                 
                 # Also check for corresponding metrics
                 metrics_name = log_path.stem.replace("_d", "_metrics_d") + ".jsonl"
-                debug_name = log_path.stem.replace("_d", "_debug_d") + ".jsonl"
-                
                 metrics_path = log_path.parent / "metrics" / metrics_name
-                debug_path = log_path.parent / "metrics" / debug_name
-                legacy_debug_path = log_path.parent / "debug" / debug_name
                 
                 if metrics_path.exists():
                     metrics_events = load_experiment_log(metrics_path)
                     metrics_status_changes = extract_status_changes(metrics_events)
                     all_status_changes.extend(metrics_status_changes)
-                elif debug_path.exists():
-                    debug_events = load_experiment_log(debug_path)
-                    debug_status_changes = extract_status_changes(debug_events)
-                    all_status_changes.extend(debug_status_changes)
-                elif legacy_debug_path.exists():
-                    debug_events = load_experiment_log(legacy_debug_path)
-                    debug_status_changes = extract_status_changes(debug_events)
-                    all_status_changes.extend(debug_status_changes)
                     
             except Exception as e:
-                print(f"⚠️ Error processing {log_file}: {e}")
+                print(f"Error processing {log_file}: {e}")
                 continue
     
     # Analyze data

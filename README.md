@@ -1,6 +1,6 @@
 # DSBL · Deferred Semantic Binding Language
 
-_Multi-agent adaptive immune system for context-dependent symbol activation_
+_MAA immune system for context-dependent symbol activation_
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)  
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15742505.svg)](https://doi.org/10.5281/zenodo.15742505)  
@@ -10,9 +10,9 @@ _Multi-agent adaptive immune system for context-dependent symbol activation_
 
 DSBL introduces **deferred semantic binding**: symbols like `⟦VOTE:promote_alice⟧` keep their
 meaning latent until runtime context activates them.  
-The repository contains the full research implementation, experimental data
-(34 MB), and analysis tools needed to **reproduce the results in  
-_"Multi-Agent Adaptive Immune Systems via Deferred Semantic Binding."_**
+The repository contains test implementation and experimental data
+(34 MB), + tools to **reproduce the results in  
+_"MAA Immune System via Deferred Semantic Binding."_**
 
 ---
 
@@ -36,8 +36,8 @@ git clone https://github.com/dsbl-dev/clsh-core.git
 cd clsh-core
 pip install -r requirements.txt
 
-cp .env .env.local        # add your OPENAI_API_KEY
-python main.py            # interactive DSBL demo
+cp .env .env.local        # add API_KEY
+python main.py            # interactive demo
 ```
 
 ### Batch experiments
@@ -54,7 +54,7 @@ python batch_runner_parallel.py --runs 30 --tickets 60 --tag "research_batch"
 # Validate data integrity
 python qc/qc_batch.py exp_output/published_data/*/events/*.jsonl
 
-# Cross-batch analysis and key figures
+# Cross-batch analysis + key figures
 python validation/cross_batch_analyzer.py exp_output/published_data/
 ```
 
@@ -76,9 +76,9 @@ exp_output/     — published_data/ + ablation_data/ (34 MB)
 
 ## Dataset
 
-- **Size**: 34 MB of JSONL logs and summary metrics from 90 experiments.
-- **License**: CC-BY-4.0 (see `DATA_LICENSE`) – free to reuse with attribution.
-- Complete experimental data is included; you can also regenerate data with the included batch scripts.
+- **Size**: ~30 MB of JSONL logs and summary metrics from 90 experiments.
+- **License**: CC-BY-4.0 (see `DATA_LICENSE`) – free to reuse.
+- Experimental data is included; regenerate data is possible with included batch scripts.
 
 ---
 
@@ -102,11 +102,11 @@ ai:
 
 ## Citation
 
-If you use DSBL or its dataset, please cite:
+If you use dataset, please cite:
 
 ```bibtex
 @misc{petersson2025dsbl,
-  title   = {Multi-Agent Adaptive Immune Systems via Deferred Semantic Binding},
+  title   = {MAA Immune System via Deferred Semantic Binding},
   author  = {Joel Petersson},
   year    = {2025},
   doi     = {10.5281/zenodo.15742505},
@@ -114,7 +114,7 @@ If you use DSBL or its dataset, please cite:
 }
 ```
 
-A `CITATION.cff` file is included so GitHub can auto-generate other formats.
+A `CITATION.cff` file is included.
 
 ---
 

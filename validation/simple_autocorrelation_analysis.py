@@ -152,15 +152,15 @@ class SimpleAutocorrelationAnalyzer:
             for ticket in experiment['data']:
                 # Count immune system activations
                 immune_count = 0
-                if 'debug_info' in ticket:
-                    debug = ticket['debug_info']
-                    if 'immune_adjustments' in debug:
-                        immune_count = len(debug['immune_adjustments'])
+                if 'metrics_info' in ticket:
+                    metrics = ticket['metrics_info']
+                    if 'immune_adjustments' in metrics:
+                        immune_count = len(metrics['immune_adjustments'])
                     
-                    # Also check for frequency mentions in debug
-                    debug_str = str(debug)
-                    if 'frequency' in debug_str.lower():
-                        immune_count += debug_str.lower().count('frequency')
+                    # Also check for frequency mentions in metrics
+                    metrics_str = str(metrics)
+                    if 'frequency' in metrics_str.lower():
+                        immune_count += metrics_str.lower().count('frequency')
                 
                 immune_sequence.append(immune_count)
             
@@ -351,7 +351,7 @@ class SimpleAutocorrelationAnalyzer:
             output_file.parent.mkdir(parents=True, exist_ok=True)
             with open(output_file, 'w') as f:
                 f.write(report_text)
-            print(f"\n📊 Report saved to: {output_file}")
+            print(f"\nReport saved to: {output_file}")
         
         return report_text
     
@@ -361,14 +361,14 @@ class SimpleAutocorrelationAnalyzer:
         
         Returns: Dictionary of analysis results for academic documentation
         """
-        print("🔬 DSBL Autocorrelation Analysis - Academic Enhancement")
+        print("Autocorrelation Analysis - Academic Enhancement")
         print("=" * 60)
         
         # Load data
         self.load_experimental_data()
         
         if not self.experiments:
-            print("❌ No experimental data loaded. Cannot proceed with analysis.")
+            print("No experimental data loaded. Cannot proceed with analysis.")
             return {}
         
         # Run analyses
@@ -386,14 +386,14 @@ class SimpleAutocorrelationAnalyzer:
         
         self.generate_academic_report(report_file)
         
-        print("\n✅ Autocorrelation analysis complete!")
-        print(f"📋 Results ready for evidence framework integration")
+        print("\nAutocorrelation analysis complete!")
+        print(f"Results ready for evidence framework integration")
         
         return self.results
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Statistical independence validation for DSBL research",
+        description="Statistical independence validation",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -425,17 +425,17 @@ Examples:
     valid_files = [f for f in log_files if f.exists() and f.suffix == '.jsonl']
     
     if not valid_files:
-        print("❌ No valid .jsonl files found")
+        print("No valid .jsonl files found")
         return 1
     
-    print(f"📁 Analyzing {len(valid_files)} experimental files")
+    print(f"Analyzing {len(valid_files)} experimental files")
     
     # Run analysis
     analyzer = SimpleAutocorrelationAnalyzer(valid_files)
     results = analyzer.run_complete_analysis(args.output)
     
     if results:
-        print("\n🎯 Complete:")
+        print("\nComplete:")
 
     
     return 0

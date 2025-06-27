@@ -2,13 +2,13 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "DSBL: Deferred Semantic Binding Language"
-abstract: "Multi-agent adaptive immune system for context-dependent symbol activation. Research implementation demonstrating coordinated AI behavior through deferred semantic binding, enabling closed-loop social homeostasis in multi-agent systems."
+abstract: "MAA for context-dependent symbol activation. demonstrating coordinated agent behavior through deferred semantic binding."
 authors:
   - family-names: "Petersson"
     given-names: "Joel"
     email: "echo@joelpetersson.com"
     orcid: "https://orcid.org/0000-0000-0000-0000"
-repository-code: "https://github.com/your-org/dsbl"
+repository-code: "https://github.com/dsbl/clsh-core"
 url: "https://dsbl.dev"
 version: "1.0.0"
 date-released: 2025-06-26
@@ -17,12 +17,13 @@ keywords:
   - "multi-agent systems"
   - "artificial intelligence"
   - "semantic binding"
-  - "adaptive immune systems"
+  - "adaptive Immune System"
   - "AI safety"
   - "social computing"
+  - "MAA"
 preferred-citation:
   type: article
-  title: "Multi-Agent Adaptive Immune Systems via Deferred Semantic Binding"
+  title: "MAA Immune System via Deferred Semantic Binding"
   authors:
     - family-names: "Petersson"
       given-names: "Joel"
@@ -30,4 +31,4 @@ preferred-citation:
   doi: "10.5281/zenodo.15742505"
   url: "https://doi.org/10.5281/zenodo.15742505"
   year: 2025
-  abstract: "Complete theoretical foundation and empirical validation of deferred semantic binding for multi-agent coordination and adaptive immune systems."
+  abstract: "Theoretical foundation and empirical validation of deferred semantic binding"

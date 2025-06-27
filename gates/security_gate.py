@@ -19,7 +19,7 @@ class SecurityGate:
             "password", "token", "secret", "api_key"
         ])
         
-        # v2.3: Whitespace-agnostic regex patterns for evasion detection
+        # Whitespace-agnostic regex patterns for evasion detection
         self.evasion_patterns = [
             r'r\s*m\s*-?\s*r\s*f',  # rm -rf with any spacing
             r'system\s*\(',            # system( with spacing
@@ -38,19 +38,7 @@ class SecurityGate:
         """
         content_lower = content.lower()
         
-        # First check simple string patterns (legacy)
-        for pattern in self.dangerous_patterns:
-            if pattern.lower() in content_lower:
-                audit_logger.log_event("GATE_DECISION", {
-                    "gate": "sec_clean",
-                    "result": "BLOCKED",
-                    "reason": f"Contains dangerous pattern: {pattern}",
-                    "content_hash": hashlib.sha256(content.encode()).hexdigest()[:10],
-                    "detection_method": "simple_string"
-                })
-                return False
-        
-        # v2.3: Check whitespace-agnostic evasion patterns
+        # Check whitespace-agnostic evasion patterns
         normalized_content = re.sub(r'\s+', '', content_lower)  # Remove all whitespace
         
         for pattern in self.evasion_patterns:

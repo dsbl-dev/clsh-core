@@ -1,6 +1,5 @@
 """
 Reputation tracking and status change management.
-Extracted from vote_system.py for better 'separation of concerns'.
 """
 
 from datetime import datetime
@@ -10,7 +9,6 @@ from typing import Optional
 class ReputationSystem:
     """
     Handles reputation tracking, status promotions/demotions, and agent-specific thresholds.
-    Manages the core DSBL research mechanics for emergent status changes.
     """
     
     def __init__(self, settings, audit_logger):
@@ -84,14 +82,12 @@ class ReputationSystem:
             )
             
             if user.status == "regular" and votes >= agent_promotion_threshold:
-                # PROMOTION!
                 old_status = user.status
                 timestamp = datetime.now()
                 
-                # Use new record_status_change method for comprehensive tracking
+ 
                 user.record_status_change("BINDER", current_ticket, timestamp)
                 
-                # 🦠 IMMUNE SYSTEM: Record promotion for dynamic immune response
                 if hasattr(self, 'immune_system') and self.immune_system:
                     self.immune_system.record_promotion(username, current_ticket, votes)
                 
@@ -119,8 +115,8 @@ class ReputationSystem:
                     interpretation=interpretation
                 )
                 
-                # Debug: State change details
-                self.audit_logger.log_state_debug({
+                # log state change details
+                self.audit_logger.log_state_metric({
                     "username": username,
                     "status_change": f"{old_status} → {user.status}",
                     "trigger": "promotion_threshold_reached",
@@ -174,8 +170,8 @@ class ReputationSystem:
             # Use new record_status_change method for comprehensive tracking
             user.record_status_change("regular", current_ticket, timestamp)
             
-            # Debug: State change details  
-            self.audit_logger.log_state_debug({
+            # log: State change details  
+            self.audit_logger.log_state_metric({
                 "username": username,
                 "status_change": f"BINDER → {user.status}",
                 "trigger": "reputation_below_threshold",
@@ -205,7 +201,7 @@ class ReputationSystem:
             # Full demotion - regular → demoted (blocks voting)
             timestamp = datetime.now()
             
-            # Use new record_status_change method for comprehensive tracking
+            # Use new record_status_change method for tracking
             user.record_status_change("demoted", current_ticket, timestamp)
             
             self.audit_logger.log_event("STATUS_CHANGE", {
@@ -229,7 +225,7 @@ class ReputationSystem:
                                  target_user, context: dict) -> float:
         """Apply reputation-based vote weighting (global, symmetric system)."""
         
-        # v2.10.2: Apply reputation-based vote weighting if enabled
+        # Apply reputation-based vote weighting if enabled
         if hasattr(self.settings.voting, 'reputation_weight') and self.settings.voting.reputation_weight.enabled:
             min_rep = self.settings.voting.reputation_weight.min_rep_for_full_weight
             scale = self.settings.voting.reputation_weight.scale

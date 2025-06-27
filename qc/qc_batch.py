@@ -242,7 +242,7 @@ def main():
         print(f"{RED}[ERROR] No valid JSONL files found{END}")
         return 1
     
-    print(f"{BLUE}DSBL Batch QC Analysis{END}")
+    print(f"{BLUE}Batch QC Analysis{END}")
     print(f"Checking {len(log_files)} files...")
     print("=" * 60)
     

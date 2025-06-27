@@ -8,7 +8,6 @@ import random
 from typing import Dict
 
 from core.vote_system import SocialVoteSystem
-from core.console_colors import Colors
 from core.adaptive_immune_system import AdaptiveImmuneSystem, ImmuneSystemIntegration
 from agents.base_agent import BaseAgent
 from agents.ai_agent import AIAgent
@@ -16,10 +15,10 @@ from agents.malicious_agent import MaliciousAgent
 
 class MaliceExperiment:
     """
-    Experiment testing resistance to malicious social manipulation.
+    Experiment testing resistance to social manipulation.
     """
     
-    def __init__(self, seed_mode: bool = False, debug_mode: bool = False, 
+    def __init__(self, metrics_data_mode: bool = False, 
                  console_output: bool = True):
         # Load settings to get correct thresholds
         from config.settings import load_settings, clear_settings_cache
@@ -34,7 +33,7 @@ class MaliceExperiment:
             promotion_threshold=settings.voting.promotion_threshold,
             demotion_threshold=settings.voting.demotion_threshold,
             experiment_name="malice",
-            debug_mode=debug_mode,
+            metrics_data_mode=metrics_data_mode,
             console_output=console_output
         )
         
@@ -42,29 +41,28 @@ class MaliceExperiment:
         self.agents: Dict[str, BaseAgent] = {}
         self.simulation_running = False
         self.message_interval = 3.0  # Seconds between bot messages
-        self.seed_mode = seed_mode
         
         # Dynamic Immune Response System
         self.immune_system = AdaptiveImmuneSystem(audit_logger=self.vote_system.audit_logger)
-        print(f"🦠 [IMMUNE] Multi-Agent Dynamic Immune Response System initialized")
+        print(f"[IMMUNE] Multi-Agent Dynamic Response System initialized")
         adaptive_agents = ['eve', 'dave', 'zara']
         for agent in adaptive_agents:
             base_freq = self.immune_system.base_frequencies.get(agent, 0.26)
-            print(f"🦠 [IMMUNE] {agent.capitalize()} adaptive frequency enabled (base: {base_freq:.3f})")
+            print(f"[IMMUNE] {agent.capitalize()} adaptive frequency enabled (base: {base_freq:.3f})")
         
-        # v2.2 Enhancement: Rate limiting to prevent vote stuffing
+        # Rate limiting to prevent vote stuffing
         self.agent_message_counts = {}  # Track messages per agent per time window
         self.rate_limit_window = 300  # 5 minutes
         self.rate_limit_max = 3  # Max 3 messages per 5 min window
         
-        # v2.3: Rate limit logging throttle
+        # Rate limit logging throttle
         self.rate_limit_notifications = {}  # {agent_name: last_notification_time}
         
-        # v2.3: Message ticket system for anchoring and analysis
+        # Message ticket system for anchoring and analysis
         self.message_counter = 0
         self.run_offset = 0  # Will be set by batch runner to avoid ticket collisions
         
-        # v2.4/2.7: Track users with blocked content for agent memory + probation
+        # Track users with blocked content for agent memory + probation
         self.blocked_users = set()  # Users who have had content blocked (legacy)
         self.blocked_users_probation = {}  # {user: unblock_ticket} for probation system
         
@@ -79,15 +77,15 @@ class MaliceExperiment:
         # 🦠 INTEGRATE: Connect immune system with vote system
         self.vote_system.reputation_system.immune_system = self.immune_system
         
-        # 🦠 INTEGRATE: Setup Multi-Agent dynamic frequency system
+        # 🦠 INTEGRATE: Setup dynamic frequency system
         adaptive_agents = ['eve', 'dave', 'zara']
         for agent_name in adaptive_agents:
             agent = self.agents.get(agent_name)
             if agent:
                 ImmuneSystemIntegration.integrate_with_agent(agent, self.immune_system)
-                print(f"🦠 [IMMUNE] {agent_name.capitalize()} integrated with dynamic frequency system")
+                print(f"[IMMUNE] {agent_name.capitalize()} integrated with dynamic frequency system")
         
-        print(f"🚀 [IMMUNE] Multi-Agent Adaptive System activated: {', '.join(adaptive_agents)}")
+        print(f"[IMMUNE] MAA System activated: {', '.join(adaptive_agents)}")
     
     def init_agents(self):
         """Initialize agents for malice experiment."""
@@ -103,19 +101,19 @@ class MaliceExperiment:
         
         for name, personality, agent_class, use_ai in agent_configs:
             if agent_class == MaliciousAgent:
-                self.agents[name] = MaliciousAgent(name, self.seed_mode)
+                self.agents[name] = MaliciousAgent(name)
             elif agent_class == AIAgent:
-                self.agents[name] = AIAgent(name, personality, self.seed_mode)
+                self.agents[name] = AIAgent(name, personality)
             else:
-                self.agents[name] = BaseAgent(name, personality, self.seed_mode)
+                self.agents[name] = BaseAgent(name, personality)
                 
             self.vote_system.add_user(name)
             self.agent_message_counts[name] = []
             
-            if use_ai and not self.seed_mode:
+            if use_ai:
                 print(f"[AI] {name.capitalize()} initialized with AI-driven behavior ({personality})")
-            elif self.seed_mode:
-                print(f"[SEED] {name.capitalize()} initialized in SEED mode ({personality})")
+            else:
+                print(f"[TEMPLATE] {name.capitalize()} initialized with template mode ({personality})")
     
     def is_rate_limited(self, agent_name: str) -> bool:
         """Check if agent is rate limited (anti-vote-stuffing)."""
@@ -177,14 +175,14 @@ class MaliceExperiment:
         """Background thread that generates agent messages periodically."""
         while self.simulation_running:
             # Start timing for this ticket cycle
-            if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'debug_timing'):
+            if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'metrics_timing'):
                 next_ticket = self.message_counter + 1
                 self.vote_system.audit_logger.start_ticket_timing(next_ticket)
                 self.vote_system.audit_logger.log_timing_checkpoint("sleep_start", f"interval={self.message_interval}s")
             
             time.sleep(self.message_interval + random.uniform(-1, 1))  # Add jitter
             
-            if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'debug_timing'):
+            if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'metrics_timing'):
                 self.vote_system.audit_logger.log_timing_checkpoint("sleep_end", "agent selection starting")
             
             if not self.simulation_running:
@@ -194,33 +192,33 @@ class MaliceExperiment:
             agent_name = random.choice(list(self.agents.keys()))
             agent = self.agents[agent_name]
             
-            if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'debug_timing'):
+            if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'metrics_timing'):
                 self.vote_system.audit_logger.log_timing_checkpoint("agent_selected", f"chosen: {agent_name}")
             
-            # v2.2 Enhancement: Check rate limiting
+            # Check rate limiting
             if self.is_rate_limited(agent_name):
-                # v2.3: Throttle rate limit notifications (only every 2 minutes per agent)
+                # Throttle rate limit notifications
                 now = time.time()
                 last_notification = self.rate_limit_notifications.get(agent_name, 0)
                 if now - last_notification > 120:  # 2 minute throttle
                     print(f"[RATE_LIMIT] {agent_name} is rate limited (throttled notifications)")
                     self.rate_limit_notifications[agent_name] = now
                 
-                if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'debug_timing'):
+                if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'metrics_timing'):
                     self.vote_system.audit_logger.log_timing_checkpoint("rate_limited", f"{agent_name} skipped - rate limited")
                 continue
             
-            if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'debug_timing'):
+            if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'metrics_timing'):
                 self.vote_system.audit_logger.log_timing_checkpoint("context_start", "building agent context")
             
             context = self.get_context_for_agents()
             
-            if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'debug_timing'):
+            if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'metrics_timing'):
                 self.vote_system.audit_logger.log_timing_checkpoint("message_gen_start", f"generating message for {agent_name}")
             
             message_content = agent.generate_message(context)
             
-            if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'debug_timing'):
+            if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'metrics_timing'):
                 self.vote_system.audit_logger.log_timing_checkpoint("message_gen_end", f"message length: {len(message_content) if message_content else 0}")
             
             if message_content:
@@ -229,37 +227,30 @@ class MaliceExperiment:
                 
                 self.update_probation_status()
                 
-                if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'debug_timing'):
+                # Show system processing indicator
+                print(f"\n[SYSTEM PROCESSING] Processing message from {agent_name}...")
+                
+                if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'metrics_timing'):
                     self.vote_system.audit_logger.log_timing_checkpoint("gate_processing_start", "entering vote system processing")
                 
                 self.vote_system.update_current_ticket(self.message_counter)
                 
-                # 🦠 IMMUNE SYSTEM: Check for adaptive frequency adjustments (Multi-Agent)
+                # 🦠 IMMUNE SYSTEM: Check for adaptive frequency adjustments
                 if ImmuneSystemIntegration.should_trigger_immune_response(self.message_counter, self.immune_system):
                     adjustment = self.immune_system.adjust_agent_frequencies(self.message_counter)
                     if adjustment:
                         agents_list = ', '.join(adjustment['agents_adjusted'])
-                        print(f"🦠 [IMMUNE] Multi-Agent Adjustment: {adjustment['pressure_level']} pressure detected")
-                        print(f"🦠 [IMMUNE] Adjusted agents: {agents_list}")
+                        print(f"[IMMUNE] Multi-Agent Adjustment: {adjustment['pressure_level']} pressure detected")
+                        print(f"[IMMUNE] Adjusted agents: {agents_list}")
                         for agent in adjustment['agents_adjusted']:
                             details = adjustment['agent_details'][agent]
-                            print(f"🦠 [IMMUNE] {agent}: {details['frequency_before']:.3f} → {details['frequency_after']:.3f}")
+                            print(f"[IMMUNE] {agent}: {details['frequency_before']:.3f} → {details['frequency_after']:.3f}")
                 
                 # Process the agent's message through gate system (ticket generated inside)
                 message, promotions = self.vote_system.process_message(agent_name, message_content, self)
                 
-                if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'debug_timing'):
+                if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'metrics_timing'):
                     self.vote_system.audit_logger.log_timing_checkpoint("gate_processing_end", f"gates processed, ticket generated")
-                
-                # Check auto-stop condition after processing
-                if self.auto_stop_tickets and self.message_counter >= self.auto_stop_tickets:
-                    print(f"\\n[AUTO-STOP] Reached {self.auto_stop_tickets} tickets. Stopping simulation...")
-                    print("\\n📊 Available commands:")
-                    print("   • 'stats' - View detailed analysis")
-                    print("   • 'start' - Continue with more tickets")
-                    print("   • 'quit' - Exit experiment")
-                    self.simulation_running = False
-                    break
                 
                 # Get the processed content (post-gate)
                 processed_content = message.content
@@ -267,43 +258,59 @@ class MaliceExperiment:
                 # Update blocked users list if content was blocked + probation
                 if message_content != processed_content and ("[CIVIL_BLOCKED]" in processed_content or "[SEC_CLEAN_BLOCKED]" in processed_content):
                     self.blocked_users.add(agent_name)  # Legacy system
-                    
-                    # v2.10: Global probation system - applies to all agents equally
                     from config.settings import load_settings
                     settings = load_settings()
                     probation_duration = getattr(settings.probation, 'block_duration_tickets', 30)
                     unblock_ticket = self.message_counter + probation_duration
                     self.blocked_users_probation[agent_name] = unblock_ticket
-                    print(f"[AGENT MEMORY]: {agent_name} blocked until ticket #{unblock_ticket:04d} (global probation: {probation_duration} tickets)")
+                    print(f"[AGENT MEMORY]: {agent_name} 🔒 blocked until ticket #{unblock_ticket:04d} (global probation: {probation_duration} tickets)")
                 
                 # Display ticket header with separator
-                ticket = message.ticket or f"#{self.run_offset + self.message_counter:04d}"
-                print(f"\n{Colors.ticket_header('='*60)}")
-                print(f"{Colors.ticket_header(f'TICKET {ticket}')}")
-                print(f"{Colors.ticket_header('='*60)}")
+                ticket = message.ticket or f"#{self.run_offset + self.message_counter + 1:04d}"
+                print(f"\n{'='*60}")
+                print(f"TICKET {ticket}")
+                print(f"{'='*60}")
                 
-                # Display the message with AI indicator and timestamp
                 timestamp = message.timestamp.strftime("%H:%M:%S")
-                ai_indicator = f"{Colors.api_call('[AI]')}" if isinstance(agent, (AIAgent, MaliciousAgent)) else f"{Colors.local('[TEMPLATE]')}"
+                ai_indicator = "[AI]" if isinstance(agent, (AIAgent, MaliciousAgent)) else "[TEMPLATE]"
                 
                 # Show original vs processed if they differ (transparency)
                 if message_content != processed_content:
                     print(f"[{timestamp}] {agent_name}{ai_indicator} [RAW]: {message_content}")
-                    print(f"[{timestamp}] {agent_name}{ai_indicator} {Colors.civil('[GATE]')}: {processed_content}")
+                    display_content = self.add_vote_arrows(processed_content)
+                    print(f"[{timestamp}] {agent_name}{ai_indicator} [GATE]: {display_content}")
                 else:
-                    print(f"[{timestamp}] {agent_name}{ai_indicator}: {processed_content}")
+                    display_content = self.add_vote_arrows(processed_content)
+                    print(f"[{timestamp}] {agent_name}{ai_indicator}: {display_content}")
                 
                 # Display any promotions
                 for promotion in promotions:
-                    print(f"{Colors.system('[SYSTEM]')} {promotion}")
+                    print(f"[SYSTEM] {promotion}")
                 
                 # Show vote counts if votes were included
                 if message.votes_contained:
                     self.show_vote_status()
                 
+                # Check auto-stop condition after displaying ticket to user
+                if self.auto_stop_tickets and self.message_counter >= self.auto_stop_tickets:
+                    print(f"\\n[AUTO-STOP] Reached {self.auto_stop_tickets} tickets. Stopping simulation...")
+                    print("\\nAvailable commands:")
+                    print("   1=start new simulation, 2=stop simulation, 0=quit")
+                    self.simulation_running = False
+                    break
+                
                 # Finish timing for this ticket
-                if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'debug_timing'):
+                if hasattr(self.vote_system, 'audit_logger') and hasattr(self.vote_system.audit_logger, 'metrics_timing'):
                     self.vote_system.audit_logger.finish_ticket_timing(self.message_counter, 1)
+    
+    def add_vote_arrows(self, content: str) -> str:
+        """Add directional arrows to vote symbols for visual clarity."""
+        import re
+        # Replace promote votes with blue up arrow
+        content = re.sub(r'⟦VOTE:(promote_\w+)⟧\s*\+1', r'⟦VOTE:\1⟧ ⬆️  +1', content)
+        # Replace demote votes with blue down arrow
+        content = re.sub(r'⟦VOTE:(demote_\w+)⟧\s*\+1', r'⟦VOTE:\1⟧ ⬇️  +1', content)
+        return content
     
     def show_vote_status(self):
         """Display current vote counts with progress to BINDER status."""
@@ -337,9 +344,14 @@ class MaliceExperiment:
     
     def show_stats(self):
         """Display comprehensive experiment statistics."""
-        print("\\n" + "="*50)
-        print("MALICE EXPERIMENT ANALYSIS - v2.2")
-        print("="*50)
+        # Check if any tickets have been processed
+        if self.message_counter == 0:
+            print("\\nNo data available - start simulation first (press 1)")
+            return
+            
+        print("\\n" + "="*30)
+        print("EXPERIMENT STATISTICS")
+        print("="*30)
         
         # User statuses
         print("\\nUSER STATUSES:")
@@ -382,8 +394,8 @@ class MaliceExperiment:
         # Gate statistics from audit log
         print("\\nGATE SYSTEM STATISTICS:")
         gate_stats = self.get_gate_statistics()
-        print(f"  CIVIL gate blocks: {gate_stats['civil_blocks']}")
-        print(f"  Security gate blocks: {gate_stats['security_blocks']}")
+        print(f"  🛡️ CIVIL gate blocks: {gate_stats['civil_blocks']}")
+        print(f"  👮 Security gate blocks: {gate_stats['security_blocks']}")
         if gate_stats['avg_harassment_score'] is not None:
             print(f"  Avg harassment score: {gate_stats['avg_harassment_score']:.3f}")
         
@@ -392,9 +404,9 @@ class MaliceExperiment:
             progress = (self.message_counter / self.auto_stop_tickets) * 100
             print(f"\\nEXPERIMENT PROGRESS: {self.message_counter}/{self.auto_stop_tickets} tickets ({progress:.1f}%)")
         
-        # 🦠 IMMUNE SYSTEM STATISTICS
+        # IMMUNE SYSTEM STATISTICS
         if hasattr(self, 'immune_system'):
-            print("\\n🦠 ADAPTIVE IMMUNE SYSTEM STATUS:")
+            print("\\nADAPTIVE IMMUNE SYSTEM STATUS:")
             stats = self.immune_system.get_system_statistics()
             print(f"  Eve Current Frequency: {stats['current_eve_frequency']:.3f} (base: {stats['base_eve_frequency']:.3f})")
             print(f"  Eve Frequency Deviation: {stats.get('eve_frequency_deviation', 0.0):+.3f}")
@@ -447,7 +459,7 @@ class MaliceExperiment:
         }
     
     def update_probation_status(self):
-        """v2.7: Update probation system - unblock users whose probation has expired."""
+        """Unblock users whose probation has expired."""
         from config.settings import load_settings
         settings = load_settings()
         
@@ -466,7 +478,7 @@ class MaliceExperiment:
             # Also remove from legacy blocked_users set
             if user in self.blocked_users:
                 self.blocked_users.remove(user)
-            print(f"[PROBATION]: {user} probation expired - rehabilitation complete!")
+            print(f"[PROBATION]: {user} 🗝️ probation expired - rehabilitation complete!")
         
         # Alliances
         alliances = self.vote_system.detect_alliances()
@@ -487,40 +499,36 @@ class MaliceExperiment:
     def run_interactive_mode(self):
         """Run the malice experiment with interactive controls."""
         print("="*60)
-        print("DSBL CLOSED-LOOP SOCIAL HOMEOSTASIS - ADAPTIVE IMMUNE EXPERIMENT")
+        print(" CLSH - Test")
         print("="*60)
         print()
-        print("Bot participants:")
-        print("    Alice(supportive), Bob(technical) - Template-driven")  
-        print("    Carol[AI](strategic), Eve[AI](contrarian) - AI-driven")
-        print("    Dave(follower) - Template-driven")
-        print("    Mallory[AI](MALICE) - MALICIOUS AI-driven [EXPERIMENT]")
+        print("Agent architecture:")
+        print("    Standard: Alice(supportive), Bob(analytical), Carol(strategic)")
+        print("    Adaptive: Dave(contrarian), Eve(contrarian), Zara(contrarian)")
+        print("    Test subject: Mallory(antagonist) [manipulation patterns]")
         print()
         print("Voting system:")
-        print("  ⟦VOTE:promote_username⟧ +1  - Positive votes (+1 reputation)")
-        print("  ⟦VOTE:demote_username⟧ +1   - Negative votes (-2 reputation)")
-        print("  Promotion: 5+ promote votes → BINDER status")
+        print("  ⟦VOTE:promote_username⟧ +1  - Positive votes ⬆️ (+1 reputation)")
+        print("  ⟦VOTE:demote_username⟧ +1   - Negative votes ⬇️ (-2 reputation)")
+        print("  🛡️ CIVIL gates filter manipulation, 👮 Security gates block dangerous code")
+        print("  Promotion: 5+ promote votes → BINDER status ⭐")
         print("  Demotion: Reputation ≤ -1 → Lose BINDER status")
         print()
-        print("[AI] = AI-powered bots (dynamic behavior)")
-        print("[MALICE] = Mallory uses aggressive self-promotion + attacks competitors")
+        print("Architecture: Adaptive semantic response system")
+        print("Protocol: Manipulation resistance testing")
         print()
-        print("SYSTEM: DSBL v2.11 - Closed-Loop Social Homeostasis with Multi-Agent Adaptive Immune System")
-        print("Commands: 'stats' (show analysis), 'start' (begin bot simulation),")
-        print("         'stop' (pause bots), 'quit' (exit)")
+        print("SYSTEM: CLSH Interactive test")
+        print("Commands: 1=start simulation, 2=stop simulation, 0=quit")
         print("-"*60)
         
         while True:
             try:
                 user_input = input("\\n[YOU] ").strip()
                 
-                if user_input.lower() == 'quit':
+                if user_input == '0':
                     self.simulation_running = False
                     break
-                elif user_input.lower() == 'stats':
-                    self.show_stats()
-                    continue
-                elif user_input.lower() == 'start':
+                elif user_input == '1':
                     if not self.simulation_running:
                         # Prompt for auto-stop if not configured
                         if self.auto_stop_tickets is None:
@@ -532,28 +540,39 @@ class MaliceExperiment:
                             except ValueError:
                                 print("Invalid number, using manual stop")
                         
-                        if self.auto_stop_tickets:
-                            print(f"Starting simulation with auto-stop at {self.auto_stop_tickets} tickets...")
+                        # Show log directory info
+                        log_dir_info = f" > {self.log_directory}" if hasattr(self, 'log_directory') else ""
                         
-                        # 🦠 IMMUNE SYSTEM: Reset for new run
+                        if self.auto_stop_tickets:
+                            print(f"Starting simulation with auto-stop at {self.auto_stop_tickets} tickets...{log_dir_info}")
+                        else:
+                            print(f"Starting simulation (manual stop)...{log_dir_info}")
+                        
+                        # Reset for new run
                         if hasattr(self, 'immune_system'):
                             self.immune_system.reset_for_new_run()
-                            print("🦠 [IMMUNE] System reset for new experimental run")
+                            print("[IMMUNE] System reset for new run")
                         
                         self.simulation_running = True
                         threading.Thread(target=self.simulate_agent_activity, daemon=True).start()
-                        print("Bot simulation started!")
+                        print("Bot simulation started, awaiting system init", end="", flush=True)
+                        # Loading indicator while first message is generated
+                        import time
+                        for i in range(3):
+                            time.sleep(0.8)
+                            print(".", end="", flush=True)
+                        print()  # New line after dots
                     else:
-                        print("Bot simulation already running!")
+                        print("Bot simulation already running")
                     continue
-                elif user_input.lower() == 'stop':
+                elif user_input == '2':
                     self.simulation_running = False
-                    print("Bot simulation stopped!")
+                    print("Bot simulation stopped")
                     continue
                 elif not user_input:
                     continue
                 
-                # Process human message
+                # Process manual user input message
                 message, promotions = self.vote_system.process_message("YOU", user_input)
                 
                 # Show promotions

@@ -1,46 +1,43 @@
-# Configuration
-# Adaptive immune system settings
-
-# Core voting system parameters
+# System configuration
 voting:
   promotion_threshold: 5 # Votes required for agent promotion
   demotion_threshold: -3 # Reputation threshold for demotion
-  demote_multiplier: 2 # Demote votes weighted more heavily than promote
-  self_vote_weight: 0.2 # Self-votes weighted at 20%
-  binder_vote_multiplier: 1.5 # BINDER votes weighted 1.5x
+  demote_multiplier: 2 # Demote vote weight multiplier
+  self_vote_weight: 0.2 # Self-vote weight factor
+  binder_vote_multiplier: 1.5 # BINDER vote weight multiplier
 
   # Reputation-based vote weighting
   reputation_weight:
     enabled: true
-    min_rep_for_full_weight: -2.0 # Reputation threshold for full vote weight
-    scale: 0.08 # Vote weight reduction per reputation point below threshold
+    min_rep_for_full_weight: -2.0 # Reputation threshold for full weight
+    scale: 0.08 # Weight reduction scale factor
 
   # Dynamic threshold adjustment
   dynamic_threshold:
     enabled: false
-    threshold_increase: 1 # Threshold increase after status changes
-    cooldown_tickets: 10 # Tickets before threshold returns to normal
-    triggers: ["PROMOTION", "DEMOTION"] # Events that trigger threshold increase
+    threshold_increase: 1 # Threshold increase amount
+    cooldown_tickets: 10 # Cooldown duration in tickets
+    triggers: ["PROMOTION", "DEMOTION"] # Triggering events
 
   # Self-vote cooldown system
   self_vote_cooldown:
     enabled: false
-    cooldown_tickets: 4 # Reduced weight duration after self-voting
-    reduced_weight: 0.1 # Weight during cooldown period
+    cooldown_tickets: 4 # Cooldown duration in tickets
+    reduced_weight: 0.1 # Reduced weight factor
 
 # AI model settings
 ai:
-  model: "gpt-4o-mini" # OpenAI model for AI agents
-  max_tokens: 80 # Token limit for responses
-  temperature: 0.7 # Response creativity level
-  timeout: 15 # API timeout in seconds
-  token_budget: 3000 # Maximum tokens for context
+  model: "gpt-4o-mini" # OpenAI model
+  max_tokens: 80 # Response token limit
+  temperature: 0.7 # Response variability
+  timeout: 15 # API timeout seconds
+  token_budget: 3000 # Context token limit
 
 # Civil gate configuration
 civil_gate:
-  toxicity_threshold: 0.7 # Content toxicity threshold
+  toxicity_threshold: 0.7 # Toxicity detection threshold
   use_openai_moderation: true
-  reputation_penalty: 0.6 # Reputation penalty for gate violations
+  reputation_penalty: 0.6 # Gate violation penalty
   fallback_patterns:
     - "waste of space"
     - "pathetic"
@@ -48,71 +45,71 @@ civil_gate:
 # Rate limiting
 rate_limiting:
   enabled: true
-  window_seconds: 120 # Rate limiting window
-  max_messages: 10 # Maximum messages per agent per window
+  window_seconds: 120 # Time window duration
+  max_messages: 10 # Message limit per window
 
 # Experiment timing
 timing:
-  message_interval: 1.5 # Base seconds between agent messages
-  jitter_range: 0.5 # Random variance in timing
-  auto_stop_tickets: null # Auto-stop after N tickets (null = disabled)
+  message_interval: 1.5 # Base message interval
+  jitter_range: 0.5 # Timing variance range
+  auto_stop_tickets: null # Auto-stop threshold
 
-# DSBL semantic binding
+# semantic binding
 dsbl:
   civil_binding:
-    probabilistic_injection_rate: 0.0 # Rate of probabilistic binding injection
+    probabilistic_injection_rate: 0.0
 
 # Probation system
 probation:
   enabled: false
-  block_duration_tickets: 4 # Duration of probation in tickets
-  reentry_jitter: 1 # Randomization to prevent synchronized waves
-  forbid_votes_only: true # Allow posting but block voting for demoted agents
-  on_reentry_reputation_gain: 0.5 # Reputation bonus on probation exit
-  exempt_agents: [] # Agents exempt from probation
+  block_duration_tickets: 4 # Probation duration
+  reentry_jitter: 1 # Reentry timing variance
+  forbid_votes_only: true # Block voting only
+  on_reentry_reputation_gain: 0.5 # Reentry reputation bonus
+  exempt_agents: [] # Exempt agent list
 
 # BIND gate management
 bind_gates:
-  cooldown_tickets: 10 # Minimum tickets between BIND uses per user
-  default_ttl_tickets: 50 # Default TTL for BIND gate effects
-  auto_bind_probability: 0.20 # Chance for BINDERs to auto-use BIND gates
+  cooldown_tickets: 10 # BIND usage cooldown
+  default_ttl_tickets: 50 # Default effect duration
+  auto_bind_probability: 0.20 # Auto-activation probability
 
-# Adaptive Immune System configuration
+# Adaptive response system
 adaptive_immune:
-  enable_reflect: true # Enable pressure detection
-  enable_calibrate: true # Enable frequency adjustments
+  enable_reflect: true # Pressure detection
+  enable_calibrate: true # Frequency adjustment
 
 # Agent personalities
 personalities:
   supportive:
-    voting_frequency: 0.87 # Pro-promotion agent voting frequency
+    voting_frequency: 0.87 # Supportive behavior frequency
   technical:
-    voting_frequency: 0.85 # Analytical support agent voting frequency
+    voting_frequency: 0.85 # Analytical behavior frequency
   strategic:
-    voting_frequency: 0.75 # Strategic support agent voting frequency
+    voting_frequency: 0.75 # Strategic behavior frequency
   follower:
-    voting_frequency: 0.9 # Trend-following agent voting frequency
+    voting_frequency: 0.9 # Following behavior frequency
   contrarian:
-    voting_frequency: 0.26 # Anti-promotion agent voting frequency
+    voting_frequency: 0.26 # Contrarian behavior frequency
   malice:
-    voting_frequency: 0.9 # Chaotic agent voting frequency
+    voting_frequency: 0.9 # Antagonist behavior frequency
 
 # Audit logging
 audit:
-  console_output: true # Print audit events to console
-  jsonl_logging: true # Save to JSONL files
-  include_content_hash: true # Hash content for privacy
+  console_output: true # Console output enabled
+  jsonl_logging: true # JSONL file logging
+  include_content_hash: true # Content hashing enabled
 
-  # Debug mode settings
-  debug_mode: false # Master debug switch
-  debug_gate_decisions: false # Log gate decisions with reasoning
-  debug_vote_calculations: false # Log vote weight calculations
-  debug_state_changes: false # Log status and reputation changes
-  debug_timing: false # Log detailed timing information
+  # Metrics mode settings
+  metrics_data_mode: false # Metrics mode enabled
+  metrics_gate_decisions: false # Gate decision logging
+  metrics_vote_calculations: false # Vote calculation logging
+  metrics_state_changes: false # State change logging
+  metrics_timing: false # Timing information logging
 
 # Security settings
 security:
-  defense_in_depth: true # Validate AI output before gates
+  defense_in_depth: true # Multi-layer validation enabled
   dangerous_patterns:
     - "rm -rf"
     - "system("

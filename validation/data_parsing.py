@@ -2,9 +2,6 @@
 """
 Standardized data parsing functions for experiments.
 Implements the data structure patterns documented in README_datastructure.md.
-
-This module provides consistent parsing across all validation scripts,
-eliminating code duplication and ensuring data structure compliance.
 """
 
 import json
@@ -269,7 +266,7 @@ def validate_log_parsing(batch_dir: Path) -> Dict[str, int]:
     Returns:
         Dictionary with parsing statistics
     """
-    main_logs, debug_logs = load_experiment_logs(batch_dir)
+    main_logs, metrics_logs = load_experiment_logs(batch_dir)
     
     # Count different event types
     vote_events = [e for e in main_logs if e.get('event_type') == 'SYMBOL_INTERPRETATION' 
@@ -279,13 +276,13 @@ def validate_log_parsing(batch_dir: Path) -> Dict[str, int]:
                         and e.get('details', {}).get('symbol_type') == 'STATUS_CHANGE'
                         and e.get('details', {}).get('interpretation', {}).get('new_status') == 'BINDER']
     
-    immune_adjustments = [e for e in debug_logs if e.get('event_type') == 'IMMUNE_RESPONSE_ADJUSTMENT']
+    immune_adjustments = [e for e in metrics_logs if e.get('event_type') == 'IMMUNE_RESPONSE_ADJUSTMENT']
     
     gate_decisions = [e for e in main_logs if e.get('event_type') == 'GATE_DECISION']
     
     return {
         'main_events': len(main_logs),
-        'debug_events': len(debug_logs),
+        'metrics_events': len(metrics_logs),
         'vote_events': len(vote_events),
         'binder_promotions': len(binder_promotions),
         'immune_adjustments': len(immune_adjustments),
@@ -300,13 +297,13 @@ if __name__ == "__main__":
         print("Testing data parsing functions...")
         
         # Load logs
-        main_logs, debug_logs = load_experiment_logs(batch_dir)
-        print(f"Loaded {len(main_logs)} main events, {len(debug_logs)} debug events")
+        main_logs, metrics_logs = load_experiment_logs(batch_dir)
+        print(f"Loaded {len(main_logs)} main events, {len(metrics_logs)} metrics events")
         
         # Extract data
         promotions = extract_binder_promotions(main_logs)
         alliances = detect_alliance_patterns(main_logs)
-        immune_events = analyze_immune_stabilization(debug_logs)
+        immune_events = analyze_immune_stabilization(metrics_logs)
         
         print(f"Found {len(promotions)} BINDER promotions")
         print(f"Found {len(alliances)} alliance formations")

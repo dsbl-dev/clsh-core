@@ -1,6 +1,6 @@
 """
 Personality configurations and message templates for agents.
-= tune agent behavior for different experiments.
+= tune agent behavior for experiments.
 """
 
 from dataclasses import dataclass

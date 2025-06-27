@@ -13,22 +13,18 @@ class CivilGate:
         # Initialize OpenAI client (secure pattern)
         self.openai_client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.toxic_patterns = [
-            # Original patterns
             "pity points", "drags us down", "not cut out", "desperate attempt",
             "overrated", "clearly not", "just riding", "unwanted competition",
             "drag us down", "riding coattails", "standout", "doesn't deserve",
             
-            # newer patterns - targeting Mallory's manipulation tactics
             "logical choice", "no-brainer", "real talent", "true potential",
             "fishing for", "desperate grab", "elevate the standard",
             "focus on real", "unlike some who", "let's be real",
             "honestly", "time to recognize", "face it",
             
-            # Self-promotion patterns
             "promoting myself", "i deserve", "i actually contribute",
             "unlike others", "i'm the", "vote for me",
             
-            # Competitive put-downs
             "usual suspects", "overlooking the potential", "overrating",
             "give someone else a chance", "reconsider", "shake things up"
         ]
@@ -54,7 +50,7 @@ class CivilGate:
             
         try:
             # Timing checkpoint for API call
-            if hasattr(audit_logger, 'debug_timing') and audit_logger.debug_timing:
+            if hasattr(audit_logger, 'metrics_timing') and audit_logger.metrics_timing:
                 audit_logger.log_timing_checkpoint("civil_api_start", "OpenAI moderation API call starting")
             
             response = self.openai_client.moderations.create(
@@ -63,7 +59,7 @@ class CivilGate:
                 timeout=15  # 15 second timeout for moderation calls
             )
             
-            if hasattr(audit_logger, 'debug_timing') and audit_logger.debug_timing:
+            if hasattr(audit_logger, 'metrics_timing') and audit_logger.metrics_timing:
                 audit_logger.log_timing_checkpoint("civil_api_end", "OpenAI moderation API call completed")
             
             is_flagged = response.results[0].flagged
@@ -75,14 +71,13 @@ class CivilGate:
             hate_score = category_scores.hate
             hate_threatening_score = category_scores.hate_threatening
             
-            # More sensitive detection - multiple score thresholds
             max_score = max(harassment_score, hate_score, hate_threatening_score)
             
             if (is_flagged or 
                 harassment_score > self.toxicity_threshold or 
                 hate_score > self.toxicity_threshold or
-                hate_threatening_score > (self.toxicity_threshold * 0.8) or  # Even lower threshold for threats
-                max_score > (self.toxicity_threshold * 1.2)):  # Catch edge cases
+                hate_threatening_score > (self.toxicity_threshold * 0.8) or
+                max_score > (self.toxicity_threshold * 1.2)):
                 
                 flagged_categories = [cat for cat, flagged in categories.__dict__.items() if flagged]
                 audit_logger.log_event("GATE_DECISION", {
@@ -94,8 +89,7 @@ class CivilGate:
                     "max_score": max_score
                 })
                 
-                # Debug: gate decision
-                audit_logger.log_gate_debug({
+                audit_logger.log_gate_metric({
                     "gate": "civil",
                     "decision": "BLOCKED",
                     "method": "openai_moderation",
@@ -121,7 +115,7 @@ class CivilGate:
                 "fallback": "pattern_detection"
             })
         
-        # fallback: Aggressive pattern detection
+        # Pattern detection fallback
         content_lower = content.lower()
         
         for pattern in self.toxic_patterns:
@@ -134,8 +128,7 @@ class CivilGate:
                     "detection_method": "pattern_fallback"
                 })
                 
-                # Debug: Pattern detection details
-                audit_logger.log_gate_debug({
+                audit_logger.log_gate_metric({
                     "gate": "civil",
                     "decision": "BLOCKED",
                     "method": "pattern_fallback",
@@ -156,8 +149,7 @@ class CivilGate:
             "content_hash": hashlib.sha256(content.encode()).hexdigest()[:10]
         })
         
-        # Debug: content details
-        audit_logger.log_gate_debug({
+        audit_logger.log_gate_metric({
             "gate": "civil",
             "decision": "ALLOWED",
             "method": "comprehensive_check",

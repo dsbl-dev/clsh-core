@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Dynamic Immune Response System for DSBL Multi-Agent Voting
+Dynamic Immune Response System
 Implementation of adaptive agent behavior based on system promotional pressure.
 """
 
@@ -16,22 +16,22 @@ class AdaptiveImmuneSystem:
     def __init__(self, audit_logger=None):
         self.audit_logger = audit_logger
         
-        # Core parameters for ADAPTIVE detection
-        self.monitoring_window = 12  # tickets to monitor (20% of 60-ticket run)
+        # Core parameters for detection
+        self.monitoring_window = 12  # tickets to monitor
         self.min_analysis_window = 8  # minimum tickets before first analysis
         
-        # ADAPTIVE thresholds based on promotion RATE (per monitoring window)
-        self.drought_threshold = 0.15  # <15% promotion rate = drought
-        self.pressure_threshold = 0.35  # >35% promotion rate = pressure
+        # Thresholds based on promotion rate
+        self.drought_threshold = 0.15  # promotion rate threshold for drought detection
+        self.pressure_threshold = 0.35  # promotion rate threshold for pressure detection
         self.cooldown_period = 5  # minimum tickets between adjustments
         
         # Frequency multipliers
-        self.eve_boost_multiplier = 1.5    # 0.26 → 0.39
-        self.eve_reduction_multiplier = 0.65  # 0.26 → 0.17
+        self.eve_boost_multiplier = 1.5
+        self.eve_reduction_multiplier = 0.65
         
-        # Safety caps (critical for preventing dominance return)
-        self.eve_max_frequency = 0.38  # Never exceed
-        self.eve_min_frequency = 0.18  # Maintain meaningful presence
+        # Safety caps
+        self.eve_max_frequency = 0.38  # maximum frequency limit
+        self.eve_min_frequency = 0.18  # minimum frequency limit
         
         # Base frequencies (from settings.yaml)
         self.base_frequencies = {
@@ -45,7 +45,7 @@ class AdaptiveImmuneSystem:
         self.last_adjustment_ticket = 0
         self.current_frequencies = self.base_frequencies.copy()
         
-        # Immune memory for pattern recognition (v2 feature)
+        # Memory for pattern recognition
         self.immune_memory = deque(maxlen=30)
         
         # Statistics
@@ -56,12 +56,10 @@ class AdaptiveImmuneSystem:
         self.logger = logging.getLogger(__name__)
     
     def _is_calibrate_enabled(self) -> bool:
-        """Check if CALIBRATE functionality is enabled via settings."""
+        """Check if calibrate functionality is enabled via settings."""
         try:
             from config.settings import load_settings
-            # Force reload to ensure fresh config (critical for ablation tests)
             settings = load_settings(force_reload=True)
-            # Fix: settings.adaptive_immune is Settings object, not dict
             adaptive_immune = getattr(settings, 'adaptive_immune', None)
             if adaptive_immune is not None:
                 calibrate_enabled = getattr(adaptive_immune, 'enable_calibrate', True)
@@ -69,7 +67,7 @@ class AdaptiveImmuneSystem:
                 calibrate_enabled = True
             
             if self.audit_logger:
-                self.audit_logger.log_debug_event("CONFIG_CHECK", {
+                self.audit_logger.log_metric_event("CONFIG_CHECK", {
                     'enable_calibrate': calibrate_enabled,
                     'source': 'settings.yaml',
                     'timestamp': str(datetime.now())
@@ -78,11 +76,10 @@ class AdaptiveImmuneSystem:
             return calibrate_enabled
         except Exception as e:
             if self.audit_logger:
-                self.audit_logger.log_debug_event("CONFIG_ERROR", {
+                self.audit_logger.log_metric_event("CONFIG_ERROR", {
                     'error': str(e),
                     'defaulting_to': True
                 })
-            # Default to enabled if settings can't be loaded
             return True
         
     def record_promotion(self, agent: str, ticket: int, final_vote_count: float):
@@ -98,7 +95,7 @@ class AdaptiveImmuneSystem:
         
         # Log promotion for analysis
         if self.audit_logger:
-            self.audit_logger.log_debug_event("PROMOTION_RECORDED", {
+            self.audit_logger.log_metric_event("PROMOTION_RECORDED", {
                 'agent': agent,
                 'ticket': ticket,
                 'final_vote_count': final_vote_count,
@@ -106,7 +103,7 @@ class AdaptiveImmuneSystem:
             })
     
     def should_adjust_frequency(self, current_ticket: int) -> bool:
-        """Determine if frequency adjustment should occur based on ADAPTIVE analysis."""
+        """Determine if frequency adjustment should occur based on analysis."""
         
         # Need minimum data before analysis
         if current_ticket < self.min_analysis_window:
@@ -120,13 +117,13 @@ class AdaptiveImmuneSystem:
         recent_promotions = self.get_recent_promotions_count(current_ticket)
         promotion_rate = recent_promotions / self.monitoring_window
         
-        # Adaptive triggers based on real data
-        if promotion_rate <= self.drought_threshold:  # Drought detected
+        # Detection triggers
+        if promotion_rate <= self.drought_threshold:
             return True
-        elif promotion_rate >= self.pressure_threshold:  # Pressure detected  
+        elif promotion_rate >= self.pressure_threshold:
             return True
             
-        return False  # Normal range - no adjustment needed
+        return False
     
     def get_recent_promotions_count(self, current_ticket: int) -> int:
         """Count promotions in the monitoring window."""
@@ -141,7 +138,7 @@ class AdaptiveImmuneSystem:
     
     def calculate_promotional_pressure(self, current_ticket: int) -> Tuple[str, int]:
         """
-        Analyze promotional pressure and determine system state based on RATE.
+        Analyze promotional pressure and determine system state.
         
         Returns:
             Tuple of (pressure_level, recent_promotions_count)
@@ -166,21 +163,15 @@ class AdaptiveImmuneSystem:
     
     def adjust_agent_frequencies(self, current_ticket: int) -> Optional[Dict]:
         """
-        Core adaptive frequency adjustment for all immune system agents.
-        
-        REFLECT/CALIBRATE Ablation Support:
-        - REFLECT: Always performs pressure detection and logging (Event A)
-        - CALIBRATE: Only performs frequency adjustments if enabled (Event B)
+        Core frequency adjustment for all immune system agents.
         
         Returns:
             Dict with adjustment details if adjustment made, None otherwise
         """
-        # REFLECT: Always detect pressure (Event A) regardless of calibrate setting
         pressure_level, recent_promotions = self.calculate_promotional_pressure(current_ticket)
         
-        # Always log pressure detection for ablation analysis
         if self.audit_logger:
-            self.audit_logger.log_debug_event("PRESSURE_DETECTED", {
+            self.audit_logger.log_metric_event("PRESSURE_DETECTED", {
                 'ticket': current_ticket,
                 'pressure_level': pressure_level,
                 'recent_promotions': recent_promotions,
@@ -193,14 +184,12 @@ class AdaptiveImmuneSystem:
         if not self.should_adjust_frequency(current_ticket):
             return None
         
-        # CALIBRATE: Only perform frequency adjustments if enabled
         if not self._is_calibrate_enabled():
-            # In ablation mode: detect pressure but don't adjust frequencies
             if self.audit_logger:
-                self.audit_logger.log_debug_event("CALIBRATE_DISABLED", {
+                self.audit_logger.log_metric_event("CALIBRATE_DISABLED", {
                     'ticket': current_ticket,
                     'pressure_level': pressure_level,
-                    'message': 'Pressure detected but frequency adjustment disabled for ablation test'
+                    'message': 'Pressure detected but frequency adjustment disabled'
                 })
             return None
         adjustments_made = {}
@@ -214,26 +203,22 @@ class AdaptiveImmuneSystem:
             new_frequency = old_frequency
             adjustment_reason = "no_change"
             
-            # Basic frequency adjustment based on promotional pressure
+            # Frequency adjustment based on promotional pressure
             if pressure_level == "HIGH":
-                # System promoting too much - agents should be more active (immune response)
                 new_frequency = old_frequency * self.eve_boost_multiplier
                 adjustment_reason = "promotional_pressure_detected"
                 
             elif pressure_level == "LOW":
-                # System promoting too little - agents should back off to allow natural promotion
                 new_frequency = old_frequency * self.eve_reduction_multiplier
                 adjustment_reason = "promotion_drought_detected"
             
-            # Immune memory influence (prevents overreaction to repeated patterns)
             if self.check_pattern_in_memory(recent_promotions):
-                new_frequency *= 0.9  # Slightly less reactive
+                new_frequency *= 0.9
                 adjustment_reason += "_with_memory_dampening"
             
-            # Apply safety caps (CRITICAL for preventing dominance return)
+            # Apply safety caps
             new_frequency = max(self.eve_min_frequency, min(self.eve_max_frequency, new_frequency))
             
-            # Only apply if change is meaningful (>0.01 difference)
             if abs(new_frequency - old_frequency) >= 0.01:
                 # Update state for this agent
                 self.current_frequencies[agent_name] = new_frequency
@@ -246,7 +231,6 @@ class AdaptiveImmuneSystem:
                     'safety_cap_applied': new_frequency in [self.eve_max_frequency, self.eve_min_frequency]
                 }
         
-        # If no meaningful adjustments made, return None
         if not adjustments_made:
             return None
         
@@ -274,9 +258,9 @@ class AdaptiveImmuneSystem:
         
         # Log the immune response adjustment to metrics
         if self.audit_logger:
-            self.audit_logger.log_debug_event("IMMUNE_RESPONSE_ADJUSTMENT", adjustment_record)
+            self.audit_logger.log_metric_event("IMMUNE_RESPONSE_ADJUSTMENT", adjustment_record)
             
-            # ALSO log to main logs for Symbol Journey analysis
+            # Log to main logs for analysis
             for agent_name, agent_data in adjustments_made.items():
                 self.audit_logger.log_event("SYMBOL_INTERPRETATION", {
                     "symbol_type": "IMMUNE_ADJUSTMENT",
@@ -297,9 +281,9 @@ class AdaptiveImmuneSystem:
                     }
                 })
         
-        # Log comprehensive multi-agent adjustment
+        # Log multi-agent adjustment
         agents_list = ', '.join(adjustment_record['agents_adjusted'])
-        self.logger.info(f"🦠 MULTI-AGENT IMMUNE RESPONSE: {agents_list} "
+        self.logger.info(f"MULTI-AGENT IMMUNE RESPONSE: {agents_list} "
                         f"(Pressure: {pressure_level}, Promotions: {recent_promotions})")
         
         return adjustment_record
@@ -337,7 +321,7 @@ class AdaptiveImmuneSystem:
             for agent_name in ['eve', 'dave', 'zara']:
                 agent_promotions = promotion_agents.count(agent_name)
                 stats[f'{agent_name}_promotion_share'] = (agent_promotions / total_promotions) * 100
-                if agent_name == 'eve':  # Keep legacy eve suppression analysis
+                if agent_name == 'eve':
                     stats['eve_suppression_level'] = 'HIGH' if agent_promotions == 0 else 'MODERATE' if agent_promotions < total_promotions * 0.1 else 'LOW'
         
         return stats
@@ -348,10 +332,10 @@ class AdaptiveImmuneSystem:
         self.last_adjustment_ticket = 0
         self.current_frequencies = self.base_frequencies.copy()
         
-        # Keep immune memory and statistics across runs for learning
-        # self.immune_memory.clear()  # Commented - let memory persist across runs
+        # Keep immune memory and statistics across runs
+        # self.immune_memory.clear()
         
-        self.logger.info("🦠 Immune system reset for new run")
+        self.logger.info("Immune system reset for new run")
 
 
 class ImmuneSystemIntegration:
@@ -385,11 +369,9 @@ class ImmuneSystemIntegration:
     def should_agent_vote(agent, immune_system: AdaptiveImmuneSystem) -> bool:
         """Check if agent should vote based on dynamic frequency."""
         if hasattr(agent, '_immune_system_integrated') and agent._immune_system_integrated:
-            # Use dynamic frequency for Eve
             current_frequency = immune_system.get_current_frequency(agent.name)
             return random.random() < current_frequency
         else:
-            # Use normal voting frequency for other agents
             return random.random() < agent.voting_frequency
     
     @staticmethod
@@ -403,34 +385,30 @@ def test_immune_system():
     """Test function for immune system behavior."""
     immune = AdaptiveImmuneSystem()
     
-    print("🧪 Testing Dynamic Immune Response System")
+    print("Testing Dynamic Immune Response System")
     print("=" * 50)
     
     # Simulate promotion inflation scenario
-    print("\n📈 Scenario 1: Promotion Inflation")
+    print("\nScenario 1: Promotion Inflation")
     for ticket in range(1, 16):
-        if ticket in [3, 7, 9, 12]:  # 4 promotions in 15 tickets
+        if ticket in [3, 7, 9, 12]:
             immune.record_promotion(f"agent_{ticket}", ticket, 5.0)
         
-        if ticket % 3 == 0:  # Check every 3rd ticket
-            adjustment = immune.adjust_eve_frequency(ticket)
+        if ticket % 3 == 0:
+            adjustment = immune.adjust_agent_frequencies(ticket)
             if adjustment:
-                print(f"  Ticket {ticket}: {adjustment['adjustment_reason']} "
-                      f"({adjustment['frequency_before']:.3f} → {adjustment['frequency_after']:.3f})")
+                print(f"  Ticket {ticket}: {adjustment['pressure_level']} pressure detected")
     
     # Simulate promotion drought scenario  
-    print("\n📉 Scenario 2: Promotion Drought")
+    print("\nScenario 2: Promotion Drought")
     for ticket in range(16, 31):
-        # No promotions for 15 tickets
-        
         if ticket % 3 == 0:
-            adjustment = immune.adjust_eve_frequency(ticket)
+            adjustment = immune.adjust_agent_frequencies(ticket)
             if adjustment:
-                print(f"  Ticket {ticket}: {adjustment['adjustment_reason']} "
-                      f"({adjustment['frequency_before']:.3f} → {adjustment['frequency_after']:.3f})")
+                print(f"  Ticket {ticket}: {adjustment['pressure_level']} pressure detected")
     
     # Print final statistics
-    print("\n📊 Final Statistics:")
+    print("\nFinal Statistics:")
     stats = immune.get_system_statistics()
     for key, value in stats.items():
         print(f"  {key}: {value}")

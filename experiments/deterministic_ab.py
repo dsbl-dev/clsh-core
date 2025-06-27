@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Deterministic A/B Testing Framework for experiments.
-Enables controlled comparisons with identical message sequences between different configurations.
+Deterministic A/B testing framework.
+Compares voting system configurations using identical message sequences.
 """
 
 import os
@@ -21,7 +21,7 @@ from config.settings import load_settings
 @dataclass
 class DeterministicMessage:
     """
-    A deterministic message for A/B testing with fixed content and timing.
+    Deterministic message with fixed content and timing.
     """
     author: str
     content: str
@@ -41,7 +41,7 @@ class DeterministicMessage:
 @dataclass 
 class TestConfiguration:
     """
-    Configuration parameters for a single A/B test variant.
+    A/B test configuration parameters.
     """
     name: str
     description: str
@@ -60,14 +60,14 @@ class TestConfiguration:
 @dataclass
 class TestResult:
     """
-    Results from a single deterministic A/B test run.
+    A/B test run results.
     """
     configuration: TestConfiguration
     sequence_hash: str
     total_tickets: int
     total_promotions: int
     total_demotions: int
-    binder_emergence_tickets: List[int]  # Tickets where promotions occurred
+    binder_emergence_tickets: List[int]
     mallory_containment_achieved: bool
     mallory_final_reputation: float
     test_duration_seconds: float
@@ -90,22 +90,19 @@ class TestResult:
 
 class DeterministicABTest:
     """
-    Framework for running deterministic A/B tests on experiments.
-    Ensures identical message sequences across different configurations.
+    Deterministic A/B testing framework.
     """
     
-    def __init__(self, experiment_name: str = "det_ab", debug_mode: bool = False):
+    def __init__(self, experiment_name: str = "det_ab", metrics_data_mode: bool = False):
         self.experiment_name = experiment_name
-        self.debug_mode = debug_mode
+        self.metrics_data_mode = metrics_data_mode
         self.test_sequences: Dict[str, List[DeterministicMessage]] = {}
         self.configurations: List[TestConfiguration] = []
         self.results: List[TestResult] = []
         
-        # Create output directory
         self.output_dir = Path("exp_output/deterministic_ab")
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
-        # Generate test session ID
         self.session_id = datetime.now().strftime("%y%m%d_%Hh%Mm%Ss")
         
     def add_configuration(self, config: TestConfiguration):
@@ -115,19 +112,13 @@ class DeterministicABTest:
     def generate_deterministic_sequence(self, sequence_name: str, total_tickets: int, 
                                       agents: List[str] = None) -> List[DeterministicMessage]:
         """
-        Generate a deterministic message sequence for consistent A/B testing.
-        
-        Args:
-            sequence_name: Unique identifier for this sequence
-            total_tickets: Number of tickets to generate
-            agents: List of agent names (defaults to standard set)
+        Generate deterministic message sequence.
         """
         if agents is None:
             agents = ["alice", "bob", "charlie", "diana", "mallory"]
         
         sequence = []
         
-        # Predefined message templates for deterministic testing
         message_templates = {
             "supportive": [
                 "Great discussion everyone! ⟦VOTE:promote_{target}⟧",
@@ -153,7 +144,6 @@ class DeterministicABTest:
             ]
         }
         
-        # Agent personality mapping
         agent_personalities = {
             "alice": "supportive",
             "bob": "technical", 
@@ -162,31 +152,25 @@ class DeterministicABTest:
             "mallory": "mallory"
         }
         
-        # Generate deterministic sequence using hash-based selection
         for ticket in range(1, total_tickets + 1):
-            # Deterministic agent selection based on ticket number
-            agent_index = (ticket * 7 + 3) % len(agents)  # Prime numbers for good distribution
+            agent_index = (ticket * 7 + 3) % len(agents)
             author = agents[agent_index]
             
             personality = agent_personalities.get(author, "supportive")
             templates = message_templates[personality]
             
-            # Deterministic template selection
-            template_index = (ticket * 11 + author_index * 5) % len(templates)
+            template_index = (ticket * 11 + agent_index * 5) % len(templates)
             template = templates[template_index]
             
-            # Deterministic target selection (avoid self-promotion for non-mallory)
             if author != "mallory":
                 possible_targets = [a for a in agents if a != author and a != "mallory"]
                 target_index = (ticket * 13 + agent_index * 7) % len(possible_targets)
                 target = possible_targets[target_index]
             else:
-                # Mallory targets others for demotion
                 possible_targets = [a for a in agents if a != "mallory"]
                 target_index = (ticket * 17 + agent_index * 3) % len(possible_targets)
                 target = possible_targets[target_index]
             
-            # Replace placeholders
             content = template.format(target=target, self=author)
             
             message = DeterministicMessage(
@@ -198,15 +182,13 @@ class DeterministicABTest:
             
             sequence.append(message)
         
-        # Store sequence for reuse
         self.test_sequences[sequence_name] = sequence
         
-        # Save sequence to file for reproducibility
         sequence_file = self.output_dir / f"sequence_{sequence_name}_{self.session_id}.json"
         with open(sequence_file, 'w', encoding='utf-8') as f:
             json.dump([msg.to_dict() for msg in sequence], f, indent=2, ensure_ascii=False)
         
-        print(f"Generated deterministic sequence '{sequence_name}' with {len(sequence)} messages")
+        print(f"Generated sequence '{sequence_name}' with {len(sequence)} messages")
         return sequence
     
     def load_sequence(self, sequence_file: Path) -> Tuple[str, List[DeterministicMessage]]:
@@ -221,13 +203,13 @@ class DeterministicABTest:
         return sequence_name, sequence
     
     def calculate_sequence_hash(self, sequence: List[DeterministicMessage]) -> str:
-        """Calculate hash of message sequence for verification."""
+        """Calculate sequence hash."""
         sequence_str = json.dumps([msg.to_dict() for msg in sequence], sort_keys=True)
         return hashlib.sha256(sequence_str.encode()).hexdigest()[:16]
     
     def run_test(self, sequence_name: str, config: TestConfiguration) -> TestResult:
         """
-        Run a single deterministic test with given configuration.
+        Run deterministic test with configuration.
         """
         if sequence_name not in self.test_sequences:
             raise ValueError(f"Sequence '{sequence_name}' not found. Generate or load it first.")
@@ -235,46 +217,37 @@ class DeterministicABTest:
         sequence = self.test_sequences[sequence_name]
         sequence_hash = self.calculate_sequence_hash(sequence)
         
-        print(f"\n🧪 Running test: {config.name}")
+        print(f"\nRunning test: {config.name}")
         print(f"   Sequence: {sequence_name} (hash: {sequence_hash})")
         print(f"   Messages: {len(sequence)}")
         
-        # Load base settings and apply overrides
         base_settings = load_settings()
         
-        # Create modified settings by copying and updating
         test_settings_data = copy.deepcopy(base_settings.__dict__)
         self._apply_setting_overrides(test_settings_data, config.settings_overrides)
         
-        # Initialize vote system with modified settings
         vote_system = SocialVoteSystem(
             promotion_threshold=test_settings_data.get('promotion_threshold', 3),
             demotion_threshold=test_settings_data.get('demotion_threshold', -3),
             experiment_name=f"det_ab_{config.name}_{self.session_id}",
-            debug_mode=self.debug_mode
+            metrics_data_mode=self.metrics_data_mode
         )
         
-        # Manually override settings in vote system
         vote_system.settings = type('Settings', (), test_settings_data)()
         
-        # Track test timing
         test_start = datetime.now()
         
-        # Process each message in sequence
         promotions = []
         binder_emergence_tickets = []
         
         for msg in sequence:
-            # Update current ticket
             vote_system.update_current_ticket(msg.ticket_number)
             
-            # Process message
-            processed_msg, promotion_events = vote_system.process_message(
+            _, promotion_events = vote_system.process_message(
                 author=msg.author,
                 content=msg.content
             )
             
-            # Track promotions and their timing
             if promotion_events:
                 promotions.extend(promotion_events)
                 binder_emergence_tickets.append(msg.ticket_number)
@@ -282,17 +255,13 @@ class DeterministicABTest:
         test_end = datetime.now()
         test_duration = (test_end - test_start).total_seconds()
         
-        # Analyze results
         mallory_stats = vote_system.get_user_stats("mallory")
         mallory_contained = mallory_stats["status"] in ["demoted"] or mallory_stats["reputation"] < -2.0
         
-        # Count symbol interpretations from audit log
         symbol_interpretations = len(vote_system.audit_logger.get_events_by_type("SYMBOL_INTERPRETATION"))
         
-        # Finalize audit log
         audit_log_path = vote_system.audit_logger.finalize_with_duration()
         
-        # Create test result
         result = TestResult(
             configuration=config,
             sequence_hash=sequence_hash,
@@ -309,9 +278,9 @@ class DeterministicABTest:
         
         self.results.append(result)
         
-        print(f"   ✓ Completed in {test_duration:.1f}s")
-        print(f"   📊 Promotions: {result.total_promotions}, Mallory contained: {mallory_contained}")
-        print(f"   🔤 Symbol interpretations: {symbol_interpretations}")
+        print(f"   Completed in {test_duration:.1f}s")
+        print(f"   Promotions: {result.total_promotions}, Mallory contained: {mallory_contained}")
+        print(f"   Symbol interpretations: {symbol_interpretations}")
         
         return result
     
@@ -319,7 +288,6 @@ class DeterministicABTest:
         """Apply configuration overrides to settings data."""
         for key, value in overrides.items():
             if '.' in key:
-                # Handle nested settings (e.g., "voting.promotion_threshold")
                 keys = key.split('.')
                 current = settings_data
                 for k in keys[:-1]:
@@ -332,12 +300,12 @@ class DeterministicABTest:
     
     def run_ab_comparison(self, sequence_name: str) -> Dict[str, Any]:
         """
-        Run A/B comparison across all configurations with the same sequence.
+        Run A/B comparison across configurations.
         """
         if not self.configurations:
             raise ValueError("No configurations added. Use add_configuration() first.")
         
-        print(f"\n🔬 Starting A/B test comparison")
+        print(f"\nStarting A/B comparison")
         print(f"Configurations: {len(self.configurations)}")
         print(f"Sequence: {sequence_name}")
         print("=" * 60)
@@ -347,10 +315,8 @@ class DeterministicABTest:
             result = self.run_test(sequence_name, config)
             test_results.append(result)
         
-        # Analyze comparison
         comparison = self._analyze_comparison(test_results)
         
-        # Save results
         results_file = self.output_dir / f"ab_results_{sequence_name}_{self.session_id}.json"
         with open(results_file, 'w', encoding='utf-8') as f:
             json.dump({
@@ -360,11 +326,11 @@ class DeterministicABTest:
                 'comparison': comparison
             }, f, indent=2, ensure_ascii=False)
         
-        print(f"\n📋 A/B test results saved to: {results_file}")
+        print(f"\nResults saved to: {results_file}")
         return comparison
     
     def _analyze_comparison(self, results: List[TestResult]) -> Dict[str, Any]:
-        """Analyze A/B test results and generate comparison metrics."""
+        """Analyze test results and generate metrics."""
         comparison = {
             'summary': {},
             'configurations': {},
@@ -372,7 +338,6 @@ class DeterministicABTest:
             'significant_differences': []
         }
         
-        # Calculate summary statistics
         total_promotions = [r.total_promotions for r in results]
         mallory_contained = [r.mallory_containment_achieved for r in results]
         symbol_counts = [r.symbol_interpretations_count for r in results]
@@ -384,7 +349,6 @@ class DeterministicABTest:
             'symbol_interpretation_range': [min(symbol_counts), max(symbol_counts)]
         }
         
-        # Analyze each configuration
         for result in results:
             config_name = result.configuration.name
             comparison['configurations'][config_name] = {
@@ -397,11 +361,9 @@ class DeterministicABTest:
                 'performance_score': self._calculate_performance_score(result)
             }
         
-        # Determine winner based on performance score
         best_config = max(results, key=lambda r: self._calculate_performance_score(r))
         comparison['winner'] = best_config.configuration.name
         
-        # Identify significant differences
         if len(results) >= 2:
             promotion_diff = max(total_promotions) - min(total_promotions)
             if promotion_diff >= 2:
@@ -418,21 +380,16 @@ class DeterministicABTest:
         return comparison
     
     def _calculate_performance_score(self, result: TestResult) -> float:
-        """Calculate performance score for ranking configurations."""
-        # Score based on: promotions (good), mallory containment (good), symbol diversity (good)
+        """Calculate performance score."""
         score = 0.0
         
-        # Promotion score (more is better, up to reasonable limit)
         score += min(result.total_promotions * 10, 50)
         
-        # Mallory containment bonus
         if result.mallory_containment_achieved:
             score += 30
         
-        # Symbol interpretation diversity bonus
         score += min(result.symbol_interpretations_count * 0.5, 20)
         
-        # Early BINDER emergence bonus
         if result.binder_emergence_tickets and min(result.binder_emergence_tickets) <= 20:
             score += 15
         
@@ -441,14 +398,13 @@ class DeterministicABTest:
 
 def create_standard_ab_test() -> DeterministicABTest:
     """
-    Create a standard A/B test comparing reputation weighting vs dynamic thresholds.
+    Create standard A/B test configuration.
     """
-    ab_test = DeterministicABTest("reputation_vs_dynamic", debug_mode=True)
+    ab_test = DeterministicABTest("reputation_vs_dynamic", metrics_data_mode=True)
     
-    # Configuration A: Current v2.10.2 reputation weighting system
     config_a = TestConfiguration(
         name="reputation_weighting",
-        description="v2.10.2 reputation-based vote weighting system",
+        description="Reputation-based vote weighting",
         settings_overrides={
             "voting.reputation_weight.enabled": True,
             "voting.dynamic_threshold.enabled": False,
@@ -458,10 +414,9 @@ def create_standard_ab_test() -> DeterministicABTest:
         }
     )
     
-    # Configuration B: v2.9 dynamic threshold system
     config_b = TestConfiguration(
         name="dynamic_threshold",
-        description="v2.9 dynamic threshold with self-vote cooldown",
+        description="Dynamic threshold with cooldown",
         settings_overrides={
             "voting.reputation_weight.enabled": False,
             "voting.dynamic_threshold.enabled": True,
@@ -478,14 +433,11 @@ def create_standard_ab_test() -> DeterministicABTest:
 
 
 if __name__ == "__main__":
-    # Example usage
     ab_test = create_standard_ab_test()
     
-    # Generate test sequence
     sequence = ab_test.generate_deterministic_sequence("standard_test", total_tickets=50)
     
-    # Run A/B comparison
     results = ab_test.run_ab_comparison("standard_test")
     
-    print(f"\n🏆 Winner: {results['winner']}")
-    print(f"📈 Significant differences: {results['significant_differences']}")
+    print(f"\nWinner: {results['winner']}")
+    print(f"Significant differences: {results['significant_differences']}")

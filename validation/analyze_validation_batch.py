@@ -160,7 +160,7 @@ class ValidationBatchAnalyzer:
     def generate_validation_report(self, log_files, tag="validation"):
         """Generate comprehensive validation report."""
         
-        print(f"🔬 Analyzing validation batch: {tag}")
+        print(f"Analyzing validation batch: {tag}")
         
         # Load and process data
         symbol_data, promotions, summary = load_and_process_logs(log_files)
@@ -211,13 +211,13 @@ class ValidationBatchAnalyzer:
         # Generate markdown summary
         self.generate_markdown_summary(report, report_path.with_suffix('.md'))
         
-        print(f"📊 Validation analysis complete: {report_path}")
+        print(f"Validation analysis complete: {report_path}")
         return report
     
     def generate_markdown_summary(self, report, output_path):
         """Generate human-readable markdown summary."""
         
-        md_content = f"""# DSBL Validation Batch Analysis
+        md_content = f"""# Validation Batch Analysis
 
 **Generated:** {report['metadata']['generated']}  
 **Tag:** {report['metadata']['tag']}  
@@ -225,7 +225,7 @@ class ValidationBatchAnalyzer:
 
 ## Quick Assessment
 
-### 🎯 Alice Dominance Status
+### Alice Dominance Status
 **{report['binder_analysis']['alice_assessment']['status'].replace('_', ' ').title()}**
 
 - **Alice BINDER Share:** {report['binder_analysis']['alice_assessment']['alice_percentage']:.1f}%
@@ -235,7 +235,7 @@ class ValidationBatchAnalyzer:
 **Reasoning:**
 {chr(10).join(f"- {reason}" for reason in report['binder_analysis']['alice_assessment']['reasoning'])}
 
-### 📊 BINDER Distribution Comparison
+### BINDER Distribution Comparison
 
 | Era | Alice | Bob | Eve | Zara | Others |
 |-----|-------|-----|-----|------|--------|"""
@@ -255,13 +255,13 @@ class ValidationBatchAnalyzer:
 
         md_content += f"""
 
-### 👻 Mallory Integration Success
+### Mallory Integration Success
 
 - **Participation Rate:** {report['mallory_integration']['participation_rate']:.1f}%
 - **Total Symbols:** {report['mallory_integration']['total_symbols']}
 - **Promote vs Demote Ratio:** {report['mallory_integration']['ratio_demote_to_promote']:.2f}
 
-### 📈 Data Quality
+### Data Quality
 
 - **Quality Score:** {report['data_quality'].get('quality_score', 'N/A')}%
 - **Symbol Interpretations:** {report['symbol_summary']['total_interpretations']}
@@ -276,17 +276,17 @@ class ValidationBatchAnalyzer:
         
         if alice_status == 'problematic_dominance':
             md_content += """
-🚨 **Action Required:** Alice showing monopolistic dominance similar to Eve era.
+**Action Required:** Alice showing monopolistic dominance similar to Eve era.
 **Next Steps:** Implement personality rebalancing or adjust supportive agent frequency.
 """
         elif alice_status == 'majority_leader':
             md_content += """
-⚖️ **Monitoring Required:** Alice leads but system maintains competitive balance.
+**Monitoring Required:** Alice leads but system maintains competitive balance.
 **Next Steps:** Collect additional validation data to confirm pattern stability.
 """
         else:
             md_content += """
-✅ **Optimal Balance Achieved:** Multi-agent competition successfully established.
+**Optimal Balance Achieved:** Multi-agent competition successfully established.
 **Next Steps:** Proceed with publication-ready visualizations and manuscript preparation.
 """
 
@@ -299,11 +299,11 @@ class ValidationBatchAnalyzer:
         with open(output_path, 'w') as f:
             f.write(md_content)
         
-        print(f"📝 Markdown summary saved: {output_path}")
+        print(f"Markdown summary saved: {output_path}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Analyze DSBL validation batch results")
+    parser = argparse.ArgumentParser(description="Analyze validation batch results")
     parser.add_argument("log_files", nargs="+", help="Validation log files to analyze")
     parser.add_argument("--tag", default="validation", help="Tag for this validation batch")
     
@@ -316,7 +316,7 @@ def main():
     alice_pct = report['binder_analysis']['alice_assessment']['alice_percentage']
     recommendation = report['binder_analysis']['alice_assessment']['recommendation']
     
-    print(f"\n🎯 QUICK SUMMARY:")
+    print(f"\nQUICK SUMMARY:")
     print(f"Alice BINDER Share: {alice_pct:.1f}%")
     print(f"Recommendation: {recommendation.replace('_', ' ').title()}")
     print(f"Total BINDER Promotions: {report['binder_analysis']['total_promotions']}")

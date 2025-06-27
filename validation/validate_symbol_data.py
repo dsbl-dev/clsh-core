@@ -264,7 +264,7 @@ def print_validation_report(results: Dict):
     if results['issues']:
         print(f"{YELLOW}=== ISSUES FOUND ==={END}")
         for issue in results['issues']:
-            print(f"⚠️  {issue}")
+            print(f"  {issue}")
         print("")
     
     # Recommendations
@@ -280,11 +280,11 @@ def print_validation_report(results: Dict):
         print("🔧 Increase diversity by running multiple experiments")
     
     if score >= 80:
-        print(f"{GREEN}🎉 Data quality is excellent! Ready for large-scale data collection.{END}")
+        print(f"{GREEN}Data quality is excellent! Ready for large-scale data collection.{END}")
     elif score >= 60:
-        print(f"{YELLOW}📊 Data quality is good. Consider addressing minor issues before scaling.{END}")
+        print(f"{YELLOW}Data quality is good. Consider addressing minor issues before scaling.{END}")
     else:
-        print(f"{RED}⚠️  Data quality needs improvement. Fix issues before proceeding.{END}")
+        print(f"{RED}Data quality needs improvement. Fix issues before proceeding.{END}")
 
 def main():
     """Main validation runner."""

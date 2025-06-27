@@ -24,7 +24,7 @@ graph TB
 
         subgraph "Isolated Files 1"
             L1[malice_..._p32311_r01_t10.jsonl]
-            D1[debug/malice_..._p32311_r01_t10_debug.jsonl]
+            D1[metrics/malice_..._p32311_r01_t10_metrics.jsonl]
         end
     end
 
@@ -43,7 +43,7 @@ graph TB
 
         subgraph "Isolated Files 2"
             L2[malice_..._p32312_r02_t10.jsonl]
-            D2[debug/malice_..._p32312_r02_t10_debug.jsonl]
+            D2[metrics/malice_..._p32312_r02_t10_metrics.jsonl]
         end
     end
 

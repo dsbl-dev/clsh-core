@@ -1,6 +1,6 @@
 """
 Gate system for semantic processing.
-Register gates here for automatic discovery.
+Gate register for automatic discovery.
 """
 
 from gates.security_gate import SecurityGate

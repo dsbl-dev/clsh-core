@@ -34,7 +34,7 @@ from core.vote_system import SocialVoteSystem
 
 
 def _run_experiment_worker(config: Dict) -> Dict:
-    """Worker function with enhanced error recovery and retry logic."""
+    """Worker function with  error recovery and retry logic."""
     import sys
     from pathlib import Path
     import contextlib
@@ -45,11 +45,11 @@ def _run_experiment_worker(config: Dict) -> Dict:
     project_root = Path(__file__).parent
     sys.path.insert(0, str(project_root))
     
-    # CRITICAL: Load environment variables in worker process
+    #  Load environment variables in worker process
     from dotenv import load_dotenv
     load_dotenv()
     
-    # CRITICAL: Clear settings cache to ensure fresh config per test
+    #  Clear settings cache to ensure fresh config per test
     from config.settings import clear_settings_cache
     clear_settings_cache()
     
@@ -74,11 +74,10 @@ def _run_experiment_worker(config: Dict) -> Dict:
     
     run_id = config['run_id']
     tickets_per_run = config['tickets_per_run']
-    seed_mode = config['seed_mode']
     adaptive_mode = config['adaptive_mode']
     dev_threshold = config['dev_threshold']
     prod_threshold = config['prod_threshold']
-    debug_mode = config.get('debug_mode', False)
+    metrics_data_mode = config.get('metrics_data_mode', False)
     
     # Retry configuration
     max_retries = 3
@@ -86,7 +85,7 @@ def _run_experiment_worker(config: Dict) -> Dict:
     retry_count = 0
     
     # Suppress all worker output for clean progress tracking
-    # Debug info goes to files via audit_logger, console_output=False
+    # metrics info goes to files via audit_logger, console_output=False
     output_suppressor = contextlib.redirect_stdout(io.StringIO())
     error_suppressor = contextlib.redirect_stderr(io.StringIO())
     
@@ -109,15 +108,17 @@ def _run_experiment_worker(config: Dict) -> Dict:
                 # Get batch directory from config BEFORE creating experiment
                 batch_dir = config.get('batch_dir', 'exp_output')
                 
-                # Create experiment instance with debug mode from config
                 # In parallel mode, never show console output to keep progress bar clean
-                experiment = MaliceExperiment(seed_mode=seed_mode, debug_mode=debug_mode, 
+                experiment = MaliceExperiment(metrics_data_mode=metrics_data_mode, 
                                             console_output=False)
                 experiment.auto_stop_tickets = tickets_per_run
                 # Set run offset to avoid ticket collisions
                 experiment.run_offset = run_id * 1000
                 
-                # CRITICAL: Initialize Multi-Agent Adaptive Immune System for Eve, Dave, Zara
+                # Set log directory for batch mode (used if console output was enabled)
+                experiment.log_directory = batch_dir
+                
+                #  Initialize MAA Immune System for Eve, Dave, Zara
                 adaptive_agents = ['eve', 'dave', 'zara']
                 immune_system = AdaptiveImmuneSystem(
                     audit_logger=experiment.vote_system.audit_logger
@@ -148,12 +149,11 @@ def _run_experiment_worker(config: Dict) -> Dict:
                     base_filename = "_".join(filename_parts)
                     experiment.vote_system.audit_logger.audit_file_base = base_filename
                     
-                    # CRITICAL: Set batch-specific paths BEFORE any logging occurs
+                    #  Set batch-specific paths BEFORE any logging occurs
                     experiment.vote_system.audit_logger.audit_file = f"{batch_dir}/events/{base_filename}.jsonl"
                     
                     # Update metrics file path to batch-specific metrics directory (always enabled)
-                    if experiment.vote_system.audit_logger.debug_file:
-                        experiment.vote_system.audit_logger.debug_file = f"{batch_dir}/metrics/{base_filename}_metrics.jsonl"
+                    experiment.vote_system.audit_logger.metrics_file = f"{batch_dir}/metrics/{base_filename}_metrics.jsonl"
                 
                 # Run simulation
                 start_time = time.time()
@@ -167,15 +167,15 @@ def _run_experiment_worker(config: Dict) -> Dict:
                 while experiment.simulation_running:
                     time.sleep(0.5)  # Check more frequently for better responsiveness
                     
-                    # CRITICAL: Trigger immune system evaluation every ticket
+                    #  Trigger immune system evaluation every ticket
                     if hasattr(experiment, 'immune_system') and experiment.immune_system:
                         try:
                             if ImmuneSystemIntegration.should_trigger_immune_response(experiment.message_counter, experiment.immune_system):
                                 adjustment = experiment.immune_system.adjust_agent_frequencies(experiment.message_counter)
                                 if adjustment:
-                                    print(f"🧬 [WORKER {run_id}] Immune system activated at ticket {experiment.message_counter}: {adjustment}")
+                                    print(f" [WORKER {run_id}] Immune system activated at ticket {experiment.message_counter}: {adjustment}")
                         except Exception as e:
-                            print(f"🚨 [WORKER {run_id}] Immune system error at ticket {experiment.message_counter}: {e}")
+                            print(f" [WORKER {run_id}] Immune system error at ticket {experiment.message_counter}: {e}")
                             # Don't let immune system errors crash the experiment
                     
                     # Update progress in shared memory (if available from config)
@@ -277,8 +277,8 @@ def _run_experiment_worker(config: Dict) -> Dict:
             retry_count += 1
             if attempt < max_retries - 1:
                 wait_time = retry_delay * (attempt + 1)
-                # Only show retry messages in debug mode via stderr (bypasses output suppressor)
-                if debug_mode:
+                # Only show retry messages in Metrics mode via stderr (bypasses output suppressor)
+                if metrics_data_mode:
                     import sys
                     print(f"[WORKER {run_id}] Rate limit hit, retrying in {wait_time}s... (attempt {attempt + 1}/{max_retries})", file=sys.stderr)
                 time.sleep(wait_time)
@@ -297,7 +297,7 @@ def _run_experiment_worker(config: Dict) -> Dict:
             retry_count += 1
             if attempt < max_retries - 1:
                 wait_time = retry_delay * (attempt + 1)
-                if debug_mode:
+                if metrics_data_mode:
                     import sys
                     print(f"[WORKER {run_id}] API connection issue, retrying in {wait_time}s... (attempt {attempt + 1}/{max_retries})", file=sys.stderr)
                 time.sleep(wait_time)
@@ -318,7 +318,7 @@ def _run_experiment_worker(config: Dict) -> Dict:
             if attempt < max_retries - 1:
                 # For unknown errors, try once more
                 retry_count += 1
-                if debug_mode:
+                if metrics_data_mode:
                     import sys
                     print(f"[WORKER {run_id}] {error_msg}, retrying...", file=sys.stderr)
                 time.sleep(retry_delay)
@@ -353,15 +353,14 @@ def _run_experiment_worker(config: Dict) -> Dict:
 class ParallelBatchRunner:
     """Elegant parallel batch experiment runner with real-time progress tracking."""
     
-    def __init__(self, experiment_count: int = 30, tickets_per_run: int = 50, 
-                 seed_mode: bool = False, tag: str = None, max_workers: int = None, 
-                 debug_mode: bool = True, batch_count: int = 1):
+    def __init__(self, experiment_count: int = 4, tickets_per_run: int = 20, 
+                 tag: str = None, max_workers: int = None, 
+                 metrics_data_mode: bool = True, batch_count: int = 1):
         self.experiment_count = experiment_count
         self.tickets_per_run = tickets_per_run
-        self.seed_mode = seed_mode
         self.tag = tag
         self.max_workers = max_workers if max_workers is not None else min(4, mp.cpu_count() - 1)
-        self.debug_mode = debug_mode
+        self.metrics_data_mode = metrics_data_mode
         self.batch_count = batch_count
         self.results: List[Dict] = []
         
@@ -383,16 +382,15 @@ class ParallelBatchRunner:
         self.enable_streaming = experiment_count > 100
         self.stream_file = None
         
-        print(f"🚀 Parallel Batch Runner initialized: {batch_count} batch{'es' if batch_count > 1 else ''} of {experiment_count} runs × {tickets_per_run} tickets each")
-        print(f"⚡ Parallel processing: {self.max_workers} workers")
+        print(f"Parallel Batch Runner initialized: {batch_count} batch{'es' if batch_count > 1 else ''} of {experiment_count} runs × {tickets_per_run} tickets each")
+        print(f"Parallel processing: {self.max_workers} workers")
         if batch_count > 1:
-            print(f"📦 Multi-batch mode: {batch_count} sequential batches with organized log directories")
-        if seed_mode:
-            print("🎯 Running in SEED mode (deterministic templates only)")
-        if self.debug_mode:
-            print("🔍 Debug mode: Enhanced logging to batch-specific debug/ directories")
+            print(f" Multi-batch mode: {batch_count} sequential batches with organized log directories")
+        print(" Running with AI agents (requires OpenAI API key)")
+        if self.metrics_data_mode:
+            print(" Metrics mode: Enhanced logging to batch-specific metrics/ directories")
         if self.enable_streaming:
-            print(f"📡 Streaming enabled: Large batch ({experiment_count} runs) will stream results to disk")
+            print(f" Streaming enabled: Large batch ({experiment_count} runs) will stream results to disk")
     
     def _create_batch_directory(self, batch_num: int) -> Path:
         """Create organized directory structure for a specific batch."""
@@ -421,18 +419,18 @@ class ParallelBatchRunner:
         return batch_dir
     
     def run_parallel_batch(self) -> Dict:
-        """Run complete batch(es) of experiments in parallel with elegant progress tracking."""
+        """Run complete batch(es) of experiments in parallel with  progress tracking."""
         print(f"\n{'='*60}")
-        print(f"🧪 DSBL PARALLEL BATCH EXPERIMENT RUNNER")
+        print(f" PARALLEL BATCH EXPERIMENT RUNNER")
         print(f"{'='*60}")
-        print(f"Experiment: Malice v2.6 Parallel Testing")
+        print(f"Experiment: Malice  Parallel Testing")
         if self.batch_count > 1:
             print(f"Multi-batch: {self.batch_count} batches of {self.experiment_count} runs each")
             print(f"Total experiments: {self.batch_count * self.experiment_count}")
         else:
             print(f"Runs: {self.experiment_count}")
         print(f"Tickets per run: {self.tickets_per_run}")
-        print(f"Mode: {'🎯 SEED (deterministic)' if self.seed_mode else '🤖 AI (dynamic)'}")
+        print(f"Mode: AI (dynamic) - requires OpenAI API key")
         print(f"Parallel workers: {self.max_workers}")
         if self.batch_count > 1:
             estimated_time = self._estimate_runtime()
@@ -455,8 +453,8 @@ class ParallelBatchRunner:
             self.results_dir.mkdir(exist_ok=True)
             
             if self.batch_count > 1:
-                print(f"\n🚀 Starting Batch {batch_num}/{self.batch_count}")
-                print(f"📁 Logs: {batch_dir}")
+                print(f"\n Starting Batch {batch_num}/{self.batch_count}")
+                print(f" Logs: {batch_dir}")
                 print(f"{'='*50}")
             
             # Run single batch
@@ -469,8 +467,8 @@ class ParallelBatchRunner:
                 })
             
             if self.batch_count > 1 and batch_num < self.batch_count:
-                print(f"\n✅ Batch {batch_num}/{self.batch_count} completed!")
-                print(f"⏳ Preparing batch {batch_num + 1}...")
+                print(f"\n Batch {batch_num}/{self.batch_count} completed!")
+                print(f" Preparing batch {batch_num + 1}...")
                 time.sleep(1)  # Brief pause between batches
         
         total_time = time.time() - global_start_time
@@ -500,7 +498,7 @@ class ParallelBatchRunner:
             else:
                 stream_filename = f"stream_{timestamp}.jsonl"
             self.stream_file = open(self.results_dir / stream_filename, 'w')
-            print(f"📡 Large batch detected - streaming results to: {stream_filename}")
+            print(f" Large batch detected - streaming results to: {stream_filename}")
         
         # Create run configurations
         run_configs = []
@@ -508,8 +506,7 @@ class ParallelBatchRunner:
             config = {
                 'run_id': run_id,
                 'tickets_per_run': self.tickets_per_run,
-                'seed_mode': self.seed_mode,
-                'adaptive_mode': self.adaptive_mode,
+                    'adaptive_mode': self.adaptive_mode,
                 'dev_threshold': self.dev_threshold,
                 'prod_threshold': self.prod_threshold,
                 'batch_dir': str(batch_dir)  # Add batch directory to config
@@ -525,13 +522,13 @@ class ParallelBatchRunner:
         def signal_handler(_sig, _frame):
             nonlocal shutdown_requested, shutdown_start_time
             if shutdown_requested:
-                print("\n🚨 Force killing processes...")
+                print("\n Force killing processes...")
                 import os
                 os._exit(1)  # Force exit immediately
             shutdown_requested = True
             shutdown_start_time = time.time()
-            print("\n🛑 Gracefully shutting down... (Press Ctrl+C again to force quit, or wait up to 10 seconds)")
-            print("🔄 Cancelling running experiments...")
+            print("\n Gracefully shutting down... (Press Ctrl+C again to force quit, or wait up to 10 seconds)")
+            print(" Cancelling running experiments...")
             
             # Cancel all running futures
             for future in future_to_config.keys():
@@ -540,18 +537,18 @@ class ParallelBatchRunner:
                     print(f"   Cancelled future for run {future_to_config[future]['run_id']}")
             
             executor.shutdown(wait=False)
-            print("📤 Executor shutdown initiated...")
+            print(" Executor shutdown initiated...")
         signal.signal(signal.SIGINT, signal_handler)
         
         results = []
         
-        # Use ProcessPoolExecutor with elegant progress tracking
+        # Use ProcessPoolExecutor with  progress tracking
         with ProcessPoolExecutor(max_workers=self.max_workers) as executor:
             # Submit all experiments
             future_to_config = {}
             for config in run_configs:
-                # Add debug mode flag and progress callback
-                config['debug_mode'] = self.debug_mode
+                # Add Metrics mode flag and progress callback
+                config['metrics_data_mode'] = self.metrics_data_mode
                 config['progress_callback'] = self.detailed_progress
                 future = executor.submit(_run_experiment_worker, config)
                 future_to_config[future] = config
@@ -563,11 +560,11 @@ class ParallelBatchRunner:
             monitoring_active = False
             
             # Always show clean progress bar with BINDER tracking
-            print(f"\n🚀 Starting {self.experiment_count} parallel experiments...")
+            print(f"\n Starting {self.experiment_count} parallel experiments...")
             
             # Create progress bar for total tickets across all runs
             total_tickets = self.experiment_count * self.tickets_per_run
-            pbar = tqdm(total=total_tickets, desc="🎫 Processing tickets", 
+            pbar = tqdm(total=total_tickets, desc=" Processing tickets", 
                        unit="ticket", position=0, colour="blue", 
                        bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]')
             # Start background thread to monitor ticket progress
@@ -600,7 +597,7 @@ class ParallelBatchRunner:
                         new_binders = set(binder_names) - binder_history[run_id]
                         if new_binders:
                             for binder in new_binders:
-                                binder_updates.append(f"🌟 Run {run_id}: {binder} → BINDER at ticket {tickets}")
+                                binder_updates.append(f" Run {run_id}: {binder} → BINDER at ticket {tickets}")
                             binder_history[run_id].update(new_binders)
                         
                         # Build per-run BINDER status list (only for runs with any activity)
@@ -625,7 +622,7 @@ class ParallelBatchRunner:
                         if has_binder:
                             if len(binder_status) > 8:
                                 current_binder_display += "..."
-                            pbar.write(f"🎯 Binders: {current_binder_display}")
+                            pbar.write(f" Binders: {current_binder_display}")
                         last_binder_status = current_binder_display
                     
                     time.sleep(0.5)  # Check every 500ms
@@ -700,7 +697,7 @@ class ParallelBatchRunner:
                     except Exception as e:
                         # Show errors above progress bar
                         if 'pbar' in locals():
-                            pbar.write(f"❌ [RUN {run_id:02d}] ERROR: {e}")  # Write above progress bar
+                            pbar.write(f" [RUN {run_id:02d}] ERROR: {e}")  # Write above progress bar
                         
                         # Create error result to maintain run count
                         error_result = {
@@ -723,7 +720,7 @@ class ParallelBatchRunner:
                 # Handle shutdown after main loop
                 if shutdown_requested:
                     elapsed = time.time() - shutdown_start_time if shutdown_start_time else 0
-                    print(f"\n🛑 Shutdown detected after {elapsed:.1f}s - cleaning up...")
+                    print(f"\n Shutdown detected after {elapsed:.1f}s - cleaning up...")
                     
                     # Log interruption to any active experiment logs
                     try:
@@ -739,27 +736,27 @@ class ParallelBatchRunner:
                             }
                         }
                         # This is a simple log entry that experiments might see if their logs are still open
-                        print(f"📝 Logged interruption event")
+                        print(f" Logged interruption event")
                     except:
                         pass  # Don't let logging issues block shutdown
                     
                     # Force shutdown if graceful didn't work
                     if elapsed > 10:
-                        print("⏰ Forcing immediate exit...")
+                        print(" Forcing immediate exit...")
                         import os
                         os._exit(1)
                             
             except KeyboardInterrupt:
-                print("\n⚠️ Batch interrupted - saving partial results...")
-                print("🔄 Shutting down executor with 5s timeout...")
+                print("\n Batch interrupted - saving partial results...")
+                print(" Shutting down executor with 5s timeout...")
                 executor.shutdown(wait=True, timeout=5)  # Wait max 5 seconds
-                print("✅ Executor shutdown complete")
+                print(" Executor shutdown complete")
             except Exception as e:
-                print(f"\n❌ Batch execution error: {e}")
-                print(f"💾 Saving {len(results)} partial results...")
-                print("🔄 Shutting down executor with 5s timeout...")
+                print(f"\n Batch execution error: {e}")
+                print(f" Saving {len(results)} partial results...")
+                print(" Shutting down executor with 5s timeout...")
                 executor.shutdown(wait=True, timeout=5)  # Wait max 5 seconds
-                print("✅ Executor shutdown complete")
+                print(" Executor shutdown complete")
             finally:
                 # Stop monitoring thread and clean up progress bar
                 monitoring_active = False
@@ -776,22 +773,22 @@ class ParallelBatchRunner:
                 # Close streaming file if it was opened
                 if self.stream_file:
                     self.stream_file.close()
-                    print(f"📡 Streaming complete - results saved to stream file")
+                    print(f" Streaming complete - results saved to stream file")
         
         total_time = time.time() - start_time
         self.results = results
         
         # Handle shutdown vs normal completion
         if shutdown_requested:
-            print(f"\n🛑 Parallel batch interrupted!")
-            print(f"📊 Runtime: {total_time:.1f} seconds")
-            print("💾 Logs preserved in exp_output/ directory")
+            print(f"\n Parallel batch interrupted!")
+            print(f" Runtime: {total_time:.1f} seconds")
+            print(" Logs preserved in exp_output/ directory")
             # Exit immediately for interrupted batches
             import sys
             sys.exit(0)
         else:
-            print(f"\n✅ Parallel batch completed!")
-            print(f"📊 Results: {len(results)} experiments finished in {total_time/60:.1f} minutes")
+            print(f"\n Parallel batch completed!")
+            print(f" Results: {len(results)} experiments finished in {total_time/60:.1f} minutes")
             
             # Generate analysis
             analysis = self.analyze_results(total_time)
@@ -804,11 +801,11 @@ class ParallelBatchRunner:
     def _print_multi_batch_summary(self, all_analyses: List[Dict], total_time: float):
         """Print summary for multi-batch runs."""
         print(f"\n{'='*60}")
-        print(f"🎉 MULTI-BATCH EXPERIMENT COMPLETE!")
+        print(f" MULTI-BATCH EXPERIMENT COMPLETE!")
         print(f"{'='*60}")
-        print(f"📊 Total batches: {len(all_analyses)}")
-        print(f"⏱️ Total runtime: {total_time/60:.1f} minutes")
-        print(f"📁 Log directories created:")
+        print(f" Total batches: {len(all_analyses)}")
+        print(f" Total runtime: {total_time/60:.1f} minutes")
+        print(f" Log directories created:")
         
         for batch_info in all_analyses:
             batch_num = batch_info['batch_number']
@@ -820,20 +817,20 @@ class ParallelBatchRunner:
             total_runs = analysis['experiment_metadata']['total_runs']
             mallory_success_rate = analysis['threat_analysis']['mallory_success_rate_percent']
             
-            print(f"  📦 Batch {batch_num}: {batch_dir}")
-            print(f"      ✅ {successful_runs}/{total_runs} successful runs")
-            print(f"      🎭 Mallory success rate: {mallory_success_rate:.1f}%")
+            print(f"   Batch {batch_num}: {batch_dir}")
+            print(f"       {successful_runs}/{total_runs} successful runs")
+            print(f"       Mallory success rate: {mallory_success_rate:.1f}%")
         
         # Calculate overall statistics
         total_successful = sum(batch['analysis']['experiment_metadata']['successful_runs'] for batch in all_analyses)
         total_experiments = sum(batch['analysis']['experiment_metadata']['total_runs'] for batch in all_analyses)
         avg_mallory_success = statistics.mean([batch['analysis']['threat_analysis']['mallory_success_rate_percent'] for batch in all_analyses])
         
-        print(f"\n📈 OVERALL STATISTICS:")
-        print(f"  🧪 Total experiments: {total_experiments}")
-        print(f"  ✅ Successful runs: {total_successful}/{total_experiments} ({total_successful/total_experiments*100:.1f}%)")
-        print(f"  🎭 Average Mallory success rate: {avg_mallory_success:.1f}%")
-        print(f"  ⚡ Experiments per minute: {total_experiments*60/total_time:.1f}")
+        print(f"\n OVERALL STATISTICS:")
+        print(f"   Total experiments: {total_experiments}")
+        print(f"   Successful runs: {total_successful}/{total_experiments} ({total_successful/total_experiments*100:.1f}%)")
+        print(f"   Average Mallory success rate: {avg_mallory_success:.1f}%")
+        print(f"   Experiments per minute: {total_experiments*60/total_time:.1f}")
     
     def save_checkpoint(self, completed_runs: List[int]):
         """Save current progress for resumability."""
@@ -843,7 +840,6 @@ class ParallelBatchRunner:
             'detailed_progress': dict(self.detailed_progress),
             'experiment_count': self.experiment_count,
             'tickets_per_run': self.tickets_per_run,
-            'seed_mode': self.seed_mode,
             'timestamp': datetime.now().isoformat()
         }
         
@@ -851,8 +847,8 @@ class ParallelBatchRunner:
         with open(checkpoint_file, 'w') as f:
             json.dump(checkpoint, f, indent=2)
         
-        if self.debug_mode:
-            print(f"💾 Checkpoint saved: {len(completed_runs)} runs completed")
+        if self.metrics_data_mode:
+            print(f" Checkpoint saved: {len(completed_runs)} runs completed")
     
     def load_checkpoint(self):
         """Resume from checkpoint if available."""
@@ -866,26 +862,21 @@ class ParallelBatchRunner:
             
             # Validate checkpoint compatibility
             if (checkpoint.get('experiment_count') != self.experiment_count or
-                checkpoint.get('tickets_per_run') != self.tickets_per_run or
-                checkpoint.get('seed_mode') != self.seed_mode):
-                print("⚠️ Checkpoint incompatible with current configuration - starting fresh")
+                checkpoint.get('tickets_per_run') != self.tickets_per_run):
+                print(" Checkpoint incompatible with current configuration - starting fresh")
                 return None
                 
-            print(f"📂 Found checkpoint: {len(checkpoint['completed_runs'])} runs completed")
+            print(f" Found checkpoint: {len(checkpoint['completed_runs'])} runs completed")
             return checkpoint
             
         except Exception as e:
-            print(f"❌ Error loading checkpoint: {e} - starting fresh")
+            print(f" Error loading checkpoint: {e} - starting fresh")
             return None
     
     def _estimate_runtime(self) -> int:
-        """Estimate runtime in minutes based on configuration."""
-        if self.seed_mode:
-            # Deterministic mode is faster
-            base_time_per_ticket = 0.5  # seconds
-        else:
-            # AI mode takes longer
-            base_time_per_ticket = 2.0  # seconds
+        """Estimate runtime in minutes based on AI mode configuration."""
+        # AI mode timing
+        base_time_per_ticket = 2.0  # seconds
         
         serial_time = (self.experiment_count * self.tickets_per_run * base_time_per_ticket) / 60
         parallel_time = serial_time / self.max_workers
@@ -930,7 +921,7 @@ class ParallelBatchRunner:
                 "total_runtime_seconds": round(total_time, 1),
                 "parallel_workers": self.max_workers,
                 "speedup_factor": f"~{self.max_workers}x",
-                "seed_mode": self.seed_mode,
+                "ai_mode": True,
                 "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
             },
             
@@ -1011,7 +1002,7 @@ class ParallelBatchRunner:
             self.print_key_findings(analysis)
         else:
             # Compact output for multi-batch
-            print(f"📊 Batch {self.current_batch_num} results: {json_file.parent}")
+            print(f" Batch {self.current_batch_num} results: {json_file.parent}")
     
     def write_summary_report(self, f, analysis: Dict):
         """Write human-readable summary report."""
@@ -1020,17 +1011,17 @@ class ParallelBatchRunner:
         defense = analysis["defense_system_stats"]
         social = analysis["social_dynamics"]
         
-        f.write("DSBL SOCIAL VOTE SYSTEM - PARALLEL BATCH EXPERIMENT REPORT\n")
+        f.write("SOCIAL VOTE SYSTEM - PARALLEL BATCH EXPERIMENT REPORT\n")
         f.write("="*60 + "\n\n")
         
-        f.write(f"Experiment: Malice v2.6 Parallel Resistance Testing\n")
+        f.write(f"Experiment: Malice  Parallel Resistance Testing\n")
         f.write(f"Timestamp: {meta['timestamp']}\n")
         f.write(f"Total runs: {meta['total_runs']}\n")
         f.write(f"Tickets per run: {meta['tickets_per_run']}\n")
         f.write(f"Runtime: {meta['total_runtime_minutes']:.1f} minutes\n")
         f.write(f"Parallel workers: {meta['parallel_workers']}\n")
         f.write(f"Speedup: {meta['speedup_factor']}\n")
-        f.write(f"Mode: {'SEED (deterministic)' if meta['seed_mode'] else 'AI (dynamic)'}\n\n")
+        f.write(f"Mode: AI (dynamic) - with OpenAI API key\n\n")
         
         f.write("THREAT ANALYSIS\n")
         f.write("-" * 30 + "\n")
@@ -1065,72 +1056,76 @@ class ParallelBatchRunner:
         defense = analysis["defense_system_stats"]
         social = analysis["social_dynamics"]
         
-        print(f"\n🎯 KEY FINDINGS:")
-        print(f"  ⚡ Parallel speedup: ~{meta['parallel_workers']}x faster")
-        print(f"  ⏱️  Runtime: {meta['total_runtime_minutes']} minutes ({meta['total_runs']} experiments)")
-        print(f"  🛡️  Manipulation Resistance: {threat['manipulation_resistance']:.1f}%")
-        print(f"  🎭 Mallory Success Rate: {threat['mallory_success_rate_percent']:.1f}%")
-        print(f"  📊 Average Mallory Score: {threat['mallory_score_stats']['mean']:.2f}/5.0")
-        print(f"  🚫 Average Gate Blocks: {defense['gate_blocks_stats']['total_mean']:.1f} per run")
-        print(f"  👤 Mallory Wins: {social['mallory_wins']}/{meta['total_runs']}")
+        print(f"\n KEY FINDINGS:")
+        print(f"   Parallel speedup: ~{meta['parallel_workers']}x faster")
+        print(f"    Runtime: {meta['total_runtime_minutes']} minutes ({meta['total_runs']} experiments)")
+        print(f"    Manipulation Resistance: {threat['manipulation_resistance']:.1f}%")
+        print(f"   Mallory Success Rate: {threat['mallory_success_rate_percent']:.1f}%")
+        print(f"   Average Mallory Score: {threat['mallory_score_stats']['mean']:.2f}/5.0")
+        print(f"   Average Gate Blocks: {defense['gate_blocks_stats']['total_mean']:.1f} per run")
+        print(f"   Mallory Wins: {social['mallory_wins']}/{meta['total_runs']}")
         
         # Show efficiency metrics (use seconds for more accurate calculation when fast)
         experiments_per_minute = (meta['total_runs'] * 60) / meta['total_runtime_seconds']
-        print(f"  📈 Efficiency: {experiments_per_minute:.1f} experiments/minute")
-        print(f"  ⏱️  Actual runtime: {meta['total_runtime_seconds']}s")
+        print(f"   Efficiency: {experiments_per_minute:.1f} experiments/minute")
+        print(f"    Actual runtime: {meta['total_runtime_seconds']}s")
 
 
 def main():
-    """Main entry point for elegant parallel batch runner."""
+    """Main entry point for  parallel batch runner."""
     import argparse
     
     parser = argparse.ArgumentParser(
-        description="🧪 DSBL Parallel Batch Experiment Runner - Elegant Symbol Journey data collection",
+        description=" Parallel Batch Experiment Runner - Elegant Symbol Journey data collection",
         epilog="""
-🚀 Example Usage:
+ Example Usage:
   Recommended baseline:        %(prog)s --runs 50 --tickets 40 --workers 4
   Large-scale collection:      %(prog)s --runs 200 --tickets 20 --workers 4 --tag "large_scale"
   Quick development test:      %(prog)s --runs 10 --tickets 15 --workers 2 --dev-fast
   Symbol-rich experiments:     %(prog)s --runs 100 --tickets 30 --workers 3 --tag "symbol_rich"
   Adaptive threshold test:     %(prog)s --runs 30 --tickets 25 --adaptive-threshold
   Multi-batch validation:      %(prog)s --runs 30 --tickets 60 --tag "adaptive_immune" --batches 3
-  Standard run (debug always enabled): %(prog)s --runs 5 --tickets 10 --workers 2
+  Standard run (metrics always enabled): %(prog)s --runs 5 --tickets 10 --workers 2
         """,
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
-    parser.add_argument("--runs", type=int, default=50, 
-                       help="Number of experiments to run (default: 50)")
-    parser.add_argument("--tickets", type=int, default=40,
-                       help="Tickets per experiment - recommended: 40 for good Symbol Journey data (default: 40)")
+    parser.add_argument("--runs", type=int, default=4, 
+                       help="Number of experiments to run (default: 4)")
+    parser.add_argument("--tickets", type=int, default=20,
+                       help="Tickets per experiment (default: 20)")
     parser.add_argument("--workers", type=int, default=None,
                        help="Number of parallel workers (default: auto-detect, max 4)")
-    parser.add_argument("--seed", action="store_true",
-                       help="🎯 Run in seed mode (deterministic templates only, faster)")
     parser.add_argument("--dev-fast", action="store_true",
-                       help="🚀 Development mode: threshold=2, faster iterations")
+                       help=" Development mode: threshold=2, faster iterations")
     parser.add_argument("--adaptive-threshold", action="store_true",
-                       help="🎯 Start with threshold=3, auto-switch to 4 after first BINDER")
+                       help=" Start with threshold=3, auto-switch to 4 after first BINDER")
     parser.add_argument("--tag", type=str, default=None,
-                       help="🏷️  Tag for experiment grouping (e.g., 'baseline', 'symbol_rich')")
+                       help="  Tag for experiment grouping (e.g., 'baseline', 'symbol_rich')")
     parser.add_argument("--batches", type=int, default=1,
-                       help="📦 Number of sequential batches to run (default: 1). Each batch gets its own organized log directory.")
+                       help=" Number of sequential batches to run (default: 1). Each batch gets its own organized log directory.")
     
     args = parser.parse_args()
     
+    # Verify API key is available - required for AI mode
+    if not os.getenv("OPENAI_API_KEY"):
+        print("ERROR: OpenAI API key required for AI agent experiments")
+        print("Set OPENAI_API_KEY environment variable or add to .env file")
+        return 1
+    
     # Show configuration banner
-    print(f"\n🧪 DSBL Parallel Batch Configuration")
+    print(f"\n Parallel Batch Configuration")
     print(f"{'='*50}")
-    print(f"📊 Runs: {args.runs}")
-    print(f"🎫 Tickets per run: {args.tickets}")
-    print(f"⚡ Workers: {args.workers or 'auto-detect'}")
-    print(f"🎯 Mode: {'SEED (deterministic)' if args.seed else 'AI (dynamic)'}")
-    # Debug mode is now always enabled for complete immune system monitoring  
-    print(f"🔍 Debug mode: Always enabled for immune system event capture")
+    print(f" Runs: {args.runs}")
+    print(f" Tickets per run: {args.tickets}")
+    print(f" Workers: {args.workers or 'auto-detect'}")
+    print(f" Mode: AI (dynamic) - requires OpenAI API key")
+    # Metrics mode is now always enabled for complete immune system monitoring  
+    print(f" Metrics mode: Always enabled for immune system event capture")
     if args.tag:
-        print(f"🏷️  Tag: {args.tag}")
+        print(f"  Tag: {args.tag}")
     if args.batches > 1:
-        print(f"📦 Batches: {args.batches} sequential batches")
+        print(f" Batches: {args.batches} sequential batches")
     
     # Configure settings
     from config.settings import load_settings
@@ -1140,16 +1135,15 @@ def main():
     if args.dev_fast:
         settings.voting.promotion_threshold = 2
         settings.timing.message_interval = 0.8
-        print(f"🚀 DEV-FAST mode: Accelerated voting and promotions")
+        print(f" DEV-FAST mode: Accelerated voting and promotions")
     
     # Create and configure runner
     runner = ParallelBatchRunner(
         experiment_count=args.runs,
         tickets_per_run=args.tickets,
-        seed_mode=args.seed,
         tag=args.tag,
         max_workers=args.workers,
-        debug_mode=True,  # Always enabled for immune system monitoring
+        metrics_data_mode=True,  # Always enabled for immune system monitoring
         batch_count=args.batches
     )
     
@@ -1159,16 +1153,16 @@ def main():
         runner.dev_threshold = 3
         runner.prod_threshold = 4
         settings.voting.promotion_threshold = 3
-        print(f"🎯 ADAPTIVE mode: threshold 3→4 after first BINDER")
+        print(f" ADAPTIVE mode: threshold 3→4 after first BINDER")
     
     # Estimate and show expected outcomes
     estimated_time = runner._estimate_runtime()
     if args.batches > 1:
         total_tickets = args.runs * args.tickets * args.batches
-        print(f"📈 Expected: {total_tickets} total tickets across {args.batches} batches, ~{estimated_time} minutes per batch")
+        print(f" Expected: {total_tickets} total tickets across {args.batches} batches, ~{estimated_time} minutes per batch")
     else:
         total_tickets = args.runs * args.tickets
-        print(f"📈 Expected: {total_tickets} total tickets, ~{estimated_time} minutes")
+        print(f" Expected: {total_tickets} total tickets, ~{estimated_time} minutes")
     print(f"{'='*50}")
     
     try:
@@ -1177,26 +1171,26 @@ def main():
         # Only show success message if not interrupted
         if analysis is not None:
             if args.batches > 1:
-                print(f"\n🎉 MULTI-BATCH EXPERIMENT COMPLETE!")
-                print(f"📁 Organized logs created in: exp_output/")
+                print(f"\n MULTI-BATCH EXPERIMENT COMPLETE!")
+                print(f" Organized logs created in: exp_output/")
             else:
-                print(f"\n🎉 BATCH EXPERIMENT COMPLETE!")
-                print(f"📁 Results saved to: {runner.results_dir}")
+                print(f"\n BATCH EXPERIMENT COMPLETE!")
+                print(f" Results saved to: {runner.results_dir}")
         
         return 0
     except KeyboardInterrupt:
-        print(f"\n\n⚠️  Parallel batch run interrupted by user")
+        print(f"\n\n  Parallel batch run interrupted by user")
         if runner.results_dir:
-            print(f"💾 Partial results may be saved in: {runner.results_dir}")
+            print(f" Partial results may be saved in: {runner.results_dir}")
         else:
-            print(f"💾 Partial results may be saved in: exp_output/")
+            print(f" Partial results may be saved in: exp_output/")
         return 1
     except Exception as e:
-        print(f"\n❌ Parallel batch run failed: {e}")
+        print(f"\n Parallel batch run failed: {e}")
         if runner.results_dir:
-            print(f"💾 Check logs in: {runner.results_dir}")
+            print(f" Check logs in: {runner.results_dir}")
         else:
-            print(f"💾 Check logs in: exp_output/")
+            print(f" Check logs in: exp_output/")
         return 1
 
 

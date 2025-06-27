@@ -1,6 +1,6 @@
-# Agent Prompt Architecture - DSBL Multi-Agent System
+# Agent Prompt Architecture - MAS
 
-Multi-agent system prompt processing architecture.
+MAS prompt processing architecture.
 
 ```mermaid
 graph TB
@@ -28,7 +28,7 @@ graph TB
 
         STRATEGIC[Strategic Targets<br/>- Momentum detection<br/>- Rising vs stagnant<br/>- Underdog priority<br/>- Attack logic]
 
-        DSBL_COACHING[DSBL Symbol Coaching<br/>- VOTE:promote +1<br/>- VOTE:demote +1<br/>- BIND gates]
+        DSBL_COACHING[Symbol coaching<br/>- VOTE:promote +1<br/>- VOTE:demote +1<br/>- BIND gates]
     end
 
     %% Sophisticated Prompt Assembly

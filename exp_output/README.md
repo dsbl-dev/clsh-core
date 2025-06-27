@@ -1,6 +1,6 @@
-# DSBL Experiment Output Directory
+# Experiment Output Directory
 
-This directory contains experiment output from DSBL multi-agent adaptive immune system experiments with organized batch structure.
+This directory contains experiment output from system experiments batch_runner_parallel / main (interactive).
 
 ## Directory Structure
 
@@ -20,6 +20,7 @@ exp_output/
 **Format:** `malice_YYMMDD_HHhMMmSSs_pPROCESS-ID_rRUN_tTICKETS_dDURATION.jsonl`
 
 **Components:**
+
 - `malice`: Experiment type identifier
 - `250614`: Date (YYMMDD)
 - `21h24m34s`: Start time
@@ -33,6 +34,7 @@ exp_output/
 ## Data Structure
 
 ### Main Event Logs (`events/*.jsonl`)
+
 - `VOTE_PROCESSING`: Vote events and processing
 - `STATUS_CHANGE`: Agent promotion/demotion events
 - `GATE_DECISION`: Security and civil gate decisions
@@ -40,31 +42,36 @@ exp_output/
 - `SYMBOL_INTERPRETATION`: Symbol processing timeline
 
 ### System Metrics (`metrics/*_metrics.jsonl`)
+
 - `IMMUNE_RESPONSE_ADJUSTMENT`: Adaptive immune system data
-- `TIMING_DEBUG`: Performance monitoring
+- `TIMING_METRIC`: Performance monitoring
 
 ### Batch Results (`batch_results/*.json`)
+
 - Experiment summaries and statistics
 
 ## Usage
 
 ### Running Experiments
+
 ```bash
 # Run batch experiments
 python batch_runner_parallel.py --runs 30 --tickets 60 --tag "experiment_name"
 ```
 
 ### Data Analysis
+
 ```python
 # Load experiment data
 from validation.data_parsing import load_experiment_logs_with_metrics
 
-main_logs, debug_logs, metrics_logs = load_experiment_logs_with_metrics(
+main_logs, metrics_logs, metrics_logs = load_experiment_logs_with_metrics(
     Path("exp_output/published_data/batch_09_adaptive_immune/")
 )
 ```
 
 ### Quality Control
+
 ```bash
 # Validate experiment logs
 python qc/qc_batch.py exp_output/published_data/*/events/*.jsonl
@@ -73,8 +80,7 @@ python qc/qc_batch.py exp_output/published_data/*/events/*.jsonl
 ## Data Organization
 
 Each experiment batch contains:
-1. **Events**: Primary experimental data
-2. **Metrics**: System telemetry and performance data
-3. **Results**: Analysis summaries and statistics
 
-This dual-stream structure separates experimental events from system metrics for cleaner analysis workflows.
+1. **Events**: Primary events
+2. **Metrics**: Telemetry and performance data
+3. **Results**: Analysis summaries and statistics

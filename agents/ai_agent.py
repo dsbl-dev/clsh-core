@@ -1,32 +1,28 @@
 """
-AI-driven agent using LLM for dynamic social behavior.
-Includes defense-in-depth security and token budget management.
+Agent dynamic social behavior.
 """
 
 import hashlib
 import random
 import openai
 import tiktoken
-import tenacity
 import os
 from typing import Dict, List, Optional, Tuple
 
 from agents.base_agent import BaseAgent
-from core.console_colors import Colors
 
 class AIAgent(BaseAgent):
-    """Agent that uses AI for dynamic social influence and conversation."""
+    """Agent for dynamic social influence and conversation."""
     
-    def __init__(self, name: str, personality: str, seed_mode: bool = False):
-        super().__init__(name, personality, seed_mode)
+    def __init__(self, name: str, personality: str):
+        super().__init__(name, personality)
         self.openai_client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        self.use_ai = not seed_mode
+        self.use_ai = True
         
     def generate_message(self, context: Dict) -> Optional[str]:
         """Generate message using AI or fall back to templates."""
-        if self.seed_mode:
-            return self.generate_seed_message(context)
-            
+        # Always use AI mode
+        
         if random.random() > 0.3:  # 30% chance to speak
             return None
             
@@ -51,7 +47,6 @@ class AIAgent(BaseAgent):
         return messages
 
     def call_openai_with_retry(self, messages: List[Dict], max_tokens: int = 100) -> str:
-        """Robust OpenAI call with retry logic and best practices."""
         import time
         import random
         max_retries = 3
@@ -105,7 +100,7 @@ class AIAgent(BaseAgent):
         raise Exception("Max retries exceeded")
 
     def validate_ai_output(self, text: str) -> bool:
-        """Defense-in-depth validation of AI output before gate wrapping."""
+        """Defense-in-depth validation of output before gate wrapping."""
         if not text or len(text.strip()) == 0:
             return False
         
@@ -125,13 +120,13 @@ class AIAgent(BaseAgent):
             if pattern.lower() in text_lower:
                 # Log the security event
                 content_hash = hashlib.sha256(text.encode()).hexdigest()[:10]
-                print(f"[AI SECURITY]: Blocked AI output containing '{pattern}' (hash: {content_hash})")
+                print(f"[AI SECURITY]: Block output containing '{pattern}' (hash: {content_hash})")
                 return False
         
         return True
     
     def is_policy_refusal(self, text_lower: str) -> bool:
-        """Detect OpenAI policy refusal responses."""
+        """Detect policy refusal responses."""
         refusal_patterns = [
             "i'm sorry, i can't assist", 
             "i cannot help", 
@@ -187,7 +182,6 @@ class AIAgent(BaseAgent):
         return text
 
     def generate_ai_message(self, context: Dict) -> Optional[str]:
-        """Generate message using AI with social influence capabilities."""
         try:
             # Prepare context for AI
             recent_msgs = context.get("recent_messages", [])[-3:]  # Last 3 messages
@@ -218,7 +212,6 @@ class AIAgent(BaseAgent):
             else:
                 strategic_instruction = "Participate naturally in the conversation."
             
-            # BINDER-power: Auto-BIND gate usage for BINDERs with cool-down
             import random
             from config.settings import load_settings
             settings = load_settings()
@@ -266,21 +259,20 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
                 }
             ]
             
-            # Validate token budget BEFORE hashing for consistent prompt across retries
+            # Validate token budget before hashing for consistent prompt across retries
             validated_messages = self.validate_token_budget(messages)
             final_prompt = validated_messages[-1]["content"]
             
             # Log prompt hash for audit (after token validation)
             prompt_hash = hashlib.sha256(final_prompt.encode()).hexdigest()[:10]
-            print(f"{Colors.api_call('[AI CALL]')} {self.name}: prompt_hash={prompt_hash}")
+            print(f"[AI CALL] {self.name}: prompt_hash={prompt_hash}")
             
             ai_response = self.call_openai_with_retry(validated_messages)
             
-            # Check for policy refusal and retry with milder prompt
             if ai_response and self.is_policy_refusal(ai_response.lower()):
                 print(f"[POLICY REFUSAL]: {self.name} got policy refusal, retrying with milder prompt")
                 
-                # Generate fallback prompt
+                # Fallback prompt
                 fallback_prompt = self.generate_fallback_prompt(final_prompt)
                 fallback_messages = [
                     {"role": "system", "content": "You are a participant in a research simulation studying social voting dynamics."},
@@ -295,15 +287,14 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
                     print(f"[POLICY RETRY FAILED]: {self.name} - {e}")
                     return None
             
-            # Defense-in-depth: Check AI output before wrapping
             if not self.validate_ai_output(ai_response):
                 print(f"[AI SECURITY]: Blocked harmful AI output from {self.name}")
                 return "⟦GATE:sec_clean⟧ [AI_OUTPUT_BLOCKED]"
             
-            # Fix Unicode issues in AI response (⦦ → ⟦)
+            # Unicode Fix
             ai_response = self.fix_unicode_gates(ai_response)
             
-            # Always wrap AI output in security gate
+            # Always wrap output in security gate
             wrapped_response = f"⟦GATE:sec_clean⟧ {ai_response}"
             return wrapped_response
             
@@ -313,20 +304,18 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
             return self.generate_template_message(context)
     
     def choose_strategic_target_with_action(self, context: Dict) -> Tuple[Optional[str], str]:
-        """Choose strategic target and action type with momentum detection. Returns (target, action_type)."""
         users = context.get("users", [])
         vote_counts = context.get("vote_counts", {})
         binders = context.get("binders", [])
-        blocked_users = context.get("blocked_users", [])  # v2.4: Avoid blocked users
-        recent_msgs = context.get("recent_messages", [])[-3:]  # Last 3 messages for momentum
+        blocked_users = context.get("blocked_users", [])
+        recent_msgs = context.get("recent_messages", [])[-3:]
         
-        # Filter out self, YOU, and blocked users
         available_users = [name for name in users if name != self.name and name != "YOU" and name not in blocked_users]
         
         if not available_users:
             return None, "none"
         
-        # MOMENTUM DETECTION: Analyze recent voting patterns for strategic timing
+        # MOMENTUM DETECTION
         recently_voted_for = set()
         for msg in recent_msgs:
             if hasattr(msg, 'votes_contained') and msg.votes_contained:
@@ -350,7 +339,6 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
             elif promote_votes > 0 and user not in recently_voted_for:
                 stagnant.append(user)
             
-        # Strategic behavior based on personality with momentum awareness
         if self.personality == "strategic":
             # Enhanced: Prefer rising stars for alliance building
             if rising_stars:
@@ -359,7 +347,6 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
                     target = random.choice(rising_stars)
                     return target, "promote"
             
-            # Fallback: Support underdogs who might become allies
             underdogs = []
             for user in available_users:
                 user_votes = vote_counts.get(f"promote_{user}", 0)
@@ -369,10 +356,10 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
             return target, "promote"
             
         elif self.personality == "contrarian":
-            # "Underdog champion" - support
-            if under_attack and random.random() < 0.3:  # 30% chance
+            # Underdog - support
+            if under_attack and random.random() < 0.3:
                 target = random.choice(under_attack)
-                return target, "promote"  # Champion the underdog
+                return target, "promote"
             
             # Specifically target malicious agents first
             if "mallory" in context.get("users", []):
@@ -380,14 +367,14 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
                 if mallory_votes > 0:  # Mallory has any votes -> demote
                     return "mallory", "demote"
             
-            # Enhanced: Prefer attacking rising stars over stagnant leaders
+            # Prefer attacking rising stars over stagnant leaders
             attack_targets = rising_stars if rising_stars else []
             if not attack_targets:
-                # Find current leader (excluding already handled Mallory)
+                # Find current leader
                 leader = None
                 max_votes = 0
                 for user in available_users:
-                    if user == "mallory":  # Skip mallory, handled above
+                    if user == "mallory":
                         continue
                     user_votes = vote_counts.get(f"promote_{user}", 0)
                     if user_votes > max_votes:
@@ -396,11 +383,11 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
                 if leader and max_votes > 0:
                     attack_targets = [leader]
             
-            # 80% chance to attack (prioritizing rising stars)
+            # Chance to attack (prioritizing rising stars)
             if attack_targets and random.random() < 0.8:
                 return random.choice(attack_targets), "demote"
                     
-            # Fallback: Support underdogs (original contrarian behavior)
+            # Fallback: Support underdogs
             vote_map = [(user, vote_counts.get(f"promote_{user}", 0)) for user in available_users if user != "mallory"]
             vote_map.sort(key=lambda x: x[1])  # Sort by vote count
             lowest_vote_users = [user for user, _ in vote_map[:2]]  # Bottom 2
@@ -408,8 +395,8 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
             return target, "promote"
             
         else:
-            # Enhanced supportive/default: Join momentum when available
-            if rising_stars and random.random() < 0.6:  # 60% chance to join rising momentum
+            # Join momentum when available
+            if rising_stars and random.random() < 0.6:  # chance to join rising momentum
                 target = random.choice(rising_stars)
                 return target, "promote"
             
@@ -421,7 +408,7 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
         users = context.get("users", [])
         vote_counts = context.get("vote_counts", {})
         binders = context.get("binders", [])
-        blocked_users = context.get("blocked_users", [])  # v2.4: Avoid blocked users
+        blocked_users = context.get("blocked_users", [])  # Avoid blocked users
         
         available_users = [name for name in users if name != self.name and name != "YOU" and name not in blocked_users]
         
@@ -448,9 +435,9 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
                     if user_votes > max_votes:
                         max_votes = user_votes
                         leader = user
-                return leader  # Return leader for demote attack
+                return leader
             else:
-                # Support underdogs (original contrarian behavior)
+                # Support underdogs
                 vote_map = [(user, vote_counts.get(f"promote_{user}", 0)) for user in available_users]
                 vote_map.sort(key=lambda x: x[1])  # Sort by vote count
                 lowest_vote_users = [user for user, _ in vote_map[:2]]  # Bottom 2

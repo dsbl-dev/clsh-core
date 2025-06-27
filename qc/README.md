@@ -1,4 +1,4 @@
-# DSBL Quality Control Tools
+# Quality Control Tools
 
 QC scripts validate JSONL audit logs from batch experiments to detect data integrity issues.
 

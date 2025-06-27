@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Multi-Agent Adaptive Immune System - Interactive Interface
+MAA Immune System - Interactive Interface
 =========================================================
 
-Interactive CLI for running Multi-Agent Adaptive Immune System.
-Simplified interface with essential functionality only.
+CLI for running MAA Immune System.
+Simplified interface for testing.
 """
 
 import os
@@ -24,45 +24,42 @@ else:
 def show_main_menu():
     """Display the main experiment selection menu."""
     print("=" * 60)
-    print("DSBL MULTI-AGENT ADAPTIVE IMMUNE SYSTEM")
+    print("MAA IMMUNE SYSTEM")
     print("=" * 60)
     print()
-    print("Multi-Agent Adaptive Immune System Research Platform")
-    print("Interactive social dynamics with emergent behaviors")
+    print("Interactive agent testing framework")
     print()
     print("Available Options:")
     print()
-    print("1. Run Interactive Experiment")
-    print("   Multi-Agent Adaptive Immune System")
-    print("   - 7 AI agents with coordinated behaviors")
-    print("   - Adaptive immune system with real-time adjustments")
-    print("   - Advanced gate processing and social dynamics")
-    print("   - Requires OpenAI API key")
+    print("1. Run Interactive Test")
+    print("   • 7 agents with adaptive response frequencies")
+    print("   • Semantic gate filtering and vote system")
+    print("   • Requires OpenAI API key")
     print()
     print("2. Help & Documentation")
-    print("   Learn about the system and controls")
+    print("   System controls and output structure")
     print()
     print("0. Exit")
     print()
     print("-" * 60)
 
 def run_interactive_experiment():
-    """Run the interactive multi-agent experiment."""
-    print("\\nStarting Multi-Agent Adaptive Immune System...")
-    print("   Interactive experiment with real-time coordination")
+    """Run the interactive experiment."""
+    print("\\nStarting MAA Test...")
+    print("   Interactive experiment")
     print()
     
-    # Check for OpenAI API key
+    # Check for API key
     if not os.getenv("OPENAI_API_KEY"):
-        print("⚠️  WARNING: No OPENAI_API_KEY found in environment")
-        print("   AI agents will fall back to template mode")
+        print("WARNING: No KEY found in environment")
+        print("   agents will fall back to template mode")
         print()
         choice = input("Continue anyway? (y/N): ").strip().lower()
         if choice != 'y':
-            return
+            return False
     
     try:
-        # Create organized log directory for interactive experiments
+        # Create log directory for experiment
         from datetime import datetime
         timestamp = datetime.now().strftime("%Y%m%d_%H%M")
         tag = f"interactive_{timestamp}"
@@ -73,45 +70,53 @@ def run_interactive_experiment():
         os.makedirs(f"{log_dir}/events", exist_ok=True)    # Main event logs
         os.makedirs(f"{log_dir}/metrics", exist_ok=True)   # System metrics
         
-        print(f"📁 Logs will be saved to: {log_dir}/")
+        print(f"Logs will be saved to: {log_dir}/")
         print()
         
         from experiments.malice import MaliceExperiment
-        # Create experiment with organized logging
-        experiment = MaliceExperiment(seed_mode=False)
+        # Create experiment + logging
+        experiment = MaliceExperiment(metrics_data_mode=True)
         
-        # Update audit logger to use organized directory structure
+        # Set the log directory for display purposes
+        experiment.log_directory = log_dir
+        
+        # Update audit logger to use directory structure
         original_audit_file = experiment.vote_system.audit_logger.audit_file
         filename = os.path.basename(original_audit_file)
         experiment.vote_system.audit_logger.audit_file = f"{log_dir}/events/{filename}"
         
-        # Update metrics file to use organized metrics directory
-        if experiment.vote_system.audit_logger.debug_file:
-            debug_filename = os.path.basename(experiment.vote_system.audit_logger.debug_file)
-            experiment.vote_system.audit_logger.debug_file = f"{log_dir}/metrics/{debug_filename}"
+        # Update metrics file to use metrics directory
+        metrics_filename = os.path.basename(experiment.vote_system.audit_logger.metrics_file)
+        experiment.vote_system.audit_logger.metrics_file = f"{log_dir}/metrics/{metrics_filename}"
         
         experiment.run_interactive_mode()
         
-        print(f"\\n📊 Experiment complete! Results saved to: {log_dir}/")
+        # Check if any experiments were actually run
+        if experiment.message_counter > 0:
+            print(f"\\nExperiment complete! Results saved to: {log_dir}/")
+            return True
+        else:
+            # No experiments run - clean up empty directory
+            import shutil
+            try:
+                shutil.rmtree(log_dir)
+                print("\\nExited without running experiments")
+            except:
+                print(f"\\nExited without running experiments (empty directory: {log_dir})")
+            return False
         
     except Exception as e:
-        print(f"❌ Error starting malice experiment: {e}")
-        print("\\nTry running in seed mode or check your setup.")
-
-
-
-
-
-
+        print(f"Error starting malice experiment: {e}")
+        print("\\nCheck your setup and API key.")
 
 def show_help():
     """Show help and documentation."""
-    print("\\nMulti-Agent Adaptive Immune System Help")
+    print("\\nMAA Immune System Help")
     print("=" * 50)
     print()
     print("System Overview:")
-    print("   • Multi-Agent Adaptive Immune System")
-    print("   • Real-time coordination between Eve, Dave, and Zara")
+    print("   • MAA Immune System")
+    print("   • Coordination testing between Eve, Dave, and Zara")
     print("   • Adaptive frequency adjustments based on social pressure")
     print("   • Emergent social structures and BINDER promotions")
     print()
@@ -123,7 +128,7 @@ def show_help():
     print()
     print("Requirements:")
     print("   • OpenAI API key required in .env file")
-    print("   • OPENAI_API_KEY=your_api_key_here")
+    print("   • OPENAI_API_KEY=key")
     print()
     print("Output Location:")
     print("   • Logs saved to exp_output/interactive_YYYYMMDD_HHMM/")
@@ -146,18 +151,24 @@ def main():
             show_main_menu()
             choice = input("Choose option (0-2): ").strip()
             
+            # Filter out special characters (arrow keys, etc)
+            if len(choice) > 1 or (choice and ord(choice[0]) < 32):
+                choice = ""
+            
             if choice == "0":
                 print("Bye!")
                 break
                 
-            elif choice == "1":
-                run_interactive_experiment()
+            elif choice == "1" or choice == "":  # Enter key defaults to option 1
+                show_press_enter = run_interactive_experiment()
+                if show_press_enter is False:
+                    continue  # Skip "Press Enter" and go back to menu
                 
             elif choice == "2":
                 show_help()
                 
             else:
-                print("\\n❌ Invalid choice. Please enter 0-2.")
+                print("\\nInvalid choice. Please enter 0-2.")
             
             if choice != "0":
                 input("\\nPress Enter to return to main menu...")
@@ -166,8 +177,8 @@ def main():
             print("\\n\\nGoodbye!")
             break
         except Exception as e:
-            print(f"\\n❌ Unexpected error: {e}")
-            print("Please try again or report this issue.")
+            print(f"\\nUnexpected error: {e}")
+            print("Try again / report issue")
 
 if __name__ == "__main__":
     main()

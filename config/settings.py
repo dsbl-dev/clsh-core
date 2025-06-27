@@ -29,12 +29,6 @@ class Settings:
 _settings_cache = None
 
 def load_settings(config_file: str = None, force_reload: bool = False) -> Settings:
-    """Load settings from YAML file with caching.
-    
-    Args:
-        config_file: Path to YAML config file
-        force_reload: If True, clear cache and reload from file
-    """
     global _settings_cache
     
     # Clear cache if force reload requested

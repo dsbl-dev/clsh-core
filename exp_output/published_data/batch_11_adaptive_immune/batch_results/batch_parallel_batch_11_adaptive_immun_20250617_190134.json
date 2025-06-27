@@ -7,7 +7,6 @@
     "total_runtime_seconds": 4587.7,
     "parallel_workers": 8,
     "speedup_factor": "~8x",
-    "seed_mode": false,
     "timestamp": "2025-06-17T19:01:34"
   },
   "threat_analysis": {

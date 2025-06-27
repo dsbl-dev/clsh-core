@@ -1,6 +1,6 @@
 """
-Configuration system for DSBL experiments.
-Provides centralized settings management.
+Configuration system for experiments.
+Centralized settings management.
 """
 
 from .settings import load_settings

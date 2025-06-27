@@ -1,3 +1,3 @@
 """
-Core system components.
+Core system.
 """

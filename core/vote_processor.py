@@ -171,14 +171,14 @@ class VoteProcessor:
         
         self.audit_logger.log_event("VOTE_PROCESSING", vote_log)
     
-    def log_vote_debug(self, vote_data: dict):
-        """Log detailed vote calculation for debugging."""
+    def log_vote_metric(self, vote_data: dict):
+        """Log detailed vote calculation for metrics."""
         
         # Only log interesting votes (BINDER votes, self-votes, or weighted votes)
         factors = vote_data["factors"]
         if factors["is_self_vote"] or factors["is_binder_vote"] or vote_data["weighted_value"] != vote_data["original_value"]:
             
-            debug_data = {
+            metric_data = {
                 "voter": vote_data["voter"],
                 "target": vote_data["target"],
                 "original_value": vote_data["original_value"],
@@ -189,4 +189,4 @@ class VoteProcessor:
                 "message_id": vote_data["message_id"]
             }
             
-            self.audit_logger.log_vote_debug(debug_data)
+            self.audit_logger.log_vote_metric(metric_data)

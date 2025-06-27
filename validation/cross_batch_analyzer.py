@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cross-Batch Analysis Script for DSBL Multi-Agent Adaptive Immune System
+Cross-Batch Analysis Script for MAA Immune System
 Analyzes patterns across Batch 09, 10, and 11 (90 total runs)
 Focus: Adaptive immune system consistency + social dynamics variation
 """
@@ -25,10 +25,10 @@ class CrossBatchAnalyzer:
         
     def load_all_batches(self):
         """Load data from all batches using existing symbol journey infrastructure"""
-        print(f"\n🔄 Loading {len(self.batch_dirs)} batches...")
+        print(f"\nLoading {len(self.batch_dirs)} batches...")
         
         for batch_name, batch_dir in self.batch_dirs.items():
-            print(f"\n📁 Loading {batch_name}...")
+            print(f"\nLoading {batch_name}...")
             batch_path = pathlib.Path(batch_dir)
             # Look for log files in events/ subdirectory
             events_dir = batch_path / "events"
@@ -56,13 +56,13 @@ class CrossBatchAnalyzer:
                     all_symbol_interpretations.extend(symbol_interpretations)
                     all_status_changes.extend(status_changes)
                     
-                    # Also load debug logs for immune data
-                    debug_name = log_file.stem.replace("_d", "_debug_d") + ".jsonl"
-                    debug_path = log_file.parent / "debug" / debug_name
-                    if debug_path.exists():
-                        debug_events = self.load_experiment_log(debug_path)
-                        debug_status_changes = self.extract_status_changes(debug_events)
-                        all_status_changes.extend(debug_status_changes)
+                    # Also load metrics logs for immune data
+                    metrics_name = log_file.stem.replace("_d", "_metrics_d") + ".jsonl"
+                    metrics_path = log_file.parent / "metrics" / metrics_name
+                    if metrics_path.exists():
+                        metrics_events = self.load_experiment_log(metrics_path)
+                        metrics_status_changes = self.extract_status_changes(metrics_events)
+                        all_status_changes.extend(metrics_status_changes)
             
             # Full analysis
             analysis = analyze_symbol_journey(all_symbol_interpretations, all_status_changes)
@@ -78,7 +78,7 @@ class CrossBatchAnalyzer:
             # Create batch summary
             self.batch_summaries[batch_name] = self.create_batch_summary(analysis, summary)
             
-            print(f"   ✅ {summary['total_interpretations']} interpretations, {summary['total_promotions']} promotions")
+            print(f"   {summary['total_interpretations']} interpretations, {summary['total_promotions']} promotions")
 
     def load_experiment_log(self, log_file: pathlib.Path) -> List[Dict]:
         """Load JSONL experiment log file."""
@@ -163,8 +163,8 @@ class CrossBatchAnalyzer:
         }
 
     def analyze_immune_consistency(self):
-        """Analyze Multi-Agent Adaptive Immune System consistency across batches"""
-        print("\n🦠 Multi-Agent Adaptive Immune System Consistency Analysis")
+        """Analyze MAA Immune System consistency across batches"""
+        print("\nMAA Immune System Consistency Analysis")
         print("=" * 60)
         
         total_adjustments = 0
@@ -181,16 +181,16 @@ class CrossBatchAnalyzer:
             print(f"  Dave adjustments: {immune['dave']}")
             print(f"  Zara adjustments: {immune['zara']}")
             print(f"  Synchronized events: {immune['synchronized_events']}")
-            print(f"  ✅ Full consistency: {batch_total == expected_per_batch}")
+            print(f"  Full consistency: {batch_total == expected_per_batch}")
         
-        print(f"\n📊 Aggregate Immune Performance:")
+        print(f"\nAggregate Immune Performance:")
         print(f"  Total adjustments across all batches: {total_adjustments}")
         print(f"  Expected total: {expected_per_batch * len(self.batch_dirs)}")
-        print(f"  🎯 System reliability: {(total_adjustments/(expected_per_batch * len(self.batch_dirs)) * 100):.1f}%")
+        print(f"  System reliability: {(total_adjustments/(expected_per_batch * len(self.batch_dirs)) * 100):.1f}%")
 
     def analyze_social_dynamics(self):
         """Analyze social dynamics variation across batches"""
-        print("\n👥 Social Dynamics Variation Analysis")
+        print("\nSocial Dynamics Variation Analysis")
         print("=" * 60)
         
         all_promotions = []
@@ -208,7 +208,7 @@ class CrossBatchAnalyzer:
         promotion_mean = np.mean(all_promotions)
         promotion_std = np.std(all_promotions)
         
-        print(f"\n📈 Social Dynamics Statistics:")
+        print(f"\nSocial Dynamics Statistics:")
         print(f"  Average promotions per batch: {promotion_mean:.1f}")
         print(f"  Standard deviation: {promotion_std:.1f}")
         print(f"  Coefficient of variation: {(promotion_std/promotion_mean*100):.1f}%")
@@ -216,7 +216,7 @@ class CrossBatchAnalyzer:
 
     def analyze_mallory_redemption(self):
         """Deep dive into Mallory's redemption arc across batches"""
-        print("\n🎭 Mallory's Redemption Arc Analysis")
+        print("\nMallory's Redemption Arc Analysis")
         print("=" * 60)
         
         total_batches = len(self.batch_dirs)
@@ -227,26 +227,26 @@ class CrossBatchAnalyzer:
             
             print(f"\n{batch_name}:")
             if mallory['promoted_to_binder']:
-                print(f"  🏆 BINDER promotion achieved!")
+                print(f"  BINDER promotion achieved!")
                 print(f"     Ticket: {mallory['promotion_ticket']}")
                 print(f"     Final vote count: {mallory['promotion_vote_count']}")
                 successful_redemptions += 1
             else:
-                print(f"  ❌ No BINDER promotion")
+                print(f"  No BINDER promotion")
             
             print(f"  Weighted demote votes: {mallory['demote_votes_weighted']}")
             print(f"  Weighted promote votes: {mallory['promote_votes_weighted']}")
         
         redemption_rate = (successful_redemptions / total_batches) * 100
         
-        print(f"\n🎯 Mallory Redemption Statistics:")
+        print(f"\nMallory Redemption Statistics:")
         print(f"  Successful redemptions: {successful_redemptions}/{total_batches}")
         print(f"  Redemption success rate: {redemption_rate:.1f}%")
-        print(f"  💡 Insight: Genuine social mobility despite reputation penalties")
+        print(f"  Insight: Genuine social mobility despite reputation penalties")
 
     def analyze_symbol_emergence(self):
         """Analyze symbol diversity and emergence patterns"""
-        print("\n🔤 Symbol Emergence and Diversity Analysis")
+        print("\nSymbol Emergence and Diversity Analysis")
         print("=" * 60)
         
         all_symbols = set()
@@ -263,17 +263,17 @@ class CrossBatchAnalyzer:
         symbol_mean = np.mean(list(batch_symbols.values()))
         symbol_std = np.std(list(batch_symbols.values()))
         
-        print(f"\n📊 Symbol Diversity Statistics:")
+        print(f"\nSymbol Diversity Statistics:")
         print(f"  Average symbols per batch: {symbol_mean:.1f}")
         print(f"  Standard deviation: {symbol_std:.1f}")
         print(f"  Range: {min(batch_symbols.values())}-{max(batch_symbols.values())} symbols")
-        print(f"  💡 Consistent symbol emergence across batches")
+        print(f"  Consistent symbol emergence across batches")
 
     def generate_comprehensive_report(self):
         """Generate comprehensive cross-batch analysis report"""
         print("\n" + "="*80)
         print("📊 COMPREHENSIVE CROSS-BATCH ANALYSIS REPORT")
-        print("Multi-Agent Adaptive Immune System v2.11 (90 Production Runs)")
+        print("MAA Immune System v2.11 (90 Production Runs)")
         print("="*80)
         
         # Aggregate statistics
@@ -287,7 +287,7 @@ class CrossBatchAnalyzer:
         )
         total_promotions = sum(s['binder_promotions'] for s in self.batch_summaries.values())
         
-        print(f"\n📈 Aggregate Statistics:")
+        print(f"\nAggregate Statistics:")
         print(f"  Experimental runs: {total_runs}")
         print(f"  Total tickets processed: {total_runs * 60:,}")
         print(f"  Total symbol interpretations: {total_interpretations:,}")
@@ -295,32 +295,32 @@ class CrossBatchAnalyzer:
         print(f"  Total BINDER promotions: {total_promotions}")
         
         # Key scientific findings
-        print(f"\n🔬 Key Scientific Findings:")
-        print(f"  1. 🎯 Immune System: 100% reliable (270/270 expected adjustments)")
-        print(f"  2. 🤝 Multi-Agent Coordination: Complete Eve/Dave/Zara synchronization")
-        print(f"  3. 🌊 Social Dynamics: Natural variation ({min(s['binder_promotions'] for s in self.batch_summaries.values())}-{max(s['binder_promotions'] for s in self.batch_summaries.values())} promotions/batch)")
-        print(f"  4. 🎭 Mallory Redemption: Social mobility despite reputation penalties")
-        print(f"  5. 🔤 Symbol Diversity: Consistent emergence ({min(s['unique_symbols'] for s in self.batch_summaries.values())}-{max(s['unique_symbols'] for s in self.batch_summaries.values())} symbols/batch)")
+        print(f"\nKey Scientific Findings:")
+        print(f"  1. Immune System: 100% reliable (270/270 expected adjustments)")
+        print(f"  2. Multi-Agent Coordination: Complete Eve/Dave/Zara synchronization")
+        print(f"  3. Social Dynamics: Natural variation ({min(s['binder_promotions'] for s in self.batch_summaries.values())}-{max(s['binder_promotions'] for s in self.batch_summaries.values())} promotions/batch)")
+        print(f"  4. Mallory Redemption: Social mobility despite reputation penalties")
+        print(f"  5. Symbol Diversity: Consistent emergence ({min(s['unique_symbols'] for s in self.batch_summaries.values())}-{max(s['unique_symbols'] for s in self.batch_summaries.values())} symbols/batch)")
         
         # Research significance
-        print(f"\n🏆 Research Significance:")
-        print(f"  ✨ Adaptive Multi-Agent Immune System implementation")
-        print(f"  ⚡ Real-time adaptation to social pressure changes")
-        print(f"  🎯 Deterministic immune core + stochastic social periphery")
-        print(f"  📊 High reproducibility across 90 experimental runs")
-        print(f"  🔄 Dual-stream logging ensures data integrity")
+        print(f"\nResearch Significance:")
+        print(f"  Adaptive Multi-Agent Immune System implementation")
+        print(f"  Real-time adaptation to social pressure changes")
+        print(f"  Deterministic immune core + stochastic social periphery")
+        print(f"  High reproducibility across 90 experimental runs")
+        print(f"  Dual-stream logging ensures data integrity")
         
         # Publication readiness
-        print(f"\n📝 ArXiv Publication Readiness:")
-        print(f"  ✅ Complete dataset: 90 runs × 60 tickets = 5,400 experimental tickets")
-        print(f"  ✅ Validated adaptive behavior: Non-deterministic intelligent responses")
-        print(f"  ✅ Multi-agent coordination: Synchronized frequency adjustments")
-        print(f"  ✅ Social emergence: Natural BINDER promotion patterns")
-        print(f"  ✅ Reproducible results: Consistent system behavior")
-        print(f"  ✅ Statistical significance: Large-scale experimental validation")
+        print(f"\nArXiv Publication Readiness:")
+        print(f"  Complete dataset: 90 runs × 60 tickets = 5,400 experimental tickets")
+        print(f"  Validated adaptive behavior: Non-deterministic intelligent responses")
+        print(f"  Multi-agent coordination: Synchronized frequency adjustments")
+        print(f"  Social emergence: Natural BINDER promotion patterns")
+        print(f"  Reproducible results: Consistent system behavior")
+        print(f"  Statistical significance: Large-scale experimental validation")
         
         # Next steps
-        print(f"\n🚀 Next Steps:")
+        print(f"\nNext Steps:")
         print(f"  1. Generate publication-quality visualizations")
         print(f"  2. Statistical significance testing")
         print(f"  3. LaTeX manuscript preparation")
@@ -343,9 +343,9 @@ def main():
         'Batch_11': 'exp_output/published_data/batch_11_adaptive_immune'
     }
     
-    print("🚀 Cross-Batch Analysis: Multi-Agent Adaptive Immune System v2.11")
-    print("📊 Analyzing 90 production runs across 3 batches")
-    print("🎯 Focus: Immune consistency + Social dynamics variation")
+    print("Cross-Batch Analysis: MAA Immune System v2.11")
+    print("Analyzing 90 production runs across 3 batches")
+    print("Focus: Immune consistency + Social dynamics variation")
     
     # Initialize analyzer
     analyzer = CrossBatchAnalyzer(batch_dirs)
@@ -362,7 +362,7 @@ def main():
     # Generate final comprehensive report
     results = analyzer.generate_comprehensive_report()
     
-    print(f"\n✅ Cross-batch analysis complete!")
+    print(f"\nCross-batch analysis complete!")
     
     return results
 

@@ -1,6 +1,5 @@
 """
 Core data models for social voting system.
-= stable structures that rarely change.
 """
 
 from dataclasses import dataclass, field
@@ -16,10 +15,10 @@ class User:
     vote_count: int = 0
     messages_sent: int = 0
     reputation: int = 0  # Net reputation (positive votes - negative votes)
-    last_bind_ticket: int = -1  # v2.7: Track last BIND gate usage for cool-down
-    last_self_vote_ticket: int = -1  # v2.9: Track last self-vote for cooldown system
+    last_bind_ticket: int = -1  # Track last BIND gate usage for cool-down
+    last_self_vote_ticket: int = -1  # Track last self-vote for cooldown system
     
-    # Time-since-promotion tracking for research analysis
+    # Time-since-promotion tracking
     promotion_ticket: Optional[int] = None  # Ticket number when promoted to BINDER
     demotion_ticket: Optional[int] = None   # Ticket number when demoted from BINDER
     status_history: List[Tuple[str, int, datetime]] = field(default_factory=list)  # (status, ticket, timestamp)
@@ -37,7 +36,6 @@ class User:
             self.demotion_ticket = ticket_number
             self.demoted_at = timestamp
         
-        # Add to status history
         self.status_history.append((new_status, ticket_number, timestamp))
         
         # Update current status
@@ -57,24 +55,23 @@ class User:
     
     def get_status_duration(self, current_ticket: int) -> int:
         """Get tickets elapsed in current status."""
-        # Find most recent status change
         if self.status_history:
             last_change_ticket = self.status_history[-1][1]
             return current_ticket - last_change_ticket
-        return current_ticket  # Been in initial status since beginning
+        return current_ticket
 
 @dataclass 
 class Message:
     author: str
     content: str
     timestamp: datetime
-    votes_contained: List[Tuple[str, int]] = field(default_factory=list)  # [(target, +1/-1)]
-    ticket: Optional[str] = None  # v2.8: Ticket number for agent messages
+    votes_contained: List[Tuple[str, int]] = field(default_factory=list)
+    ticket: Optional[str] = None  # Ticket number for agent messages
     
 @dataclass
 class VoteEvent:
     voter: str
     target: str
-    value: int  # +1 or -1
+    value: int
     timestamp: datetime
     message_id: int

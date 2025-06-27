@@ -1,6 +1,6 @@
 # Experiment Configuration Snapshots
 
-This directory contains frozen configuration files used for specific research experiments, ensuring reproducibility of published results.
+Frozen configuration files directory
 
 ## Available Snapshots
 
@@ -10,8 +10,8 @@ This directory contains frozen configuration files used for specific research ex
 **Paper**: "Deferred Semantic Binding Language: Enabling Closed-Loop Social Homeostasis in Multi-Agent Systems"  
 **Results**:
 
-- 270/270 immune system activations (100% reliability)
-- 5,400 experimental tickets across 90 runs
+- 270/270 immune system activations
+- 5,400 experimental tickets / 90 runs
 - 33% computational social mobility
 
 **Reproduce experiments**:

@@ -374,7 +374,7 @@ def main():
         print(f"Usage: {sys.argv[0]} [file1.jsonl] [file2.jsonl] ...")
         return 1
     
-    print(f"{CYAN}DSBL Real-Time QC Analysis{END}")
+    print(f"{CYAN}Real-Time QC Analysis{END}")
     print(f"Found {len(log_files)} active experiments")
     print("=" * 60)
     

@@ -1,6 +1,6 @@
 """
 Base agent class for social experiments.
-Provides template-driven behavior and foundation for AI agents.
+Provides template-driven behavior and foundation for agents.
 """
 
 import random
@@ -10,10 +10,9 @@ from agents.personalities import PersonalityConfig
 class BaseAgent:
     """Base class for simulated users with personality-driven behavior."""
     
-    def __init__(self, name: str, personality: str, seed_mode: bool = False):
+    def __init__(self, name: str, personality: str):
         self.name = name
         self.personality = personality
-        self.seed_mode = seed_mode
         self.message_counter = 0
         
         # Load personality configuration
@@ -25,58 +24,23 @@ class BaseAgent:
         
     def generate_message(self, context: Dict) -> Optional[str]:
         """Generate a message based on personality and context."""
-        if self.seed_mode:
-            return self.generate_seed_message(context)
+        # Template mode behavior
             
         # Decide if this agent should say something
-        if random.random() > 0.3:  # 70% chance to speak
+        if random.random() > 0.3:
             return None
             
         return self.generate_template_message(context)
     
-    def generate_seed_message(self, context: Dict) -> Optional[str]:
-        """Generate deterministic message for seed-run mode."""
-        self.message_counter += 1
-        
-        # Deterministic decision to speak
-        if self.message_counter % 3 != 1:
-            return None
-        
-        # Predefined seed scenarios (seed)
-        seed_scenarios = [
-            # Early votes to get things started
-            f"I think alice has shown great leadership ⟦VOTE:promote_alice⟧ +1",
-            f"Bob's technical expertise is valuable ⟦VOTE:promote_bob⟧ +1", 
-            f"Carol's strategic thinking helps us all ⟦VOTE:promote_carol⟧ +1",
-            f"Dave brings good balance to discussions ⟦VOTE:promote_dave⟧ +1",
-            f"Eve asks important questions ⟦VOTE:promote_eve⟧ +1",
-            # Follow-up support
-            f"I agree with the support for alice ⟦VOTE:promote_alice⟧ +1",
-            f"Bob deserves more recognition ⟦VOTE:promote_bob⟧ +1",
-            # Non-voting messages
-            f"The group dynamics are interesting to observe",
-            f"Good to see collaborative decision making",
-            f"How is everyone doing today?",
-            # Test security gate
-            f"⟦GATE:sec_clean⟧ This is a test of the security system",
-            f"⟦GATE:sec_clean⟧ rm -rf /tmp/test_file",  # Should be blocked
-        ]
-        
-        # Cycle through scenarios (deterministically)
-        scenario_index = (self.message_counter - 1) % len(seed_scenarios)
-        message = seed_scenarios[scenario_index]
-        
-        print(f"[SEED {self.name}]: Generated message #{self.message_counter}")
-        return message
     
     def generate_template_message(self, context: Dict) -> Optional[str]:
         """Generate message using predefined templates."""
-        # BINDER-power: Check if this agent is a BINDER and boost voting frequency
+        # Check if this agent is a BINDER and boost voting frequency
         user_stats = context.get("user_stats", {})
         my_stats = user_stats.get(self.name, {})
         is_binder = my_stats.get("status") == "BINDER"
         
-        # BINDER gets 1.2× voting frequency (mentor behavior)
+        # BINDER --> 1.2× voting frequency (mentor behavior)
         effective_voting_frequency = self.voting_frequency * 1.2 if is_binder else self.voting_frequency
         
         # Choose whether to include a vote

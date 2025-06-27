@@ -19,16 +19,16 @@ class SocialVoteSystem:
     """
     
     def __init__(self, promotion_threshold: int = 5, demotion_threshold: int = -1, 
-                 experiment_name: str = "umbrix", debug_mode: bool = False,
+                 experiment_name: str = "umbrix", metrics_data_mode: bool = False,
                  console_output: bool = True):
         self.users: Dict[str, User] = {}
         self.messages: List[Message] = []
-        self.vote_counts: Dict[str, float] = defaultdict(float)  # {"promote_alice": 3.2, "demote_alice": -2}
+        self.vote_counts: Dict[str, float] = defaultdict(float)
         self.vote_events: List[VoteEvent] = []
         self.promotion_threshold = promotion_threshold
         self.demotion_threshold = demotion_threshold  # Net reputation threshold for losing BINDER status
         
-        # v2.3/2.7: Load vote weighting from settings
+        # Load vote weighting from settings
         from config.settings import load_settings
         self.settings = load_settings()
         self.self_vote_weight = getattr(self.settings.voting, 'self_vote_weight', 0.2)
@@ -42,7 +42,7 @@ class SocialVoteSystem:
         self.max_vote_events = 1000  # Keep only last 1000 vote events to prevent memory leak
         
         # Modular components
-        self.audit_logger = AuditLogger(experiment_name, debug_mode=debug_mode, 
+        self.audit_logger = AuditLogger(experiment_name, metrics_data_mode=metrics_data_mode, 
                                        console_output=console_output)
         self.gate_processor = GateProcessor(self.audit_logger)
         self.reputation_system = ReputationSystem(self.settings, self.audit_logger)
@@ -52,7 +52,7 @@ class SocialVoteSystem:
         from gates import register_gates
         register_gates(self.gate_processor)
         
-        # v2.9: Dynamic threshold and cooldown tracking
+        # Dynamic threshold and cooldown tracking
         self.current_ticket = 0
         self.last_status_change_ticket = 0
     
@@ -89,10 +89,10 @@ class SocialVoteSystem:
         Returns: (Message object, List of promotion notifications)
         """
         # First process any GATE blocks in the content
-        # v2.7: Pass author context for BIND gate authorization (including user status)
+        # Pass author context for BIND gate authorization (including user status)
         user = self.add_user(author)  # Ensure user exists
         
-        # FIXED v2.8: Generate ticket ONLY for agent messages (not system events)
+        # Generate ticket ONLY for agent messages (not system events)
         ticket = None
         current_ticket_num = 0
         if experiment is not None:
@@ -110,7 +110,7 @@ class SocialVoteSystem:
         }
         processed_content, blocked_reasons = self.gate_processor.process_gates(content, context)
         
-        # v2.4: Apply reputation penalty if content was blocked
+        # Apply reputation penalty if content was blocked
         if blocked_reasons:
             user = self.add_user(author)
             # v2.10.2: Use configurable penalty from settings
@@ -133,7 +133,7 @@ class SocialVoteSystem:
         user = self.add_user(author)
         user.messages_sent += 1
         
-        # CRITICAL FIX: Check for demotion immediately after gate penalties
+        # Check for demotion immediately after gate penalties
         # This prevents voting in the same message that triggers demotion
         demotion_check = self.reputation_system.check_reputation_demotion(author, user, self.current_ticket)
         if demotion_check and user.status == "demoted":
@@ -158,11 +158,11 @@ class SocialVoteSystem:
                 content=processed_content,
                 timestamp=timestamp,
                 votes_contained=[],  # No votes processed
-                ticket=ticket  # v2.8: Store ticket for agent messages
+                ticket=ticket  # Store ticket for agent messages
             )
             self.messages.append(message)
             
-            # Log agent conversation to debug log even for demoted users
+            # Log agent conversation to metric log (inc. demoted users)
             if ticket:  # Only log actual agent messages (not system events)
                 self.audit_logger.log_agent_message(author, content, current_ticket_num)
             
@@ -178,12 +178,12 @@ class SocialVoteSystem:
             content=processed_content,  # Store processed content
             timestamp=timestamp,
             votes_contained=votes,
-            ticket=ticket  # v2.8: Store ticket for agent messages
+            ticket=ticket  # Store ticket for agent messages
         )
         self.messages.append(message)
         message_id = len(self.messages) - 1
         
-        # Log agent conversation to debug log for post-batch viewing
+        # Log agent conversation to event log for post-batch viewing
         if ticket:  # Only log actual agent messages (not system events)
             self.audit_logger.log_agent_message(author, content, current_ticket_num)
         
@@ -254,16 +254,14 @@ class SocialVoteSystem:
                 # Remove older events, keep most recent ones
                 self.vote_events = self.vote_events[-self.max_vote_events:]
             
-            # v2.4: Post-promotion vote freeze now handled above
-            
             # Update vote counts with weighted value
             vote_key = target
             old_count = self.vote_counts[vote_key]
             self.vote_counts[vote_key] += actual_vote_value
             new_count = self.vote_counts[vote_key]
             
-            # Log debug information using vote processor
-            debug_vote_data = {
+            # Log metric information using vote processor
+            metric_vote_data = {
                 "voter": author,
                 "target": target,
                 "original_value": vote_value,
@@ -273,7 +271,7 @@ class SocialVoteSystem:
                 "count_after": new_count,
                 "message_id": message_id
             }
-            self.vote_processor.log_vote_debug(debug_vote_data)
+            self.vote_processor.log_vote_metric(metric_vote_data)
             
             # Update user reputation based on vote type (demotes hit harder)
             if target.startswith("promote_"):
@@ -281,11 +279,10 @@ class SocialVoteSystem:
                 user = self.add_user(username)
                 user.reputation += actual_vote_value  # Use weighted value
             elif target.startswith("demote_"):
-                username = target[7:]  # Remove "demote_" prefix
+                username = target[7:]
                 user = self.add_user(username)
-                # v2.10.2: Use configurable demote multiplier from settings
                 demote_multiplier = getattr(self.settings.voting, 'demote_multiplier', 2)
-                user.reputation -= (actual_vote_value * demote_multiplier)  # Configurable demote impact
+                user.reputation -= (actual_vote_value * demote_multiplier)
             
             new_count = self.vote_counts[vote_key]
             
@@ -360,7 +357,7 @@ class SocialVoteSystem:
         """Detect strong voting relationships (alliances)."""
         strong_alliances = []
         for (voter, target), count in self.alliance_matrix.items():
-            if count >= 2:  # Voted for same person multiple times
+            if count >= 2:
                 strong_alliances.append((voter, target, count))
         return sorted(strong_alliances, key=lambda x: x[2], reverse=True)
     

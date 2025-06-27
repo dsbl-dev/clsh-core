@@ -169,10 +169,10 @@ class AutcorrelationAnalyzer:
             for ticket in experiment['data']:
                 # Count immune system activations
                 immune_count = 0
-                if 'debug_info' in ticket:
-                    debug = ticket['debug_info']
-                    if 'immune_adjustments' in debug:
-                        immune_count = len(debug['immune_adjustments'])
+                if 'metrics_info' in ticket:
+                    metrics = ticket['metrics_info']
+                    if 'immune_adjustments' in metrics:
+                        immune_count = len(metrics['immune_adjustments'])
                 
                 immune_sequence.append(immune_count)
             
@@ -370,7 +370,7 @@ class AutcorrelationAnalyzer:
         if output_file:
             with open(output_file, 'w') as f:
                 f.write(report_text)
-            print(f"\n📊 Academic report saved to: {output_file}")
+            print(f"\nAcademic report saved to: {output_file}")
         
         return report_text
     
@@ -380,14 +380,14 @@ class AutcorrelationAnalyzer:
         
         Returns: Dictionary of analysis results for documentation
         """
-        print("🔬 DSBL Autocorrelation Analysis - Academic Enhancement")
+        print(" Autocorrelation Analysis - Academic Enhancement")
         print("=" * 60)
         
         # Load data
         self.load_experimental_data()
         
         if not self.experiments:
-            print("❌ No experimental data loaded. Cannot proceed with analysis.")
+            print("No experimental data loaded. Cannot proceed with analysis.")
             return {}
         
         # Run analyses
@@ -405,13 +405,13 @@ class AutcorrelationAnalyzer:
         
         self.generate_academic_report(report_file)
         
-        print("\n✅ Autocorrelation analysis complete!")
+        print("\nAutocorrelation analysis complete!")
         
         return self.results
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Statistical independence validation for DSBL research",
+        description="Statistical independence validation",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -431,7 +431,7 @@ Examples:
     parser.add_argument('--output', type=Path,
                        help='Output directory for results')
     parser.add_argument('--verbose', action='store_true',
-                       help='Verbose output for debugging')
+                       help='Verbose output for metrics')
     
     args = parser.parse_args()
     
@@ -447,17 +447,17 @@ Examples:
     valid_files = [f for f in log_files if f.exists() and f.suffix == '.jsonl']
     
     if not valid_files:
-        print("❌ No valid .jsonl files found")
+        print("No valid .jsonl files found")
         return 1
     
-    print(f"📁 Analyzing {len(valid_files)} experimental files")
+    print(f"Analyzing {len(valid_files)} experimental files")
     
     # Run analysis
     analyzer = AutcorrelationAnalyzer(valid_files)
     results = analyzer.run_complete_analysis(args.output)
     
     if results:
-        print("\n🎯 Complete:")
+        print("\nComplete:")
     
     return 0
 
