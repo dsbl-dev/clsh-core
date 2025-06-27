@@ -124,7 +124,7 @@ class GateProcessor:
         return processed_text, blocked_reasons
     
     def process_bind_gate(self, gate_type: str, content: str, context) -> Tuple[str, bool]:
-        """v2.7: Process BIND gates - BINDER-only privileges.
+        """Process BIND gates - BINDER-only privileges.
         
         Args:
             gate_type: e.g. "BIND:sec_clean+fact_check"  

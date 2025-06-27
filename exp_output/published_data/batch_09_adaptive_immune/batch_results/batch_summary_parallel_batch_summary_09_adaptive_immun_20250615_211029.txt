@@ -1,7 +1,7 @@
 DSBL SOCIAL VOTE SYSTEM - PARALLEL BATCH EXPERIMENT REPORT
 ============================================================
 
-Experiment: Malice v2.6 Parallel Resistance Testing
+Experiment: Malice Parallel Resistance Testing
 Timestamp: 2025-06-15T21:10:29
 Total runs: 30
 Tickets per run: 60

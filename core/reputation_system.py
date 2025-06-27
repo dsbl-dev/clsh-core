@@ -30,7 +30,7 @@ class ReputationSystem:
         threshold = base_threshold
         # Threshold calculation (logging handled at higher level to avoid duplicates)
         
-        # v2.9: Apply dynamic threshold if enabled
+        # Apply dynamic threshold if enabled
         if hasattr(self.settings.voting, 'dynamic_threshold') and self.settings.voting.dynamic_threshold.enabled:
             cooldown_tickets = self.settings.voting.dynamic_threshold.cooldown_tickets
             threshold_increase = self.settings.voting.dynamic_threshold.threshold_increase
@@ -46,7 +46,7 @@ class ReputationSystem:
         """Get self-vote weight with global cooldown system."""
         base_weight = self.settings.voting.self_vote_weight
         
-        # v2.9: Apply self-vote cooldown if enabled (affects ALL agents equally)
+        # Apply self-vote cooldown if enabled (affects ALL agents equally)
         if hasattr(self.settings.voting, 'self_vote_cooldown') and self.settings.voting.self_vote_cooldown.enabled:
             last_self_vote_ticket = getattr(user, 'last_self_vote_ticket', 0)
             cooldown_tickets = self.settings.voting.self_vote_cooldown.cooldown_tickets

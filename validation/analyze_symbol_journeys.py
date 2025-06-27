@@ -870,7 +870,7 @@ def export_timeline_visualization_data(symbol_journeys: Dict[str, List[Dict]], s
                         'event_details': details
                     })
             
-            # Immune frequency adjustments (v2.11)
+            # Immune frequency adjustments
             elif event_type == 'IMMUNE_RESPONSE_ADJUSTMENT':
                 agent_details = details.get('agent_details', {})
                 for agent_name, agent_data in agent_details.items():

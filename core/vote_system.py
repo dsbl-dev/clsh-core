@@ -85,7 +85,7 @@ class SocialVoteSystem:
     def process_message(self, author: str, content: str, experiment=None) -> Tuple[Message, List[str]]:
         """
         Process a chat message, extract votes, update counts, check for promotions.
-        v2.4: Added reputation penalties for blocked content.
+        reputation penalties for blocked content.
         Returns: (Message object, List of promotion notifications)
         """
         # First process any GATE blocks in the content
@@ -113,7 +113,7 @@ class SocialVoteSystem:
         # Apply reputation penalty if content was blocked
         if blocked_reasons:
             user = self.add_user(author)
-            # v2.10.2: Use configurable penalty from settings
+            # Configurable penalty from settings
             gate_penalty = getattr(self.settings.civil_gate, 'reputation_penalty', 1.0)
             penalty = -gate_penalty * len(blocked_reasons)  # Configurable penalty per blocked gate
             user.reputation += penalty

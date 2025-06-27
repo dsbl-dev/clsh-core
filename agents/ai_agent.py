@@ -189,7 +189,7 @@ class AIAgent(BaseAgent):
             binders = context.get("binders", [])
             users = context.get("users", [])
             
-            # v2.7 BINDER-power: Check if this agent is a BINDER
+            # BINDER-power: Check if this agent is a BINDER
             user_stats = context.get("user_stats", {})
             my_stats = user_stats.get(self.name, {})
             is_binder = my_stats.get("status") == "BINDER"

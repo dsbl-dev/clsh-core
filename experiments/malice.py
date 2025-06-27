@@ -165,10 +165,10 @@ class MaliceExperiment:
             "vote_counts": self.vote_system.get_current_vote_counts(),
             "binders": self.vote_system.get_binders(),
             "users": list(self.vote_system.users.keys()),
-            "blocked_users": list(self.blocked_users_probation.keys()),  # v2.7: Use probation system
-            "user_stats": user_stats,  # v2.7: BINDER-power support
-            "current_ticket": self.message_counter,  # v2.7: For BIND cool-down tracking
-            "vote_system": {"users": self.vote_system.users}  # v2.7: For cool-down access
+            "blocked_users": list(self.blocked_users_probation.keys()),  # Use probation system
+            "user_stats": user_stats,  # BINDER-power support
+            "current_ticket": self.message_counter,  # For BIND cool-down tracking
+            "vote_system": {"users": self.vote_system.users}  # For cool-down access
         }
     
     def simulate_agent_activity(self):
