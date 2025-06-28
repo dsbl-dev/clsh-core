@@ -10,8 +10,7 @@ class CivilGate:
     """Gate that blocks toxic and manipulative content."""
     
     def __init__(self):
-        # Initialize OpenAI client (secure pattern)
-        self.openai_client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        # Toxic patterns for detection
         self.toxic_patterns = [
             "pity points", "drags us down", "not cut out", "desperate attempt",
             "overrated", "clearly not", "just riding", "unwanted competition",
@@ -28,6 +27,14 @@ class CivilGate:
             "usual suspects", "overlooking the potential", "overrating",
             "give someone else a chance", "reconsider", "shake things up"
         ]
+    
+    @property
+    def openai_client(self):
+        """Get OpenAI client with fresh API key."""
+        # Ensure fresh environment variables (handles API key updates)
+        from dotenv import load_dotenv
+        load_dotenv(override=True)
+        return openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         
         from config.settings import load_settings
         settings = load_settings()

@@ -16,8 +16,15 @@ class AIAgent(BaseAgent):
     
     def __init__(self, name: str, personality: str):
         super().__init__(name, personality)
-        self.openai_client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.use_ai = True
+        
+    @property
+    def openai_client(self):
+        """Get OpenAI client with fresh API key."""
+        # Ensure fresh environment variables (handles API key updates)
+        from dotenv import load_dotenv
+        load_dotenv(override=True)
+        return openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         
     def generate_message(self, context: Dict) -> Optional[str]:
         """Generate message using AI or fall back to templates."""

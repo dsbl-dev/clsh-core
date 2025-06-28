@@ -21,9 +21,8 @@ from tqdm import tqdm
 from dotenv import load_dotenv
 load_dotenv()
 
-# Initialize OpenAI client (secure pattern)
+# OpenAI client will be initialized fresh in each worker process
 import openai
-openai_client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Add project root to path
 project_root = Path(__file__).parent

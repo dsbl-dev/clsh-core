@@ -9,7 +9,26 @@ Simplified interface for testing.
 
 import os
 import sys
+import shutil
+import glob
 from dotenv import load_dotenv
+
+# Clear Python cache to ensure fresh environment variable loading
+def clear_python_cache():
+    """Clear Python cache files to ensure fresh module loading."""
+    try:
+        # Remove __pycache__ directories
+        for pycache_dir in glob.glob("**/__pycache__", recursive=True):
+            shutil.rmtree(pycache_dir, ignore_errors=True)
+        
+        # Remove .pyc files
+        for pyc_file in glob.glob("**/*.pyc", recursive=True):
+            os.remove(pyc_file)
+    except Exception:
+        pass  # Silently continue if cache clearing fails
+
+# Clear cache before loading environment
+clear_python_cache()
 
 # Load environment variables
 load_dotenv()
