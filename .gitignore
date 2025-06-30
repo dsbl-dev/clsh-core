@@ -197,12 +197,12 @@ cython_debug/
 *.png
 *_private*
 
-# Documentation and reports (local development)
+# Documentation and reports
 docs/
 test/
 tests/
 reports/
 
-# Markdown files in root (except README.md)
+# root .md rules 
 /*.md
 !README.md
