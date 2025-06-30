@@ -65,7 +65,7 @@ python batch_runner_parallel.py --runs 30 --tickets 60 --tag "experiment_name"
 # Load experiment data
 from validation.data_parsing import load_experiment_logs_with_metrics
 
-main_logs, metrics_logs, metrics_logs = load_experiment_logs_with_metrics(
+main_logs, metrics_logs = load_experiment_logs_with_metrics(
     Path("exp_output/published_data/batch_09_adaptive_immune/")
 )
 ```

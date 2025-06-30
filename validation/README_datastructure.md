@@ -16,8 +16,7 @@ exp_output/batch_tag/
 ├── events/
 │   └── malice_YYMMDD_HHhMMmSSs_pPID_rRUN_tTICKETS_dDURATION.jsonl    # Main logs
 ├── metrics/
-│   ├── malice_YYMMDD_HHhMMmSSs_pPID_rRUN_tTICKETS_metrics_dDURATION.jsonl  # System metrics
-│   └── malice_YYMMDD_HHhMMmSSs_pPID_rRUN_tTICKETS_metrics_dDURATION.jsonl   # Legacy metrics logs
+│   └── malice_YYMMDD_HHhMMmSSs_pPID_rRUN_tTICKETS_metrics_dDURATION.jsonl  # System metrics
 └── batch_results/
     └── batch_summary.json    # Analysis results
 ```
@@ -25,8 +24,7 @@ exp_output/batch_tag/
 Data Distribution:
 
 - Main logs: Analysis events (SYMBOL_INTERPRETATION, VOTE_PROCESSING, GATE_DECISION)
-- Metrics logs: System telemetry (IMMUNE_RESPONSE_ADJUSTMENT, TIMING_METRIC, etc.)
-- Legacy metrics logs: Historical metrics information (CONFIG_CHECK, etc.)
+- Metrics logs: System telemetry (IMMUNE_RESPONSE_ADJUSTMENT, TIMING_METRIC, CONFIG_CHECK, etc.)
 
 ---
 
@@ -190,7 +188,7 @@ if (event.get('event_type') == 'SYMBOL_INTERPRETATION' and
 Parsing Pattern:
 
 ```python
-# Extract immune system adjustments from metrics logs (preferred) or legacy metrics logs (fallback)
+# Extract immune system adjustments from metrics logs
 if event.get('event_type') == 'IMMUNE_RESPONSE_ADJUSTMENT':
     ticket = event.get('details', {}).get('ticket', 0)
     agent_details = event.get('details', {}).get('agent_details', {})
@@ -217,9 +215,9 @@ if event.get('event_type') == 'IMMUNE_RESPONSE_ADJUSTMENT':
 
 ---
 
-## Legacy Metrics Log Event Structures
+## Additional Metrics Log Event Structures
 
-Legacy metrics logs now contain primarily technical information and configuration events:
+Metrics logs also contain configuration and technical events:
 
 ### CONFIG_CHECK - Settings Validation
 
@@ -259,9 +257,9 @@ import json
 from pathlib import Path
 from typing import List, Dict, Tuple
 
-def load_experiment_logs_with_metrics(batch_dir: Path) -> Tuple[List[Dict], List[Dict], List[Dict]]:
-    """Load main, legacy, and metrics logs from batch directory."""
-    main_logs, legacy_logs, metrics_logs = [], [], []
+def load_experiment_logs_with_metrics(batch_dir: Path) -> Tuple[List[Dict], List[Dict]]:
+    """Load main logs and metrics logs from batch directory."""
+    main_logs, metrics_logs = [], []
 
     # Load main logs from events/ directory
     events_dir = batch_dir / "events"
@@ -274,18 +272,8 @@ def load_experiment_logs_with_metrics(batch_dir: Path) -> Tuple[List[Dict], List
                     except json.JSONDecodeError:
                         continue
 
-    # Load legacy logs from metrics/ directory (legacy location)
-    metrics_dir = batch_dir / "metrics"
-    if metrics_dir.exists():
-        for legacy_file in metrics_dir.glob("*_metrics.jsonl"):
-            with open(legacy_file, 'r') as f:
-                for line in f:
-                    try:
-                        legacy_logs.append(json.loads(line))
-                    except json.JSONDecodeError:
-                        continue
-
     # Load metrics logs from metrics/ directory
+    metrics_dir = batch_dir / "metrics"
     if metrics_dir.exists():
         for metrics_file in metrics_dir.glob("*_metrics.jsonl"):
             with open(metrics_file, 'r') as f:
@@ -295,7 +283,7 @@ def load_experiment_logs_with_metrics(batch_dir: Path) -> Tuple[List[Dict], List
                     except json.JSONDecodeError:
                         continue
 
-    return main_logs, legacy_logs, metrics_logs
+    return main_logs, metrics_logs
 ```
 
 ### BINDER Promotion Analysis
@@ -391,14 +379,11 @@ def detect_alliance_patterns(main_logs: List[Dict], time_window: int = 3) -> Lis
 ### Immune System Stabilization Analysis
 
 ```python
-def analyze_immune_stabilization(legacy_logs: List[Dict], metrics_logs: Optional[List[Dict]] = None) -> List[Dict]:
-    """Analyze pressure detection -> stabilization timing from metrics or legacy logs."""
+def analyze_immune_stabilization(metrics_logs: List[Dict]) -> List[Dict]:
+    """Analyze pressure detection -> stabilization timing from metrics logs."""
     immune_events = []
 
-    # Prefer metrics_logs if available, fallback to legacy_logs
-    source_logs = metrics_logs if metrics_logs else legacy_logs
-
-    for event in source_logs:
+    for event in metrics_logs:
         if event.get('event_type') == 'IMMUNE_RESPONSE_ADJUSTMENT':
             details = event.get('details', {})
 
@@ -442,15 +427,15 @@ target = event.get('details', {}).get('target')
 target = event.get('details', {}).get('interpretation', {}).get('target')
 ```
 
-### 3. Legacy Log File Loading
+### 3. Metrics Log File Loading
 
 ```python
-# WRONG - legacy logs have different naming pattern
-legacy_file = main_file.replace('.jsonl', '_metrics.jsonl')
+# WRONG - incorrect file path construction
+metrics_file = main_file.replace('.jsonl', '_metrics.jsonl')
 
-# CORRECT - legacy logs in metrics directory with specific pattern
+# CORRECT - metrics logs in metrics directory with specific pattern
 metrics_dir = batch_dir / "metrics"
-legacy_files = list(metrics_dir.glob("*_metrics.jsonl"))
+metrics_files = list(metrics_dir.glob("*_metrics.jsonl"))
 ```
 
 ### 4. Event Type Filtering
@@ -472,11 +457,11 @@ if (event.get('event_type') == 'SYMBOL_INTERPRETATION' and
 | ------------------ | -------------------------------------------------------- | ------------------------- | --------------------------------- |
 | Vote patterns      | `SYMBOL_INTERPRETATION` + `symbol_type: "VOTE"`          | Main                      | `interpretation.target`           |
 | BINDER promotions  | `SYMBOL_INTERPRETATION` + `symbol_type: "STATUS_CHANGE"` | Main                      | `interpretation.new_status`       |
-| Immune adjustments | `IMMUNE_RESPONSE_ADJUSTMENT`                             | Metrics (Legacy fallback) | `agent_details.*.frequency_after` |
+| Immune adjustments | `IMMUNE_RESPONSE_ADJUSTMENT`                             | Metrics                   | `agent_details.*.frequency_after` |
 | Gate decisions     | `GATE_DECISION`                                          | Main                      | `details.result`                  |
 | Alliance timing    | `SYMBOL_INTERPRETATION` + `symbol_type: "VOTE"`          | Main                      | `context.ticket`                  |
-| Performance data   | `TIMING_METRIC`                                          | Metrics (Legacy fallback) | `details.duration_seconds`        |
-| Configuration      | `CONFIG_CHECK`, `CONFIG_ERROR`                           | Legacy                    | `details.enable_calibrate`        |
+| Performance data   | `TIMING_METRIC`                                          | Metrics                   | `details.duration_seconds`        |
+| Configuration      | `CONFIG_CHECK`, `CONFIG_ERROR`                           | Metrics                   | `details.enable_calibrate`        |
 
 ---
 
@@ -487,17 +472,17 @@ if (event.get('event_type') == 'SYMBOL_INTERPRETATION' and
 ```python
 def validate_log_parsing(batch_dir: Path) -> Dict[str, int]:
     """Validate parsing against known batch structure."""
-    main_logs, legacy_logs = load_experiment_logs(batch_dir)
+    main_logs, metrics_logs = load_experiment_logs_with_metrics(batch_dir)
 
     stats = {
         'main_events': len(main_logs),
-        'legacy_events': len(legacy_logs),
+        'metrics_events': len(metrics_logs),
         'vote_events': len([e for e in main_logs if e.get('event_type') == 'SYMBOL_INTERPRETATION'
                            and e.get('details', {}).get('symbol_type') == 'VOTE']),
         'binder_promotions': len([e for e in main_logs if e.get('event_type') == 'SYMBOL_INTERPRETATION'
                                  and e.get('details', {}).get('symbol_type') == 'STATUS_CHANGE'
                                  and e.get('details', {}).get('interpretation', {}).get('new_status') == 'BINDER']),
-        'immune_adjustments': len([e for e in legacy_logs if e.get('event_type') == 'IMMUNE_RESPONSE_ADJUSTMENT'])
+        'immune_adjustments': len([e for e in metrics_logs if e.get('event_type') == 'IMMUNE_RESPONSE_ADJUSTMENT'])
     }
 
     return stats
@@ -525,13 +510,13 @@ from pathlib import Path
 from typing import List, Dict, Tuple
 
 def main():
-    # 1. Load logs using standard pattern (with metrics)
+    # 1. Load logs using standard pattern
     batch_dir = Path("exp_output/published_data/batch_11_adaptive_immune")
-    main_logs, metrics_logs, metrics_logs = load_experiment_logs_with_metrics(batch_dir)
+    main_logs, metrics_logs = load_experiment_logs_with_metrics(batch_dir)
 
     # 2. Extract specific data using documented patterns
     binder_promotions = extract_binder_promotions(main_logs)
-    immune_adjustments = analyze_immune_stabilization(metrics_logs, metrics_logs)  # Prefer metrics
+    immune_adjustments = analyze_immune_stabilization(metrics_logs)
     alliances = detect_alliance_patterns(main_logs)
 
     # 3. Analyze and report

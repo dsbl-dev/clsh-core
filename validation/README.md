@@ -8,7 +8,7 @@ Validation and analysis tools.
 
 Reusable parsing functions for experiment data:
 
-- `load_experiment_logs_with_metrics()` - Load main, and metrics logs
+- `load_experiment_logs_with_metrics()` - Load main and metrics logs
 - `extract_binder_promotions()` - Parse STATUS_CHANGE events for promotions
 - `detect_alliance_patterns()` - Identify coordinated voting behaviors
 - `analyze_immune_stabilization()` - Extract immune system adjustments
@@ -17,7 +17,7 @@ Reusable parsing functions for experiment data:
 
 ```python
 from validation.data_parsing import load_experiment_logs_with_metrics, extract_binder_promotions
-main_logs, metrics_logs, metrics_logs = load_experiment_logs_with_metrics(batch_dir)
+main_logs, metrics_logs = load_experiment_logs_with_metrics(batch_dir)
 promotions = extract_binder_promotions(main_logs)
 ```
 

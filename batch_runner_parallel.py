@@ -148,10 +148,10 @@ def _run_experiment_worker(config: Dict) -> Dict:
                     base_filename = "_".join(filename_parts)
                     experiment.vote_system.audit_logger.audit_file_base = base_filename
                     
-                    #  Set batch-specific paths BEFORE any logging occurs
+                    # Set batch-specific paths BEFORE any logging occurs
                     experiment.vote_system.audit_logger.audit_file = f"{batch_dir}/events/{base_filename}.jsonl"
                     
-                    # Update metrics file path to batch-specific metrics directory (always enabled)
+                    # Update metrics file path to batch-specific metrics directory
                     experiment.vote_system.audit_logger.metrics_file = f"{batch_dir}/metrics/{base_filename}_metrics.jsonl"
                 
                 # Run simulation
@@ -387,7 +387,7 @@ class ParallelBatchRunner:
             print(f" Multi-batch mode: {batch_count} sequential batches with organized log directories")
         print(" Running with AI agents (requires OpenAI API key)")
         if self.metrics_data_mode:
-            print(" Metrics mode: Enhanced logging to batch-specific metrics/ directories")
+            print(" Metrics mode: System telemetry logging to batch-specific metrics/ directories")
         if self.enable_streaming:
             print(f" Streaming enabled: Large batch ({experiment_count} runs) will stream results to disk")
     
@@ -412,7 +412,7 @@ class ParallelBatchRunner:
         
         # Create subdirectories
         (batch_dir / "events").mkdir(exist_ok=True)    # Main event logs
-        (batch_dir / "metrics").mkdir(exist_ok=True)   # System metrics
+        (batch_dir / "metrics").mkdir(exist_ok=True)   # System metrics and telemetry  
         (batch_dir / "batch_results").mkdir(exist_ok=True)  # Analysis results
         
         return batch_dir
@@ -571,7 +571,7 @@ class ParallelBatchRunner:
             monitoring_active = True
             
             def monitor_ticket_progress():
-                """Enhanced monitoring with richer BINDER insights."""
+                """monitoring with BINDER insights."""
                 last_total_tickets = 0
                 last_binder_status = ""
                 binder_history = {}  # Track when each run gets BINDERs
@@ -1119,8 +1119,8 @@ def main():
     print(f" Tickets per run: {args.tickets}")
     print(f" Workers: {args.workers or 'auto-detect'}")
     print(f" Mode: AI (dynamic) - requires OpenAI API key")
-    # Metrics mode is now always enabled for complete immune system monitoring  
-    print(f" Metrics mode: Always enabled for immune system event capture")
+    # Metrics mode is always enabled for system telemetry and immune system monitoring
+    print(f" Metrics mode: Always enabled for system telemetry and immune system event capture")
     if args.tag:
         print(f"  Tag: {args.tag}")
     if args.batches > 1:
@@ -1142,7 +1142,7 @@ def main():
         tickets_per_run=args.tickets,
         tag=args.tag,
         max_workers=args.workers,
-        metrics_data_mode=True,  # Always enabled for immune system monitoring
+        metrics_data_mode=True,  # Always enabled for system telemetry and immune system monitoring
         batch_count=args.batches
     )
     

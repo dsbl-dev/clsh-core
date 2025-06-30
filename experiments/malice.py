@@ -71,7 +71,7 @@ class MaliceExperiment:
         settings = load_settings()
         self.auto_stop_tickets = getattr(settings.timing, 'auto_stop_tickets', None)
         
-        # Initialize agents with enhanced configurations
+        # Initialize agents
         self.init_agents()
         
         # 🦠 INTEGRATE: Connect immune system with vote system

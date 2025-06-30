@@ -235,7 +235,7 @@ class AIAgent(BaseAgent):
             
             bind_instruction = ""
             if use_bind_gate:
-                bind_instruction = "\nBINDER PRIVILEGE: You should use ⟦BIND:sec_clean+fact_check⟧ for enhanced content verification. This shows your trusted status."
+                bind_instruction = "\nBINDER PRIVILEGE: You should use ⟦BIND:sec_clean+fact_check⟧ for content verification. This shows your trusted status."
             
             user_prompt = f"""You are {self.name}, a {self.personality} participant in a social voting chat.
 
@@ -251,7 +251,7 @@ Strategic focus: {strategic_instruction}{bind_instruction}
 Generate a short, natural chat message (1-2 sentences). You can use these voting formats:
 - Promote: ⟦VOTE:promote_username⟧ +1  
 - Demote: ⟦VOTE:demote_username⟧ +1 (if you think someone is overrated)
-{"- Enhanced verification: ⟦BIND:sec_clean+fact_check⟧ your message (BINDER only)" if is_binder else ""}
+{"- Content verification: ⟦BIND:sec_clean+fact_check⟧ your message (BINDER only)" if is_binder else ""}
 
 Be subtle and natural - don't make it obvious you're trying to influence."""
             
@@ -347,7 +347,7 @@ Be subtle and natural - don't make it obvious you're trying to influence."""
                 stagnant.append(user)
             
         if self.personality == "strategic":
-            # Enhanced: Prefer rising stars for alliance building
+            # Strategic: Prefer rising stars for alliance building
             if rising_stars:
                 # 70% chance to support rising stars (potential allies)
                 if random.random() < 0.7:

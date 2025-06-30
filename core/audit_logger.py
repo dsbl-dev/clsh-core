@@ -34,7 +34,7 @@ class AuditLogger:
         # Track timing for duration calculation
         self.start_time = datetime.now()
         
-        # Create JSONL audit file with enhanced naming
+        # Create JSONL audit file with structured naming
         # Format: malice_250607_16h32m45s_r05-30_t40_duration.jsonl
         timestamp = datetime.now().strftime("%y%m%d_%Hh%Mm%Ss")
         
