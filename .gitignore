@@ -128,6 +128,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+.env
 .venv
 env/
 venv/
@@ -195,3 +196,13 @@ cython_debug/
 # Screenshots and private files
 *.png
 *_private*
+
+# Documentation and reports (local development)
+docs/
+test/
+tests/
+reports/
+
+# Markdown files in root (except README.md)
+/*.md
+!README.md

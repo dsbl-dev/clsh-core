@@ -36,8 +36,8 @@ git clone https://github.com/dsbl-dev/clsh-core.git
 cd clsh-core
 pip install -r requirements.txt
 
-cp .env .env.local        # add API_KEY
-python main.py            # interactive demo
+cp .env.example .env      # copy template and add your API key (OpenAI)
+python main.py            # interactive
 ```
 
 ### Batch experiments
