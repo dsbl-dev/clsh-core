@@ -1,34 +1,39 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite it as below."
+message: "If you use this software or dataset, please cite as below."
 type: software
 title: "DSBL: Deferred Semantic Binding Language"
-abstract: "MAAIS for context-dependent symbol activation. demonstrating coordinated agent behavior through deferred semantic binding."
+abstract: >
+  Deferred semantic binding for context-dependent symbol activation in
+  multi-agent systems. Includes reference implementation, dataset and
+  scripts that reproduce results in the companion paper.
 authors:
-  - family-names: "Petersson"
-    given-names: "Joel"
-    email: "echo@joelpetersson.com"
-    orcid: "https://orcid.org/0000-0000-0000-0000"
-repository-code: "https://github.com/dsbl/clsh-core"
-url: "https://dsbl.dev"
-version: "1.0.0"
-date-released: 2025-06-26
+  - family-names: Petersson
+    given-names: Joel
+    email: echo@joelpetersson.com
+    orcid: https://orcid.org/0009-0003-7002-6601
+repository-code: https://github.com/dsbl-dev/clsh-core
+url: https://dsbl.dev
+version: 1.0.1
+date-released: 2025-06-30
 license: Apache-2.0
 keywords:
-  - "multi-agent systems"
-  - "artificial intelligence"
-  - "semantic binding"
-  - "adaptive Immune System"
-  - "AI safety"
-  - "social computing"
-  - "MAAIS"
+  - DSBL
+  - deferred semantic binding
+  - multi-agent systems
+  - artificial intelligence
+  - contextual semantics
+  - adaptive-immune-system
+  - AI safety
+  - social computing
+  - MAAIS
 preferred-citation:
   type: article
   title: "MAAIS via Deferred Semantic Binding"
   authors:
-    - family-names: "Petersson"
-      given-names: "Joel"
-      email: "echo@joelpetersson.com"
-  doi: "10.5281/zenodo.15742505"
-  url: "https://doi.org/10.5281/zenodo.15742505"
+    - family-names: Petersson
+      given-names: Joel
+      orcid: https://orcid.org/0009-0003-7002-6601
+  doi: 10.5281/zenodo.15742505
+  url: https://doi.org/10.5281/zenodo.15742505
   year: 2025
-  abstract: "Theoretical foundation and empirical validation of deferred semantic binding"
+  abstract: "Theoretical foundation and empirical validation of deferred semantic binding."
