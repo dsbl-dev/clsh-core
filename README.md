@@ -1,4 +1,5 @@
-# DSBL · Deferred Semantic Binding Language  
+# DSBL · Deferred Semantic Binding Language
+
 _Context-dependent symbol activation in multi-agent systems_
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
@@ -12,12 +13,13 @@ _Context-dependent symbol activation in multi-agent systems_
 `⟦VOTE:promote_alice⟧` remain latent until runtime context (actor, timing, social
 state) binds their meaning.
 
-- **Paper:** *"Deferred Semantic Binding Language: Theory & Prototype for Closed-Loop Social Homeostasis"* → Zenodo DOI above.  
+- **Paper:** _"Deferred Semantic Binding Language: Theory & Prototype for Closed-Loop Social Homeostasis"_ → Zenodo DOI above.
 - **This repo:** reference implementation + 90-run dataset & scripts to reproduce all figures.
 
 ---
 
 ## Table of Contents
+
 1. [Quick Start](#quick-start)
 2. [Reproduce the Paper](#reproduce-the-paper)
 3. [Directory Map](#directory-map)
@@ -76,9 +78,9 @@ exp_output/     – published_data/ + ablation_data/ (~30 MB)
 
 ## Dataset
 
-* **Size:** ≈ 30 MB JSONL + metrics (90 experiments)
-* **License:** CC-BY-4.0 (see `DATA_LICENSE`) – free to reuse
-* Data is version-controlled; regenerate via provided batch scripts.
+- **Size:** ≈ 30 MB JSONL + metrics (90 experiments)
+- **License:** CC-BY-4.0 (see `DATA_LICENSE`) – free to reuse
+- Data is version-controlled; regenerate via provided batch scripts.
 
 ---
 
@@ -100,9 +102,11 @@ ai:
 
 ## Citation
 
-### Preferred citation
+### How to cite
 
-If you use DSBL in academic work, cite *all versions* via the concept DOI:
+When citing DSBL, please use the **concept DOI**  
+(10.5281/zenodo.15742504).  
+The concept DOI always resolves to the latest version of the work.
 
 ```bibtex
 @misc{petersson_dsbl_2025,
@@ -122,8 +126,8 @@ See also: [CITATION.cff](./CITATION.cff)
 
 ## License
 
-* **Code:** Apache-2.0
-* **All `exp_output/` data:** CC-BY-4.0 (see `DATA_LICENSE`)
+- **Code:** Apache-2.0
+- **All `exp_output/` data:** CC-BY-4.0 (see `DATA_LICENSE`)
 
 ---
 
