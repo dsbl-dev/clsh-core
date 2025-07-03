@@ -15,11 +15,11 @@ graph TB
         BOB[Bob - Analytical<br/>Data-focused voting<br/>Objective analysis]
         CAROL[Carol - Strategic<br/>Alliance formation<br/>Long-term planning]
 
-        EVE[Eve - Adaptive<br/>80% demote leaders<br/>Immune Coordination<br/>Freq 0.18-0.38]
-        DAVE[Dave - Adaptive<br/>Challenge dominance<br/>270/270 Success]
+        EVE[Eve - Adaptive<br/>Demote leaders<br/>Immune Coordination]
+        DAVE[Dave - Adaptive<br/>Challenge dominance<br/>Dynamic frequency]
         ZARA[Zara - Adaptive<br/>Target momentum<br/>Multi-agent sync]
 
-        MALLORY[Mallory - Malicious<br/>Test manipulation<br/>33% Redemption]
+        MALLORY[Mallory - Malicious<br/>Manipulation detection<br/>Gate system testing]
     end
 
     %% Runtime Prompt Generation
