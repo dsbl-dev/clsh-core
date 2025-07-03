@@ -1,23 +1,23 @@
-# DSBL · Deferred Semantic Binding Language
+# DSBL · Deferred Semantic Binding Language  
+_Context-dependent symbol activation in multi-agent systems_
 
-_MAAIS for context-dependent symbol activation_
-
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)  
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15742505.svg)](https://doi.org/10.5281/zenodo.15742505)  
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15742504.svg)](https://doi.org/10.5281/zenodo.15742504)
 [![Site](https://img.shields.io/badge/site-dsbl.dev-blue.svg)](https://dsbl.dev)
+[![GitHub stars](https://img.shields.io/github/stars/dsbl-dev/clsh-core?style=social)](https://github.com/dsbl-dev/clsh-core/stargazers)
 
 ---
 
-DSBL introduces **deferred semantic binding**: symbols like `⟦VOTE:promote_alice⟧` keep their
-meaning latent until runtime context activates them.  
-The repository contains test implementation and experimental data
-(34 MB), + tools to **reproduce the results in  
-_"MAAIS via Deferred Semantic Binding."_**
+**DSBL introduces _deferred semantic binding_:** symbols such as  
+`⟦VOTE:promote_alice⟧` remain latent until runtime context (actor, timing, social
+state) binds their meaning.
+
+- **Paper:** *"Deferred Semantic Binding Language: Theory & Prototype for Closed-Loop Social Homeostasis"* → Zenodo DOI above.  
+- **This repo:** reference implementation + 90-run dataset & scripts to reproduce all figures.
 
 ---
 
 ## Table of Contents
-
 1. [Quick Start](#quick-start)
 2. [Reproduce the Paper](#reproduce-the-paper)
 3. [Directory Map](#directory-map)
@@ -36,14 +36,14 @@ git clone https://github.com/dsbl-dev/clsh-core.git
 cd clsh-core
 pip install -r requirements.txt
 
-cp .env.example .env      # copy template and add your API key (OpenAI)
-python main.py            # interactive
+cp .env.example .env      # add your OpenAI API key
+python main.py            # interactive demo
 ```
 
 ### Batch experiments
 
 ```bash
-python batch_runner_parallel.py --runs 30 --tickets 60 --tag "research_batch"
+python batch_runner_parallel.py --runs 30 --tickets 60 --tag "research"
 ```
 
 ---
@@ -51,10 +51,10 @@ python batch_runner_parallel.py --runs 30 --tickets 60 --tag "research_batch"
 ## Reproduce the Paper
 
 ```bash
-# Validate data integrity
+# 1 Validate data integrity
 python qc/qc_batch.py exp_output/published_data/*/events/*.jsonl
 
-# Cross-batch analysis + key figures
+# 2 Generate cross-batch analysis & key figures
 python validation/cross_batch_analyzer.py exp_output/published_data/
 ```
 
@@ -63,28 +63,26 @@ python validation/cross_batch_analyzer.py exp_output/published_data/
 ## Directory Map
 
 ```
-core/           — voting, gating, reputation, logging
-agents/         — GPT-driven agent behaviours & personas
-gates/          — security & civil content filters
-experiments/    — AB-tests and baseline scripts
-qc/             — batch / realtime data validation
-validation/     — statistical & symbolic post-analysis
-exp_output/     — published_data/ + ablation_data/ (34 MB)
+core/           – voting, gating, reputation, logging
+agents/         – GPT-driven behaviours & personas
+gates/          – safety & civil-content filters
+experiments/    – AB-tests and baselines
+qc/             – batch / realtime data validation
+validation/     – statistical & symbolic post-analysis
+exp_output/     – published_data/ + ablation_data/ (~30 MB)
 ```
 
 ---
 
 ## Dataset
 
-- **Size**: ~30 MB of JSONL logs and summary metrics from 90 experiments.
-- **License**: CC-BY-4.0 (see `DATA_LICENSE`) – free to reuse.
-- Experimental data is included; regenerate data is possible with included batch scripts.
+* **Size:** ≈ 30 MB JSONL + metrics (90 experiments)
+* **License:** CC-BY-4.0 (see `DATA_LICENSE`) – free to reuse
+* Data is version-controlled; regenerate via provided batch scripts.
 
 ---
 
-## System Configuration
-
-Key parameters (`config/settings.yaml`):
+## System Configuration (excerpt)
 
 ```yaml
 voting:
@@ -102,29 +100,33 @@ ai:
 
 ## Citation
 
-If you use dataset, please cite:
+### Preferred citation
+
+If you use DSBL in academic work, cite *all versions* via the concept DOI:
 
 ```bibtex
-@misc{petersson2025dsbl,
-  title   = {MAAIS via Deferred Semantic Binding},
-  author  = {Joel Petersson},
+@misc{petersson_dsbl_2025,
+  title   = {Deferred Semantic Binding Language: Theory & Prototype},
+  author  = {Petersson, Joel},
   year    = {2025},
-  doi     = {10.5281/zenodo.15742505},
-  url     = {https://doi.org/10.5281/zenodo.15742505}
+  doi     = {10.5281/zenodo.15742504},
+  url     = {https://doi.org/10.5281/zenodo.15742504}
 }
 ```
 
-A `CITATION.cff` file is included.
+(Or grab the latest version-specific BibTeX from Zenodo.)
+
+See also: [CITATION.cff](./CITATION.cff)
 
 ---
 
 ## License
 
-Code © 2025 Joel Petersson, released under the **Apache 2.0 License**  
-Dataset released under **CC-BY-4.0** (see `DATA_LICENSE`).
+* **Code:** Apache-2.0
+* **All `exp_output/` data:** CC-BY-4.0 (see `DATA_LICENSE`)
 
 ---
 
 ## Maintainer
 
-Joel Petersson · [echo@joelpetersson.com](mailto:echo@joelpetersson.com) · [dsbl.dev](https://dsbl.dev)
+Joel Petersson · [echo@joelpetersson.com](mailto:echo@joelpetersson.com) · [https://dsbl.dev](https://dsbl.dev)
