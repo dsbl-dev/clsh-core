@@ -198,11 +198,12 @@ cython_debug/
 *_private*
 
 # Documentation and reports
-docs/
 test/
 tests/
 reports/
+dsbl_theory.tex
 
 # root .md rules 
 /*.md
 !README.md
+!dsbl_core_algorithm.md

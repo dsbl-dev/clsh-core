@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: 2025 DSBL-Dev contributors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Standardized data parsing functions for experiments.
 Implements the data structure patterns documented in README_datastructure.md.

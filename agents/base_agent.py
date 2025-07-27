@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 DSBL-Dev contributors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Base agent class for social experiments.
 Provides template-driven behavior and foundation for agents.

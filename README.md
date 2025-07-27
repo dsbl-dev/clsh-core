@@ -76,6 +76,12 @@ exp_output/     – published_data/ + ablation_data/ (~30 MB)
 
 ---
 
+## Documentation
+
+- **Pseudocode core** → [dsbl_core_algorithm.md](dsbl_core_algorithm.md)
+
+---
+
 ## Dataset
 
 - **Size:** ≈ 30 MB JSONL + metrics (90 experiments)

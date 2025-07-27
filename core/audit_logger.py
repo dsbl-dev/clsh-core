@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 DSBL-Dev contributors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Audit logging for experiments.
 Provides JSONL file logging and real-time console output.

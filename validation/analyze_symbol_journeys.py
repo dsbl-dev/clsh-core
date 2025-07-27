@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: 2025 DSBL-Dev contributors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Symbol Journey Timeline Analyzer for experiments.
 Analyzes how symbol meanings evolve over time based on context changes.

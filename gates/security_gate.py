@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 DSBL-Dev contributors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Security gate for detecting bad code patterns.
 Part of defense.

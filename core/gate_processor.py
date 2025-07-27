@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 DSBL-Dev contributors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Gate processing system for semantic gates.
 Handles registration and orchestration of different gate types.

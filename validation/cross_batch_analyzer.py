@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+# SPDX-FileCopyrightText: 2025 DSBL-Dev contributors
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """
 Cross-Batch Analysis Script for MAAIS
 Analyzes patterns across Batch 09, 10, and 11 (90 total runs)
