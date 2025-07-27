@@ -1,3 +1,6 @@
+# DSBL Core Algorithm
+
+```pseudocode
 # SPDX-License-Identifier: Apache-2.0
 # Copyright © 2025 DSBL-Dev contributors
 #
@@ -95,3 +98,4 @@ procedure BIND_WEIGHT(vote_symbol, ctx):
         adj  ← (ctx.target_reputation - cfg.min_rep) * cfg.scale
         base ← max(0.1, base + adj)
     return base
+```
