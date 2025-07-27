@@ -13,7 +13,7 @@
 # DSBL is a *general-purpose algorithm* for deferred semantic binding:
 #   • Symbol semantics bind only at **runtime context** — never at design time.
 #   • The algorithm is domain-agnostic; any system requiring context-dependent
-#     meaning (multi-agent chat, IoT policy, quantum control, etc.) can adopt it.
+#     meaning (multi-agent coordination, IoT policy, complex systems, etc.) can adopt it.
 #
 # The repository you are reading applies DSBL to a *multi-agent social immune
 # system* — merely one illustrative use-case, not a limitation.
